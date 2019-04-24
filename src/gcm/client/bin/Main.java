@@ -1,4 +1,4 @@
-package gcm.client;
+package gcm.client.bin;
 
 public class Main {
     public static void main(String[] args) {
