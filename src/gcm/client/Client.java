@@ -2,6 +2,7 @@ package gcm.client;
 
 import gcm.ChatIF;
 import gcm.commands.Command;
+import gcm.commands.Echo;
 import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
@@ -54,7 +55,8 @@ public class Client extends AbstractClient {
     public void handleMessageFromClientConsole(String msg) {
         this.chatIF.displayf("sending msg to server: %s", msg);
         try {
-            this.sendToServer(msg);
+            Command cmd = new Echo(msg);
+            this.sendToServer(cmd);
         } catch (IOException e) {
             this.chatIF.display("ERR: couldn't send message");
             e.printStackTrace();
