@@ -1,16 +1,17 @@
-package gcm.server.bin;
+package gcm.client.bin;
+
 
 import com.beust.jcommander.JCommander;
+import gcm.client.Client;
 import gcm.ChatIF;
-import gcm.server.Server;
-import gcm.server.Settings;
+import gcm.client.Settings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class ServerConsole implements ChatIF {
-    private Server server;
+public class ClientConsole implements ChatIF {
+    private Client client;
 
     public static void main(String[] cliArgs) {
         // parse cli args
@@ -20,12 +21,12 @@ public class ServerConsole implements ChatIF {
                 .build()
                 .parse(cliArgs);
 
-        ServerConsole serverConsole = new ServerConsole(args);
+        ClientConsole clientConsole = new ClientConsole(args);
 
         try {
-            serverConsole.start();
+            clientConsole.start();
         } catch (IOException e) {
-            serverConsole.display("ERR: couldn't start server");
+            clientConsole.display("ERR: couldn't start server");
             e.printStackTrace();
             System.exit(1);
         }
@@ -33,7 +34,7 @@ public class ServerConsole implements ChatIF {
 
     private void start() throws IOException {
         // start server
-        this.server.start();
+        this.client.start();
         // accept console commands
         this.accept();
     }
@@ -45,18 +46,18 @@ public class ServerConsole implements ChatIF {
 
             while (true) {
                 message = fromConsole.readLine();
-                this.server.handleMessageFromServerConsole(message);
+                this.client.handleMessageFromClientConsole(message);
             }
         } catch (Exception ex) {
             this.display("Unexpected error while reading from console!");
         }
     }
 
-    public ServerConsole(Args args) {
-        this.server = new Server(
+    public ClientConsole(Args args) {
+        this.client = new Client(
                 new Settings(
-                        args.getPort(),
-                        args.getConnectionString()
+                        args.getHost(),
+                        args.getPort()
                 ),
                 this
         );

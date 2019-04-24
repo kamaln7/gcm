@@ -1,5 +1,6 @@
 package gcm.server;
 
+import gcm.ChatIF;
 import gcm.commands.Command;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
@@ -18,8 +19,7 @@ public class Server extends AbstractServer {
     }
 
     public void start() throws IOException {
-        int port = this.settings.port;
-        this.chatIF.display("Starting server on port " + port);
+        this.chatIF.displayf("Starting server on port %s", this.settings.port);
         this.listen();
     }
 
@@ -39,6 +39,7 @@ public class Server extends AbstractServer {
     }
 
     public void handleMessageFromServerConsole(String msg) {
-        this.chatIF.displayf("server console msg: %s", msg);
+        this.chatIF.displayf("sending msg to all clients: %s", msg);
+        this.sendToAllClients(msg);
     }
 }
