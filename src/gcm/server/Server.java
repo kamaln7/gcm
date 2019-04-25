@@ -1,20 +1,18 @@
 package gcm.server;
 
-import com.beust.jcommander.JCommander;
 import gcm.ChatIF;
 import gcm.commands.Command;
-import gcm.commands.Echo;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class Server extends AbstractServer {
     private Settings settings;
     private ChatIF chatIF;
+    private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
 
     public Server(Settings settings, ChatIF chatIF) {
         super(settings.port);
@@ -29,6 +27,15 @@ public class Server extends AbstractServer {
     }
 
     @Override
+    protected void clientConnected(ConnectionToClient client) {
+        String id = UUID.randomUUID().toString();
+        client.setInfo("connectionId", id);
+        this.clientConnections.put(id, client);
+
+        this.chatIF.displayf("Client [%s] connected, assigned id [%s]", client, id);
+    }
+
+    @Override
     public void listen(int port) {
         this.setPort(port);
         try {
@@ -40,14 +47,21 @@ public class Server extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        this.chatIF.displayf("client msg: %s\nisCommand: %s", msg, msg instanceof Command);
-        if (msg instanceof Command) {
-            Command cmd = (Command) msg;
-            cmd.runOnServer(this);
+        this.chatIF.displayf("received client msg: %s\nisCommand: %s", msg, msg instanceof Command);
+        if (!(msg instanceof Command)) {
+            return;
+        }
+
+        Command cmd = (Command) msg;
+        cmd.runOnServer(this);
+        try {
+            client.sendToClient(cmd);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public void handleMessageFromServerConsole(String msg) {
-
+        this.chatIF.displayf("server console commands are not implemented");
     }
 }

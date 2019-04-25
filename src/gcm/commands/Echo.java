@@ -2,20 +2,37 @@ package gcm.commands;
 
 import gcm.server.Server;
 
-public class Echo extends Command {
-    public static String NAME = "echo";
+import java.io.Serializable;
+
+public class Echo extends Command implements Serializable {
+    private class Input implements Serializable {
+        String message;
+
+        public Input(String message) {
+            this.message = message;
+        }
+    }
+
+    private class Output implements Serializable {
+        String message;
+
+        public Output(String message) {
+            this.message = message;
+        }
+    }
+
+    public Input input;
+    public Output output;
 
     public Echo(String msg) {
         super();
-        this.args = msg;
-    }
-
-    public Echo() {
-
+        this.input = new Input(msg);
     }
 
     @Override
     public void runOnServer(Server server) {
-        server.sendToAllClients(this.args);
+        Output output = new Output(this.input.message);
+        this.output = output;
+        server.sendToAllClients("Echo command requested: " + this.input.message);
     }
 }

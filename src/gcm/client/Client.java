@@ -50,13 +50,20 @@ public class Client extends AbstractClient {
     @Override
     protected void handleMessageFromServer(Object msg) {
         this.chatIF.displayf("server msg: %s\nisCommand: %s", msg, msg instanceof Command);
+        if (!(msg instanceof Command)) {
+            return;
+        }
+
+        Command cmd = (Command) msg;
+        this.chatIF.displayf("command output: %s", cmd.output);
     }
 
     public void handleMessageFromClientConsole(String msg) {
         this.chatIF.displayf("sending msg to server: %s", msg);
         try {
-            Command cmd = new Echo(msg);
+            Echo cmd = new Echo(msg);
             this.sendToServer(cmd);
+            this.chatIF.display("sent message");
         } catch (IOException e) {
             this.chatIF.display("ERR: couldn't send message");
             e.printStackTrace();
