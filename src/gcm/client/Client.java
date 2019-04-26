@@ -7,6 +7,7 @@ import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.UUID;
 
 public class Client extends AbstractClient {
     private Settings settings;
@@ -55,13 +56,15 @@ public class Client extends AbstractClient {
         }
 
         Command cmd = (Command) msg;
-        this.chatIF.displayf("command output: %s", cmd.output);
+        cmd.clientOnReply.accept(cmd);
     }
 
     public void handleMessageFromClientConsole(String msg) {
         this.chatIF.displayf("sending msg to server: %s", msg);
         try {
             Echo cmd = new Echo(msg);
+            cmd.id = UUID.randomUUID().toString();
+
             this.sendToServer(cmd);
             this.chatIF.display("sent message");
         } catch (IOException e) {

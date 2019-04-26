@@ -29,7 +29,7 @@ public class Server extends AbstractServer {
     @Override
     protected void clientConnected(ConnectionToClient client) {
         String id = UUID.randomUUID().toString();
-        client.setInfo("connectionId", id);
+        client.setInfo("id", id);
         this.clientConnections.put(id, client);
 
         this.chatIF.displayf("Client [%s] connected, assigned id [%s]", client, id);
@@ -47,21 +47,31 @@ public class Server extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        this.chatIF.displayf("received client msg: %s\nisCommand: %s", msg, msg instanceof Command);
+        this.chatIF.displayf("Received msg from [%s]: %s\nisCommand: %s", client, msg, msg instanceof Command);
         if (!(msg instanceof Command)) {
             return;
         }
 
         Command cmd = (Command) msg;
-        cmd.runOnServer(this);
-        try {
-            client.sendToClient(cmd);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        cmd.clientId = (String) client.getInfo("id");
+        CommandRunner runner = new CommandRunner(cmd, this);
+        Thread runnerThread = new Thread(runner);
+        runnerThread.start();
     }
 
     public void handleMessageFromServerConsole(String msg) {
         this.chatIF.displayf("server console commands are not implemented");
+    }
+
+    public void sendCommandReply(Command command) {
+        if (!this.clientConnections.containsKey(command.clientId)) {
+            return;
+        }
+
+        try {
+            this.clientConnections.get(command.clientId).sendToClient(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

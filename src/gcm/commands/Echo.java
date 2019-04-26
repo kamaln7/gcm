@@ -5,16 +5,16 @@ import gcm.server.Server;
 import java.io.Serializable;
 
 public class Echo extends Command implements Serializable {
-    private class Input implements Serializable {
-        String message;
+    public class Input implements Serializable {
+        public String message;
 
         public Input(String message) {
             this.message = message;
         }
     }
 
-    private class Output implements Serializable {
-        String message;
+    public class Output implements Serializable {
+        public String message;
 
         public Output(String message) {
             this.message = message;
