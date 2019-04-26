@@ -1,8 +1,8 @@
 package gcm.client;
 
 import gcm.ChatIF;
+import gcm.commands.BroadcastCommandRequest;
 import gcm.commands.Command;
-import gcm.commands.Echo;
 import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
@@ -54,19 +54,14 @@ public class Client extends AbstractClient {
         if (!(msg instanceof Command)) {
             return;
         }
-
-        Command cmd = (Command) msg;
-        cmd.clientOnReply.accept(cmd);
     }
 
     public void handleMessageFromClientConsole(String msg) {
         this.chatIF.displayf("sending msg to server: %s", msg);
         try {
-            Echo cmd = new Echo(msg);
-            cmd.id = UUID.randomUUID().toString();
-
-            this.sendToServer(cmd);
-            this.chatIF.display("sent message");
+            BroadcastCommandRequest request = new BroadcastCommandRequest(msg);
+            request.id = UUID.randomUUID().toString();
+            this.sendToServer(request);
         } catch (IOException e) {
             this.chatIF.display("ERR: couldn't send message");
             e.printStackTrace();

@@ -1,7 +1,7 @@
 package gcm.server;
 
 import gcm.ChatIF;
-import gcm.commands.Command;
+import gcm.commands.Request;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
@@ -47,31 +47,15 @@ public class Server extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        this.chatIF.displayf("Received msg from [%s]: %s\nisCommand: %s", client, msg, msg instanceof Command);
-        if (!(msg instanceof Command)) {
+        this.chatIF.displayf("Received msg from [%s]: %s\nisRequest: %s", client, msg, msg instanceof Request);
+        if (!(msg instanceof Request)) {
             return;
         }
 
-        Command cmd = (Command) msg;
-        cmd.clientId = (String) client.getInfo("id");
-        CommandRunner runner = new CommandRunner(cmd, this);
-        Thread runnerThread = new Thread(runner);
-        runnerThread.start();
+
     }
 
     public void handleMessageFromServerConsole(String msg) {
         this.chatIF.displayf("server console commands are not implemented");
-    }
-
-    public void sendCommandReply(Command command) {
-        if (!this.clientConnections.containsKey(command.clientId)) {
-            return;
-        }
-
-        try {
-            this.clientConnections.get(command.clientId).sendToClient(command);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
