@@ -4,9 +4,8 @@ import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
 import java.io.IOException;
-import java.io.Serializable;
 
-public class EchoCommand implements Command<EchoCommandRequest, EchoCommandResponse>, Serializable {
+public class EchoCommand implements Command<EchoCommandRequest, EchoCommandResponse> {
     Server server;
 
     public EchoCommand New(Server server) {

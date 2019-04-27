@@ -3,9 +3,7 @@ package gcm.commands;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-import java.io.Serializable;
-
-public class BroadcastCommand implements Command<BroadcastCommandRequest, BroadcastCommandResponse>, Serializable {
+public class BroadcastCommand implements Command<BroadcastCommandRequest, BroadcastCommandResponse> {
     Server server;
 
     public BroadcastCommand New(Server server) {
