@@ -59,8 +59,8 @@ public class Client extends AbstractClient {
     public void handleMessageFromClientConsole(String msg) {
         this.chatIF.displayf("sending msg to server: %s", msg);
         try {
-            BroadcastCommandRequest request = new BroadcastCommandRequest(msg);
-            request.id = UUID.randomUUID().toString();
+            String id = UUID.randomUUID().toString();
+            BroadcastCommandRequest request = new BroadcastCommandRequest(id, msg);
             this.sendToServer(request);
         } catch (IOException e) {
             this.chatIF.display("ERR: couldn't send message");

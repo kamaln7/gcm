@@ -1,7 +1,7 @@
 package gcm.server;
 
 import gcm.ChatIF;
-import gcm.commands.Request;
+import gcm.commands.*;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
@@ -13,6 +13,15 @@ public class Server extends AbstractServer {
     private Settings settings;
     private ChatIF chatIF;
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
+
+    // <-- commands
+    private static HashMap<Class<? extends Request>, Class<? extends gcm.commands.Command<? extends gcm.commands.Request, ? extends gcm.commands.Response>>> requestToCommandMap = new HashMap<>();
+
+    static {
+        requestToCommandMap.put(BroadcastCommandRequest.class, BroadcastCommand.class);
+        requestToCommandMap.put(EchoCommandRequest.class, EchoCommand.class);
+    }
+    // --> commands
 
     public Server(Settings settings, ChatIF chatIF) {
         super(settings.port);
@@ -52,7 +61,23 @@ public class Server extends AbstractServer {
             return;
         }
 
+        if (!requestToCommandMap.containsKey(msg.getClass())) {
+            this.chatIF.displayf("Received unknown request [%s] from client [%s]", msg.getClass(), client);
+            try {
+                client.sendToClient("ERR: Unknown request " + msg.getClass());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
+        try {
+            Request req = (Request) msg;
+            Response res = requestToCommandMap.get(msg.getClass()).newInstance().New(this).runOnServer(req, client);
+            client.sendToClient(res);
+        } catch (InstantiationException | IllegalAccessException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleMessageFromServerConsole(String msg) {
