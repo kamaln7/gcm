@@ -1,10 +1,13 @@
 package gcm.commands;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import gcm.common.GsonSingleton;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-public interface Command<Req extends Request, Res extends Response> {
-    <C extends Command> C New(Server server);
+public interface Command {
+    Gson gson = GsonSingleton.GsonSingleton().gson;
 
-    Res runOnServer(Req request, ConnectionToClient client);
+    JsonElement runOnServer(Request request, Server server, ConnectionToClient client);
 }
