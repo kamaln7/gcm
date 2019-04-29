@@ -10,18 +10,22 @@ import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class Client extends AbstractClient {
     private Gson gson = GsonSingleton.GsonSingleton().gson;
     private Settings settings;
     private ChatIF chatIF;
+    private HashMap<String, CompletableFuture<Response>> pendingCommands;
 
     public Client(Settings settings, ChatIF chatIF) {
         super(settings.host, settings.port);
 
         this.settings = settings;
         this.chatIF = chatIF;
+        this.pendingCommands = new HashMap<>();
     }
 
     public void start() throws IOException {
@@ -58,15 +62,17 @@ public class Client extends AbstractClient {
         if (!(msg instanceof Response)) {
             return;
         }
-//
-//        Response response = (Response) msg;
-//        String id = response.getClass().cast(response).id;
-//        if (!this.pendingCommands.containsKey(id)) {
-//            return;
-//        }
-//
-//        this.pendingCommands.get(id).complete(response);
-//        this.pendingCommands.remove(id);
+
+        (new Thread(() -> {
+            Response response = (Response) msg;
+            String id = response.id;
+            if (!this.pendingCommands.containsKey(id)) {
+                return;
+            }
+
+            this.pendingCommands.get(id).complete(response);
+            this.pendingCommands.remove(id);
+        })).start();
     }
 
     public void handleMessageFromClientConsole(String msg) {
@@ -76,7 +82,12 @@ public class Client extends AbstractClient {
                 String id = UUID.randomUUID().toString();
                 BroadcastCommand.Input input = new BroadcastCommand.Input("hello there");
                 Request request = new Request(id, BroadcastCommand.class, gson.toJson(input));
+                CompletableFuture<Response> responseF = new CompletableFuture<>();
+                this.pendingCommands.put(id, responseF);
                 this.sendToServer(request);
+
+                Response response = responseF.get();
+                this.chatIF.display("got response for " + response.id);
             } catch (Exception e) {
                 this.chatIF.display("ERR: couldn't send message");
                 e.printStackTrace();
