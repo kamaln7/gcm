@@ -57,16 +57,18 @@ public class Server extends AbstractServer {
             return;
         }
 
-        try {
-            Request request = (Request) msg;
-            Command cmd = request.command.newInstance();
+        (new Thread(() -> {
+            try {
+                Request request = (Request) msg;
+                Command cmd = request.command.newInstance();
 
-            Object output = cmd.runOnServer(request, this, client);
-            Response response = new Response(request.id, request.command, gson.toJson(output));
-            client.sendToClient(response);
-        } catch (InstantiationException | IllegalAccessException | IOException e) {
-            e.printStackTrace();
-        }
+                Object output = cmd.runOnServer(request, this, client);
+                Response response = new Response(request.id, request.command, gson.toJson(output));
+                client.sendToClient(response);
+            } catch (InstantiationException | IllegalAccessException | IOException e) {
+                e.printStackTrace();
+            }
+        })).start();
     }
 
     public void handleMessageFromServerConsole(String msg) {
