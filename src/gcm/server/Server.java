@@ -1,10 +1,11 @@
 package gcm.server;
 
-import com.google.gson.JsonElement;
+import com.google.gson.Gson;
 import gcm.ChatIF;
 import gcm.commands.Command;
 import gcm.commands.Request;
 import gcm.commands.Response;
+import gcm.common.GsonSingleton;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Server extends AbstractServer {
+    private Gson gson = GsonSingleton.GsonSingleton().gson;
     private Settings settings;
     private ChatIF chatIF;
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
@@ -59,8 +61,8 @@ public class Server extends AbstractServer {
             Request request = (Request) msg;
             Command cmd = request.command.newInstance();
 
-            JsonElement output = cmd.runOnServer(request, this, client);
-            Response response = new Response(request.id, request.command, output);
+            Object output = cmd.runOnServer(request, this, client);
+            Response response = new Response(request.id, request.command, gson.toJson(output));
             client.sendToClient(response);
         } catch (InstantiationException | IllegalAccessException | IOException e) {
             e.printStackTrace();

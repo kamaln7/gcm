@@ -1,6 +1,5 @@
 package gcm.commands;
 
-import com.google.gson.JsonElement;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
@@ -22,10 +21,10 @@ public class BroadcastCommand implements Command {
     }
 
     @Override
-    public JsonElement runOnServer(Request request, Server server, ConnectionToClient client) {
-        Input input = this.gson.fromJson(request.input, Input.class);
+    public Object runOnServer(Request request, Server server, ConnectionToClient client) {
+        Input input = gson.fromJson(request.input, Input.class);
         server.sendToAllClients("Broadcasted: " + input.message);
 
-        return this.gson.toJsonTree(new Output(true));
+        return new Output(true);
     }
 }

@@ -75,7 +75,7 @@ public class Client extends AbstractClient {
             try {
                 String id = UUID.randomUUID().toString();
                 BroadcastCommand.Input input = new BroadcastCommand.Input("hello there");
-                Request request = new Request(id, BroadcastCommand.class, gson.toJsonTree(input));
+                Request request = new Request(id, BroadcastCommand.class, gson.toJson(input));
                 this.sendToServer(request);
             } catch (Exception e) {
                 this.chatIF.display("ERR: couldn't send message");
