@@ -3,6 +3,7 @@ package gcm.client;
 import com.google.gson.Gson;
 import gcm.ChatIF;
 import gcm.commands.BroadcastCommand;
+import gcm.commands.Input;
 import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
@@ -11,8 +12,8 @@ import ocsf.client.AbstractClient;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class Client extends AbstractClient {
     private Gson gson = GsonSingleton.GsonSingleton().gson;
@@ -79,19 +80,27 @@ public class Client extends AbstractClient {
         (new Thread(() -> {
             this.chatIF.displayf("sending msg to server: %s", msg);
             try {
-                String id = UUID.randomUUID().toString();
-                BroadcastCommand.Input input = new BroadcastCommand.Input("hello there");
-                Request request = new Request(id, BroadcastCommand.class, gson.toJson(input));
-                CompletableFuture<Response> responseF = new CompletableFuture<>();
-                this.pendingCommands.put(id, responseF);
-                this.sendToServer(request);
+                Input input = new BroadcastCommand.Input(msg);
+                Response response = this.sendInputAndWaitForResponse(input);
+                BroadcastCommand.Output output = response.getOutput(BroadcastCommand.Output.class);
 
-                Response response = responseF.get();
-                this.chatIF.display("got response for " + response.id);
+                this.chatIF.displayf("got response for %s status: %s", response.id, output.ok);
             } catch (Exception e) {
                 this.chatIF.display("ERR: couldn't send message");
                 e.printStackTrace();
             }
         })).start();
+    }
+
+    private Response sendInputAndWaitForResponse(Input input) throws InterruptedException, ExecutionException, IOException {
+        Request request = new Request(input);
+        return this.sendRequestAndWaitForResponse(request);
+    }
+
+    private Response sendRequestAndWaitForResponse(Request request) throws IOException, ExecutionException, InterruptedException {
+        CompletableFuture<Response> response = new CompletableFuture<>();
+        this.pendingCommands.put(request.id, response);
+        this.sendToServer(request);
+        return response.get();
     }
 }

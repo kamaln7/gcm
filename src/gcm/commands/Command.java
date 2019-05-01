@@ -8,5 +8,5 @@ import ocsf.server.ConnectionToClient;
 public interface Command {
     Gson gson = GsonSingleton.GsonSingleton().gson;
 
-    Object runOnServer(Request request, Server server, ConnectionToClient client);
+    Output runOnServer(Request request, Server server, ConnectionToClient client);
 }

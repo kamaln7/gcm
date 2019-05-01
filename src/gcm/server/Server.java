@@ -3,6 +3,7 @@ package gcm.server;
 import com.google.gson.Gson;
 import gcm.ChatIF;
 import gcm.commands.Command;
+import gcm.commands.Output;
 import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
@@ -62,10 +63,19 @@ public class Server extends AbstractServer {
                 Request request = (Request) msg;
                 Command cmd = request.command.newInstance();
 
-                Object output = cmd.runOnServer(request, this, client);
-                Response response = new Response(request.id, request.command, gson.toJson(output));
+                // run command
+                Exception exception = null;
+                Output output = null;
+                try {
+                    output = cmd.runOnServer(request, this, client);
+                } catch (Exception e) {
+                    exception = e;
+                }
+
+                // return output
+                Response response = new Response(request, output, exception);
                 client.sendToClient(response);
-            } catch (InstantiationException | IllegalAccessException | IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         })).start();
