@@ -1,12 +1,12 @@
 package gcm.commands;
 
+import com.google.gson.Gson;
+import gcm.common.GsonSingleton;
 import gcm.server.Server;
+import ocsf.server.ConnectionToClient;
 
-import java.io.Serializable;
+public interface Command {
+    Gson gson = GsonSingleton.GsonSingleton().gson;
 
-public abstract class Command implements Serializable {
-    public String id, clientId;
-    public Object input, output;
-
-    public abstract void runOnServer(Server server);
+    Output runOnServer(Request request, Server server, ConnectionToClient client);
 }

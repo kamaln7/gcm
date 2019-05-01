@@ -1,7 +1,12 @@
 package gcm.server;
 
+import com.google.gson.Gson;
 import gcm.ChatIF;
 import gcm.commands.Command;
+import gcm.commands.Output;
+import gcm.commands.Request;
+import gcm.commands.Response;
+import gcm.common.GsonSingleton;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
@@ -10,6 +15,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Server extends AbstractServer {
+    private Gson gson = GsonSingleton.GsonSingleton().gson;
     private Settings settings;
     private ChatIF chatIF;
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
@@ -47,31 +53,35 @@ public class Server extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        this.chatIF.displayf("Received msg from [%s]: %s\nisCommand: %s", client, msg, msg instanceof Command);
-        if (!(msg instanceof Command)) {
+        this.chatIF.displayf("Received msg from [%s]: %s\nisRequest: %s", client, msg, msg instanceof Request);
+        if (!(msg instanceof Request)) {
             return;
         }
 
-        Command cmd = (Command) msg;
-        cmd.clientId = (String) client.getInfo("id");
-        CommandRunner runner = new CommandRunner(cmd, this);
-        Thread runnerThread = new Thread(runner);
-        runnerThread.start();
+        (new Thread(() -> {
+            try {
+                Request request = (Request) msg;
+                Command cmd = request.command.newInstance();
+
+                // run command
+                Exception exception = null;
+                Output output = null;
+                try {
+                    output = cmd.runOnServer(request, this, client);
+                } catch (Exception e) {
+                    exception = e;
+                }
+
+                // return output
+                Response response = new Response(request, output, exception);
+                client.sendToClient(response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        })).start();
     }
 
     public void handleMessageFromServerConsole(String msg) {
         this.chatIF.displayf("server console commands are not implemented");
-    }
-
-    public void sendCommandReply(Command command) {
-        if (!this.clientConnections.containsKey(command.clientId)) {
-            return;
-        }
-
-        try {
-            this.clientConnections.get(command.clientId).sendToClient(command);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
