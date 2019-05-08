@@ -28,12 +28,14 @@ public class Server extends AbstractServer {
 
     public Server(Settings settings, ChatIF chatIF) throws SQLException {
         super(settings.port);
-        this.chatIF.display("Initializing server");
-
         this.settings = settings;
         this.chatIF = chatIF;
 
+        this.chatIF.display("Initializing server");
+
         this.chatIF.display("Connecting to the database");
+
+        // TODO: JDBC MySQL driver
         this.db = DriverManager.getConnection(this.settings.connectionString);
         Model.setDb(this.db);
     }

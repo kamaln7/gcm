@@ -2,7 +2,7 @@ package gcm.client;
 
 import com.google.gson.Gson;
 import gcm.ChatIF;
-import gcm.commands.BroadcastCommand;
+import gcm.commands.FindUserByIdCommand;
 import gcm.commands.Input;
 import gcm.commands.Request;
 import gcm.commands.Response;
@@ -78,13 +78,14 @@ public class Client extends AbstractClient {
 
     public void handleMessageFromClientConsole(String msg) {
         (new Thread(() -> {
-            this.chatIF.displayf("sending msg to server: %s", msg);
+            Integer id = Integer.parseInt(msg);
+            this.chatIF.displayf("finding user with id %d", id);
             try {
-                Input input = new BroadcastCommand.Input(msg);
+                Input input = new FindUserByIdCommand.Input(id);
                 Response response = this.sendInputAndWaitForResponse(input);
-                BroadcastCommand.Output output = response.getOutput(BroadcastCommand.Output.class);
+                FindUserByIdCommand.Output output = response.getOutput(FindUserByIdCommand.Output.class);
 
-                this.chatIF.displayf("got response for %s status: %s", response.id, output.ok);
+                this.chatIF.displayf("got response for %s status: %s", response.id, output.user);
             } catch (Exception e) {
                 this.chatIF.display("ERR: couldn't send message");
                 e.printStackTrace();

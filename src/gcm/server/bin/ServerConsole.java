@@ -8,6 +8,7 @@ import gcm.server.Settings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 
 public class ServerConsole implements ChatIF {
     private Server server;
@@ -20,12 +21,11 @@ public class ServerConsole implements ChatIF {
                 .build()
                 .parse(cliArgs);
 
-        ServerConsole serverConsole = new ServerConsole(args);
-
         try {
+            ServerConsole serverConsole = new ServerConsole(args);
             serverConsole.start();
-        } catch (IOException e) {
-            serverConsole.display("ERR: couldn't start server");
+        } catch (Exception e) {
+            System.err.println("ERR: couldn't start server");
             e.printStackTrace();
             System.exit(1);
         }
@@ -52,7 +52,7 @@ public class ServerConsole implements ChatIF {
         }
     }
 
-    public ServerConsole(Args args) {
+    public ServerConsole(Args args) throws SQLException {
         this.server = new Server(
                 new Settings(
                         args.getPort(),
