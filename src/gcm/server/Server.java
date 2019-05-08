@@ -7,28 +7,39 @@ import gcm.commands.Output;
 import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
+import gcm.database.models.Model;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class Server extends AbstractServer {
     private Gson gson = GsonSingleton.GsonSingleton().gson;
+
     private Settings settings;
     private ChatIF chatIF;
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
+    private Connection db;
 
-    public Server(Settings settings, ChatIF chatIF) {
+    public Server(Settings settings, ChatIF chatIF) throws SQLException {
         super(settings.port);
+        this.chatIF.display("Initializing server");
 
         this.settings = settings;
         this.chatIF = chatIF;
+
+        this.chatIF.display("Connecting to the database");
+        this.db = DriverManager.getConnection(this.settings.connectionString);
+        Model.setDb(this.db);
     }
 
     public void start() throws IOException {
-        this.chatIF.displayf("Starting server on port %s", this.settings.port);
+        this.chatIF.displayf("Starting OCSF server on port %s", this.settings.port);
         this.listen();
     }
 
@@ -47,23 +58,25 @@ public class Server extends AbstractServer {
         try {
             this.listen();
         } catch (Exception e) {
-            // yeah idk
+            this.chatIF.displayf("couldn't set port to %d", port);
         }
     }
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        this.chatIF.displayf("Received msg from [%s]: %s\nisRequest: %s", client, msg, msg instanceof Request);
+        this.chatIF.displayf("Received msg from [%s]: %s", client, msg);
         if (!(msg instanceof Request)) {
             return;
         }
 
+        // The message is of type Request
+        // process in new thread
         (new Thread(() -> {
             try {
                 Request request = (Request) msg;
                 Command cmd = request.command.newInstance();
 
-                // run command
+                // run the command
                 Exception exception = null;
                 Output output = null;
                 try {
@@ -72,7 +85,7 @@ public class Server extends AbstractServer {
                     exception = e;
                 }
 
-                // return output
+                // return command output to client as a Response
                 Response response = new Response(request, output, exception);
                 client.sendToClient(response);
             } catch (Exception e) {
