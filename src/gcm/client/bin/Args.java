@@ -9,9 +9,9 @@ public class Args {
     @Parameter
     private List<String> parameters = new ArrayList<>();
 
-    @Parameter(names = "--host", description = "Server host to connet to")
+    @Parameter(names = "--host", description = "Server host to connect to")
     private String host = "127.0.0.1";
-    @Parameter(names = "--port", description = "Server port to connet to")
+    @Parameter(names = "--port", description = "Server port to connect to")
     private Integer port = 5000;
 
     public List<String> getParameters() {

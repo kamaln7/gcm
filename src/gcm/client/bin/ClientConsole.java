@@ -2,8 +2,8 @@ package gcm.client.bin;
 
 
 import com.beust.jcommander.JCommander;
-import gcm.client.Client;
 import gcm.ChatIF;
+import gcm.client.Client;
 import gcm.client.Settings;
 
 import java.io.BufferedReader;
@@ -14,13 +14,15 @@ public class ClientConsole implements ChatIF {
     private Client client;
 
     public static void main(String[] cliArgs) {
-        // parse cli args
+        // read cli args
         Args args = new Args();
         JCommander.newBuilder()
                 .addObject(args)
                 .build()
                 .parse(cliArgs);
 
+        // create and start client console
+        // connects to server on start
         ClientConsole clientConsole = new ClientConsole(args);
 
         try {
@@ -40,6 +42,7 @@ public class ClientConsole implements ChatIF {
     }
 
     private void accept() {
+        // this reads input from the command line console and sends it to the Client
         try {
             BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
             String message;

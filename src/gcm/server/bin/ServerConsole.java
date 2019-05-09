@@ -13,13 +13,14 @@ public class ServerConsole implements ChatIF {
     private Server server;
 
     public static void main(String[] cliArgs) {
-        // parse cli args
+        // read cli args
         Args args = new Args();
         JCommander.newBuilder()
                 .addObject(args)
                 .build()
                 .parse(cliArgs);
 
+        // create server and start listening for connections
         try {
             ServerConsole serverConsole = new ServerConsole(args);
             serverConsole.start();

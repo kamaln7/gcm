@@ -25,7 +25,16 @@ public class User extends Model {
         this.updatedAt = rs.getTimestamp("updated_at");
     }
 
-    // queries
+    /* QUERIES */
+
+    /**
+     * Find a user by its id
+     *
+     * @param id The user id to find
+     * @return User The requested user
+     * @throws SQLException
+     * @throws NotFound     if no such user
+     */
     public static User findById(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = Model.getDb().prepareStatement("select * from users where id = ?")) {
             preparedStatement.setInt(1, id);

@@ -14,6 +14,12 @@ public class Request implements Serializable {
     public final Class<? extends Command> command;
     public final String input;
 
+    /**
+     * Create a Request instance from an Input object.
+     * Automatically find the Command class and store it
+     *
+     * @param input The Input object of the command
+     */
     public Request(Input input) {
         this.id = UUID.randomUUID().toString();
         this.command = input.getClass().getEnclosingClass().asSubclass(Command.class);

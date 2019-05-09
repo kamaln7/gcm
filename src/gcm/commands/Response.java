@@ -6,6 +6,9 @@ import gcm.common.GsonSingleton;
 import java.io.IOException;
 import java.io.Serializable;
 
+/**
+ * Response is a command output response sent from the server
+ */
 public class Response implements Serializable {
     private transient Gson gson = GsonSingleton.GsonSingleton().gson;
 
