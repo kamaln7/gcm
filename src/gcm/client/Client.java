@@ -19,8 +19,10 @@ import java.util.concurrent.ExecutionException;
 public class Client extends AbstractClient {
     private Gson gson = GsonSingleton.GsonSingleton().gson;
     private Settings settings;
-    private ChatIF chatIF;
     private HashMap<String, CompletableFuture<Response>> pendingCommands;
+
+
+    public ChatIF chatIF;
 
     public Client(Settings settings, ChatIF chatIF) {
         super(settings.host, settings.port);
@@ -105,7 +107,7 @@ public class Client extends AbstractClient {
     }
 
     // Takes an Input, creates a Request object and calls sendRequestAndWaitForResponse()
-    private Response sendInputAndWaitForResponse(Input input) throws InterruptedException, ExecutionException, IOException {
+    public Response sendInputAndWaitForResponse(Input input) throws InterruptedException, ExecutionException, IOException {
         Request request = new Request(input);
         return this.sendRequestAndWaitForResponse(request);
     }

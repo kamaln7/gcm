@@ -5,6 +5,7 @@ import com.beust.jcommander.JCommander;
 import gcm.ChatIF;
 import gcm.client.Client;
 import gcm.client.Settings;
+import javafx.application.Application;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +28,9 @@ public class ClientConsole implements ChatIF {
 
         try {
             clientConsole.start();
+            clientConsole.display("Starting GUI");
+            ClientGUI.setClient(clientConsole.client);
+            Application.launch(ClientGUI.class);
         } catch (IOException e) {
             clientConsole.display("ERR: couldn't start server");
             e.printStackTrace();
@@ -42,18 +46,20 @@ public class ClientConsole implements ChatIF {
     }
 
     private void accept() {
-        // this reads input from the command line console and sends it to the Client
-        try {
-            BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
-            String message;
+        (new Thread(() -> {
+            // this reads input from the command line console and sends it to the Client
+            try {
+                BufferedReader fromConsole = new BufferedReader(new InputStreamReader(System.in));
+                String message;
 
-            while (true) {
-                message = fromConsole.readLine();
-                this.client.handleMessageFromClientConsole(message);
+                while (true) {
+                    message = fromConsole.readLine();
+                    this.client.handleMessageFromClientConsole(message);
+                }
+            } catch (Exception ex) {
+                this.display("Unexpected error while reading from console!");
             }
-        } catch (Exception ex) {
-            this.display("Unexpected error while reading from console!");
-        }
+        })).start();
     }
 
     public ClientConsole(Args args) {
