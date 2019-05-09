@@ -8,7 +8,6 @@ import gcm.server.Settings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLException;
 
 public class ServerConsole implements ChatIF {
     private Server server;
@@ -34,6 +33,7 @@ public class ServerConsole implements ChatIF {
     private void start() throws IOException {
         // start server
         this.server.start();
+
         // accept console commands
         this.accept();
     }
@@ -52,7 +52,7 @@ public class ServerConsole implements ChatIF {
         }
     }
 
-    public ServerConsole(Args args) throws SQLException {
+    public ServerConsole(Args args) throws Exception {
         this.server = new Server(
                 new Settings(
                         args.getPort(),
@@ -64,6 +64,6 @@ public class ServerConsole implements ChatIF {
 
     @Override
     public void display(String message) {
-        System.out.println("> " + message);
+        System.out.println("# " + message);
     }
 }

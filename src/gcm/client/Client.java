@@ -7,6 +7,7 @@ import gcm.commands.Input;
 import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
+import gcm.database.models.User;
 import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
@@ -59,7 +60,7 @@ public class Client extends AbstractClient {
 
     @Override
     protected void handleMessageFromServer(Object msg) {
-        this.chatIF.displayf("server msg: %s\nisResponse: %s", msg, msg instanceof Response);
+        this.chatIF.displayf("server sent msg: %s", msg);
         if (!(msg instanceof Response)) {
             return;
         }
@@ -78,14 +79,17 @@ public class Client extends AbstractClient {
 
     public void handleMessageFromClientConsole(String msg) {
         (new Thread(() -> {
-            Integer id = Integer.parseInt(msg);
-            this.chatIF.displayf("finding user with id %d", id);
+            Integer id = -1;
             try {
+                id = Integer.parseInt(msg);
+                this.chatIF.displayf("finding user with id %d", id);
                 Input input = new FindUserByIdCommand.Input(id);
                 Response response = this.sendInputAndWaitForResponse(input);
                 FindUserByIdCommand.Output output = response.getOutput(FindUserByIdCommand.Output.class);
 
                 this.chatIF.displayf("got response for %s status: %s", response.id, output.user);
+            } catch (User.NotFound e) {
+                this.chatIF.displayf("user with id %d wasn't found", id);
             } catch (Exception e) {
                 this.chatIF.display("ERR: couldn't send message");
                 e.printStackTrace();

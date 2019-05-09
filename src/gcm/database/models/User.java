@@ -27,16 +27,18 @@ public class User extends Model {
 
     // queries
     public static User findById(Integer id) throws SQLException, NotFound {
-        PreparedStatement preparedStatement = Model.getDb().prepareStatement("select * from users where id = ?");
-        preparedStatement.setInt(1, id);
-        ResultSet rs = preparedStatement.executeQuery();
+        try (PreparedStatement preparedStatement = Model.getDb().prepareStatement("select * from users where id = ?")) {
+            preparedStatement.setInt(1, id);
 
-        if (!rs.next()) {
-            throw new User.NotFound();
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    throw new User.NotFound();
+                }
+
+                User user = new User(rs);
+                return user;
+            }
         }
-
-        User user = new User(rs);
-        return user;
     }
 
     // exceptions

@@ -14,7 +14,6 @@ import ocsf.server.ConnectionToClient;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -26,7 +25,7 @@ public class Server extends AbstractServer {
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
     private Connection db;
 
-    public Server(Settings settings, ChatIF chatIF) throws SQLException {
+    public Server(Settings settings, ChatIF chatIF) throws Exception {
         super(settings.port);
         this.settings = settings;
         this.chatIF = chatIF;
@@ -35,7 +34,7 @@ public class Server extends AbstractServer {
 
         this.chatIF.display("Connecting to the database");
 
-        // TODO: JDBC MySQL driver
+        // MySQL connection
         this.db = DriverManager.getConnection(this.settings.connectionString);
         Model.setDb(this.db);
     }

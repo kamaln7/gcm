@@ -21,7 +21,11 @@ public class Response implements Serializable {
         this.exception = exception;
     }
 
-    public <O extends Output> O getOutput(Class<O> c) {
+    public <O extends Output> O getOutput(Class<O> c) throws Exception {
+        if (this.exception != null) {
+            throw this.exception;
+        }
+
         return gson.fromJson(this.output, c);
     }
 
