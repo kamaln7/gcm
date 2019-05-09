@@ -119,4 +119,8 @@ public class Client extends AbstractClient {
         this.sendToServer(request);
         return response.get();
     }
+
+    public void stop() throws IOException {
+        this.closeConnection();
+    }
 }

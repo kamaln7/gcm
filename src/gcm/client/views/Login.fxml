@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.151"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.LoginController">
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.LoginController">
     <children>
-        <Text layoutX="14.0" layoutY="14.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GCM"
-              wrappingWidth="574.37353515625"/>
+        <Text layoutX="14.0" layoutY="14.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Login View" wrappingWidth="574.37353515625" />
+      <Hyperlink fx:id="openRegisterViewBtn" layoutX="143.0" layoutY="34.0" onAction="#openRegisterView" text="Register" />
     </children>
 </AnchorPane>
