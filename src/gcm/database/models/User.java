@@ -132,15 +132,24 @@ public class User extends Model {
      *
      * @param username Input username
      * @param password Input password
-     * @return Boolean try to log in user with username and password
+     * @return User
      */
-    public static Boolean login(String username, String password) throws SQLException {
-        try {
-            User user = findByUsername(username);
+    public static User login(String username, String password) throws NotFound, SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from users where username = ?")) {
+            preparedStatement.setString(1, username);
 
-            return user.checkPassword(password);
-        } catch (NotFound notFound) {
-            return false;
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    throw new User.NotFound();
+                }
+
+                User user = new User(rs);
+                if (!user.checkPassword(password)) {
+                    throw new User.NotFound();
+                }
+
+                return user;
+            }
         }
     }
 
