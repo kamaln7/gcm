@@ -2,7 +2,7 @@
   <configuration default="false" name="Server" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="gcm.server.bin.ServerConsole" />
     <module name="gcm" />
-    <option name="PROGRAM_PARAMETERS" value="--connectionString &quot;jdbc:mysql://root:root@localhost/gcm&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="--connectionString &quot;jdbc:mysql://f2Z8ihkJqY:15oK6k75bd@remotemysql.com/f2Z8ihkJqY&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="gcm.server.bin.*" />

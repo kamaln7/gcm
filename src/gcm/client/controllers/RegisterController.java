@@ -61,6 +61,7 @@ public class RegisterController {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Username already exists.");
             alert.show();
         } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
