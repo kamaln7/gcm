@@ -93,6 +93,7 @@ public class Client extends AbstractClient {
                 id = Integer.parseInt(msg);
                 this.chatIF.displayf("finding user with id %d", id);
                 Input input = new FindUserByIdCommand.Input(id);
+
                 Response response = this.sendInputAndWaitForResponse(input);
                 FindUserByIdCommand.Output output = response.getOutput(FindUserByIdCommand.Output.class);
 

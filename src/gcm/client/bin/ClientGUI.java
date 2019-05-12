@@ -2,6 +2,7 @@ package gcm.client.bin;
 
 import gcm.client.Client;
 import gcm.client.controllers.LoginController;
+import gcm.database.models.User;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -13,6 +14,7 @@ import java.io.IOException;
 public class ClientGUI extends Application {
     private static Client client;
     private static Stage primaryStage;
+    private static User currentUser = null;
 
     public static void setClient(Client c) {
         client = c;
@@ -28,6 +30,14 @@ public class ClientGUI extends Application {
 
     public static void setPrimaryStage(Stage ps) {
         primaryStage = ps;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User currentUser) {
+        ClientGUI.currentUser = currentUser;
     }
 
     @Override
