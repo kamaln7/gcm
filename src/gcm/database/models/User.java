@@ -5,6 +5,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 
 public class User extends Model {
@@ -26,7 +27,7 @@ public class User extends Model {
 
     public User(String username, String password, String email, String phone, String role) {
         this.username = username;
-        this.password = password;
+        this.setPassword(password);
         this.email = email;
         this.phone = phone;
         this.role = role;
@@ -43,9 +44,9 @@ public class User extends Model {
         this.updatedAt = rs.getTimestamp("updated_at");
     }
 
-    public User register() throws SQLException, NotFound {
+    public User register() throws SQLException, NotFound, AlreadyExists {
         // insert user to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into users (username, password, email, phone, role) values (?, ?, ?, ?, ?")) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into users (username, password, email, phone, role) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getUsername());
             preparedStatement.setString(2, this.getPassword());
             preparedStatement.setString(3, this.getEmail());
@@ -64,16 +65,18 @@ public class User extends Model {
             Integer id = rs.getInt(1);
 
             try (PreparedStatement preparedStatement1 = getDb().prepareStatement("select * from users where id = ?")) {
-                preparedStatement.setInt(1, id);
+                preparedStatement1.setInt(1, id);
 
                 try (ResultSet rs1 = preparedStatement1.executeQuery()) {
-                    if (!rs.next()) {
+                    if (!rs1.next()) {
                         throw new User.NotFound();
                     }
 
-                    this.fillFieldsFromResultSet(rs);
+                    this.fillFieldsFromResultSet(rs1);
                 }
             }
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            throw new AlreadyExists();
         }
 
         return this;
@@ -165,6 +168,9 @@ public class User extends Model {
 
     // exceptions
     public static class NotFound extends Exception {
+    }
+
+    public static class AlreadyExists extends Exception {
     }
 
     // getters and setters
