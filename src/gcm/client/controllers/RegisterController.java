@@ -55,7 +55,7 @@ public class RegisterController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             RegisterUserCommand.Output output = response.getOutput(RegisterUserCommand.Output.class);
 
-            System.out.printf("%s", output.user.getId());
+            ClientGUI.setCurrentUser(output.user);
             MainScreenController.loadView(ClientGUI.getPrimaryStage());
         } catch (User.AlreadyExists e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Username already exists.");

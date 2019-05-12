@@ -50,7 +50,7 @@ public class LoginController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             LoginUserCommand.Output output = response.getOutput(LoginUserCommand.Output.class);
 
-            System.out.printf("%s", output.user.getEmail());
+            ClientGUI.setCurrentUser(output.user);
             MainScreenController.loadView(ClientGUI.getPrimaryStage());
         } catch (User.NotFound e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect login details.");
