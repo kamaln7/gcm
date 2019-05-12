@@ -28,6 +28,8 @@ public class LoginUserCommand implements Command {
 
         User user = User.login(input.username, input.password);
 
+        client.setInfo("userId", user.getId());
+
         return new Output(user);
     }
 }

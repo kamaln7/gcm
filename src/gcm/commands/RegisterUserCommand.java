@@ -31,6 +31,8 @@ public class RegisterUserCommand implements Command {
         User user = new User(input.username, input.password, input.email, input.phone);
         user.register();
 
+        client.setInfo("userId", user.getId());
+
         return new Output(user);
     }
 }
