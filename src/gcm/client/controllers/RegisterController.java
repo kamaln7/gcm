@@ -26,10 +26,10 @@ public class RegisterController {
     private PasswordField passwordField;
 
     @FXML
-    private PasswordField emailField;
+    private TextField emailField;
 
     @FXML
-    private PasswordField phoneField;
+    private TextField phoneField;
 
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = RegisterController.class.getResource("/gcm/client/views/Register.fxml");
@@ -56,6 +56,7 @@ public class RegisterController {
             RegisterUserCommand.Output output = response.getOutput(RegisterUserCommand.Output.class);
 
             System.out.printf("%s", output.user.getId());
+            MainScreenController.loadView(ClientGUI.getPrimaryStage());
         } catch (User.AlreadyExists e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Username already exists.");
             alert.show();
