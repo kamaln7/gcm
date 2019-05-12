@@ -56,6 +56,7 @@ public class LoginController {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect login details.");
             alert.show();
         } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }

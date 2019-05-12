@@ -6,6 +6,7 @@ import gcm.database.models.User;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -38,6 +39,11 @@ public class ClientGUI extends Application {
 
     public static void setCurrentUser(User currentUser) {
         ClientGUI.currentUser = currentUser;
+    }
+
+    public static void showErrorTryAgain() {
+        Alert alert = new Alert(Alert.AlertType.WARNING, "There was an error. Please try again.");
+        alert.show();
     }
 
     @Override
