@@ -15,8 +15,10 @@
         <PasswordField fx:id="passwordField" layoutX="14.0" layoutY="129.0" prefHeight="27.0" prefWidth="240.0" />
         <TextField fx:id="emailField" layoutX="14.0" layoutY="181.0" prefHeight="27.0" prefWidth="240.0" />
         <TextField fx:id="phoneField" layoutX="14.0" layoutY="233.0" prefHeight="27.0" prefWidth="240.0" />
-        <Button layoutX="188.0" layoutY="272.0" minWidth="36.0" mnemonicParsing="false" onAction="#registerButtonClick" prefHeight="27.0" text="Register" />
-        <ButtonBar layoutX="62.0" layoutY="266.0" prefHeight="40.0" prefWidth="200.0" />
+        <ButtonBar layoutX="62.0" layoutY="266.0" prefHeight="40.0" prefWidth="200.0">
+         <buttons>
+              <Button minWidth="36.0" mnemonicParsing="false" onAction="#registerButtonClick" prefHeight="27.0" text="Register" />
+         </buttons></ButtonBar>
         <Text layoutX="15.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Register">
             <font>
                 <Font size="24.0" />
