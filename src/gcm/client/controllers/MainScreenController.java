@@ -1,6 +1,7 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -34,6 +35,14 @@ public class MainScreenController implements Initializable {
         primaryStage.setTitle("GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
+    }
+    @FXML
+    void createCity(ActionEvent event) {
+        try {
+            AddCityController.loadView(ClientGUI.getPrimaryStage());
+        }catch (Exception e){
+
+        }
     }
 }
 

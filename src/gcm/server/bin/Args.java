@@ -10,7 +10,7 @@ public class Args {
     private List<String> parameters = new ArrayList<>();
 
     @Parameter(names = "--connectionString", description = "JDBC MySQL connection string")
-    private String connectionString = "jdbc:mysql://localhost/gcm";
+    private String connectionString = "jdbc:mysql://f2Z8ihkJqY:15oK6k75bd@remotemysql.com/databaseName?useSSL=false";
 
     @Parameter(names = "--port", description = "Port to listen on")
     private Integer port = 5000;
