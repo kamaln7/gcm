@@ -44,5 +44,23 @@ public class MainScreenController implements Initializable {
 
         }
     }
+
+    @FXML
+    void createMap(ActionEvent event) {
+        try {
+            AddMapController.loadView(ClientGUI.getPrimaryStage());
+        }catch (Exception e){
+
+        }
+    }
+
+    @FXML
+    void editMap(ActionEvent event) {
+        try {
+            EditMapController.loadView(ClientGUI.getPrimaryStage());
+        }catch (Exception e){
+
+        }
+    }
 }
 
