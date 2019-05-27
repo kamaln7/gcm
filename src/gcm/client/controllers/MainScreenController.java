@@ -62,5 +62,16 @@ public class MainScreenController implements Initializable {
 
         }
     }
+
+
+    @FXML
+    void logout(ActionEvent event) {
+        try {
+            LoginController.loadView(ClientGUI.getPrimaryStage());
+        }catch (Exception e){
+
+        }
+    }
+
 }
 
