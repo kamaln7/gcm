@@ -1,6 +1,5 @@
 package gcm.database.models;
 
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +10,7 @@ import java.util.Date;
 public class Map extends Model {
     // fields
     private Integer id, one_off_price, subscription_price ;
-    private String title, description, version;
+    private String title, description, version, img;
     private Date createdAt, updatedAt;
 
     // create User object with info from ResultSet
@@ -21,12 +20,13 @@ public class Map extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public Map( Integer one_off_price, Integer subscription_price, String title, String description, String version) {
+    public Map( Integer one_off_price, Integer subscription_price, String title, String description, String version, String img) {
         this.one_off_price = one_off_price;
         this.subscription_price = subscription_price;
         this.title = title;
         this.description = description;
         this.version = version;
+        this.img = img;
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -38,6 +38,7 @@ public class Map extends Model {
         this.version = rs.getString("version");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
+        this.img = rs.getString("img");
     }
 
 
@@ -89,6 +90,9 @@ public class Map extends Model {
             }
         }
     }
+
+
+
     public void insert() throws SQLException, Map.NotFound, Map.AlreadyExists {
         //check if the city already exist
         try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM maps WHERE title = ? AND version = ?")){
@@ -102,12 +106,14 @@ public class Map extends Model {
             }
         }
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, one_off_price, subscription_price, description) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, one_off_price, subscription_price, description, img) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getTitle());
             preparedStatement.setString(2, this.getVersion());
             preparedStatement.setInt(3, this.getOne_off_price());
             preparedStatement.setInt(4, this.getSubscription_price());
             preparedStatement.setString(5, this.getDescription());
+            preparedStatement.setString(6, this.getImg());
+
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
@@ -192,5 +198,12 @@ public class Map extends Model {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 }
