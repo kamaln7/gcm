@@ -62,5 +62,11 @@ public class MainScreenController implements Initializable {
 
         }
     }
+
+
+    @FXML
+    void getMap(ActionEvent event) {
+
+    }
 }
 

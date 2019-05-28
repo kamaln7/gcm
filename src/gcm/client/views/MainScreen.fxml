@@ -16,5 +16,6 @@
       <Button layoutX="40.0" layoutY="94.0" mnemonicParsing="false" onAction="#createCity" prefHeight="25.0" prefWidth="93.0" text="Create  City" />
       <Button layoutX="40.0" layoutY="127.0" minWidth="30.0" mnemonicParsing="false" onAction="#createMap" prefHeight="25.0" prefWidth="93.0" text="Create Map" />
       <Button layoutX="40.0" layoutY="161.0" mnemonicParsing="false" onAction="#editMap" prefHeight="25.0" prefWidth="93.0" text="Edit Map" />
+      <Button layoutX="40.0" layoutY="194.0" mnemonicParsing="false" onAction="#getMap" prefHeight="25.0" prefWidth="93.0" text="Get Map" />
     </children>
 </AnchorPane>

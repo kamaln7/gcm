@@ -12,8 +12,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -34,6 +38,10 @@ public class AddMapController {
     @FXML
     private TextField version_field;
 
+    @FXML
+    private TextField imgPath;
+
+
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/AddMap.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -49,6 +57,7 @@ public class AddMapController {
         String description = description_field.getText();
         String title = title_field.getText();
         String version = version_field.getText();
+        String img = imgPath.getText();
         try {
             if (!validate(one_off_price_field.getText()) || !validate(subscription_price_field.getText())) {
                 throw new Map.WrongType();
@@ -61,7 +70,7 @@ public class AddMapController {
         int one_off_price = Integer.parseInt(one_off_price_field.getText());
         int subscription_price = Integer.parseInt(subscription_price_field.getText());
 
-        Input input = new AddMapCommand.Input(title,description,version,one_off_price,subscription_price);
+        Input input = new AddMapCommand.Input(title,description,version,one_off_price,subscription_price, img);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -81,5 +90,15 @@ public class AddMapController {
         return text.matches("[0-9]*");
     }
 
+    @FXML
+    void fileChooser(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image files", "*.jpg", "*.png"));
+        File f = fc.showOpenDialog(null);
+
+        if (f != null){
+            imgPath.setText("Selected File::"+ f.getAbsolutePath());
+        }
+    }
 }
 
