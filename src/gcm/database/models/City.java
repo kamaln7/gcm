@@ -13,8 +13,7 @@ public class City extends Model {
     private Integer id;
     private String name, country;
     private Date createdAt, updatedAt;
-    double subscription_price, purchase_price;
-
+    double subscription_price, purchase_price, new_subscription_price, new_purchase_price  ;
     // create User object with info from ResultSet
     public City(ResultSet rs) throws SQLException {
         super();
@@ -43,6 +42,8 @@ public class City extends Model {
         this.updatedAt = rs.getTimestamp("updated_at");
         this.subscription_price=rs.getDouble("subscription_price");
         this.purchase_price=rs.getDouble("purchase_price");
+        this.new_purchase_price=rs.getDouble("new_purchase_price");
+        this.new_subscription_price=rs.getDouble("new_subscription_price");
     }
 
 
@@ -160,5 +161,37 @@ public class City extends Model {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public double getSubscription_price() {
+        return subscription_price;
+    }
+
+    public void setSubscription_price(double subscription_price) {
+        this.subscription_price = subscription_price;
+    }
+
+    public double getPurchase_price() {
+        return purchase_price;
+    }
+
+    public void setPurchase_price(double purchase_price) {
+        this.purchase_price = purchase_price;
+    }
+
+    public double getNew_subscription_price() {
+        return new_subscription_price;
+    }
+
+    public void setNew_subscription_price(double new_subscription_price) {
+        this.new_subscription_price = new_subscription_price;
+    }
+
+    public double getNew_purchase_price() {
+        return new_purchase_price;
+    }
+
+    public void setNew_purchase_price(double new_purchase_price) {
+        this.new_purchase_price = new_purchase_price;
     }
 }
