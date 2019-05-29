@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -16,17 +17,21 @@ import java.util.ResourceBundle;
 
 public class MainScreenController implements Initializable {
     @FXML
-    private Text userDetailsText;
+    public Tab adminTab;
 
     @FXML
-    private AnchorPane mainContentAnchorPane;
+    private Text userDetailsText;
 
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
+        // set welcome text
         userDetailsText.setText(String.format(
                 "Welcome, %s!",
                 ClientGUI.getCurrentUser().getUsername()
         ));
+
+        // show admin tab if has access
+        adminTab.setDisable(!ClientGUI.getCurrentUser().hasRole("employee"));
     }
 
     public static void loadView(Stage primaryStage) throws IOException {
