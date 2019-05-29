@@ -2,10 +2,7 @@ package gcm.client;
 
 import com.google.gson.Gson;
 import gcm.ChatIF;
-import gcm.commands.FindUserByIdCommand;
-import gcm.commands.Input;
-import gcm.commands.Request;
-import gcm.commands.Response;
+import gcm.commands.*;
 import gcm.common.GsonSingleton;
 import gcm.database.models.User;
 import ocsf.client.AbstractClient;
@@ -123,5 +120,9 @@ public class Client extends AbstractClient {
 
     public void stop() throws IOException {
         this.closeConnection();
+    }
+
+    public void logout() throws InterruptedException, ExecutionException, IOException {
+        this.sendInputAndWaitForResponse(new LogoutUserCommand.Input());
     }
 }

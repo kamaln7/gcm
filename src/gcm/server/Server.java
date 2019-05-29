@@ -39,6 +39,10 @@ public class Server extends AbstractServer {
         Model.setDb(this.db);
     }
 
+    public ChatIF getChatIF() {
+        return chatIF;
+    }
+
     public void start() throws IOException {
         this.chatIF.displayf("Starting OCSF server on port %s", this.settings.port);
         this.listen();
