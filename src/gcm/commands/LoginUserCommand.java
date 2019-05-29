@@ -27,8 +27,8 @@ public class LoginUserCommand implements Command {
         Input input = request.getInput(Input.class);
 
         User user = User.login(input.username, input.password);
-
         client.setInfo("userId", user.getId());
+        server.getChatIF().displayf("Client [%s] logged in as id=%d username=%s", client, user.getId(), user.getUsername());
 
         return new Output(user);
     }
