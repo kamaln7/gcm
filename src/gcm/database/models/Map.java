@@ -9,8 +9,8 @@ import java.util.Date;
 
 public class Map extends Model {
     // fields
-    private Integer id, one_off_price, subscription_price ;
-    private String title, description, version, img;
+    private Integer id, cityId;
+    private String title, description, version, img, cityName;
     private Date createdAt, updatedAt;
 
     // create User object with info from ResultSet
@@ -20,19 +20,35 @@ public class Map extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public Map( Integer one_off_price, Integer subscription_price, String title, String description, String version, String img) {
-        this.one_off_price = one_off_price;
-        this.subscription_price = subscription_price;
+    public Map(String title, String description, String version, String img) {
+
         this.title = title;
         this.description = description;
         this.version = version;
         this.img = img;
+
+    }
+    public Map(String title, String description, String version, String img, String cityName) {
+
+        this.title = title;
+        this.description = description;
+        this.version = version;
+        this.img = img;
+        this.cityName= cityName;
+
+    }
+    public Map(String title, String description, String version, String img, int cityId) {
+
+        this.title = title;
+        this.description = description;
+        this.version = version;
+        this.img = img;
+        this.cityId=cityId;
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
-        this.one_off_price = rs.getInt("one_off_price");
-        this.subscription_price = rs.getInt("subscription_price");
+        this.cityId = rs.getInt("cityId");
         this.title = rs.getString("title");
         this.description = rs.getString("description");
         this.version = rs.getString("version");
@@ -93,7 +109,8 @@ public class Map extends Model {
 
 
 
-    public void insert() throws SQLException, Map.NotFound, Map.AlreadyExists {
+    public void insert() throws SQLException, Map.NotFound, Map.AlreadyExists, City.NotFound {
+
         //check if the city already exist
         try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM maps WHERE title = ? AND version = ?")){
             preparedStatement.setString(1, this.getTitle());
@@ -105,14 +122,29 @@ public class Map extends Model {
                 }
             }
         }
-        // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, one_off_price, subscription_price, description, img) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+
+        // get city id
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("Select id from cities where name = ?")) {
+            preparedStatement.setString(1, this.getCityName());
+
+            // run the insert command
+            preparedStatement.executeQuery();
+            // get the auto generated id
+            ResultSet rs = preparedStatement.getResultSet();
+            if (!rs.next()) {
+                throw new City.NotFound();
+            }
+            this.cityId= rs.getInt("id");
+        }
+
+        // insert map to table
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, description, img, cityId) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+
             preparedStatement.setString(1, this.getTitle());
             preparedStatement.setString(2, this.getVersion());
-            preparedStatement.setInt(3, this.getOne_off_price());
-            preparedStatement.setInt(4, this.getSubscription_price());
-            preparedStatement.setString(5, this.getDescription());
-            preparedStatement.setString(6, this.getImg());
+            preparedStatement.setString(3, this.getDescription());
+            preparedStatement.setString(4, this.getImg());
+            preparedStatement.setInt(5, this.getCityId());
 
             // run the insert command
             preparedStatement.executeUpdate();
@@ -121,6 +153,8 @@ public class Map extends Model {
             if (!rs.next()) {
                 throw new Map.NotFound();
             }
+
+
         }
     }
 
@@ -129,7 +163,6 @@ public class Map extends Model {
     // exceptions
     public static class NotFound extends Exception {
     }
-
     public static class AlreadyExists extends Exception {
     }
     public static class WrongType extends Exception {
@@ -142,22 +175,6 @@ public class Map extends Model {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getOne_off_price() {
-        return one_off_price;
-    }
-
-    public void setOne_off_price(Integer one_off_price) {
-        this.one_off_price = one_off_price;
-    }
-
-    public Integer getSubscription_price() {
-        return subscription_price;
-    }
-
-    public void setSubscription_price(Integer subscription_price) {
-        this.subscription_price = subscription_price;
     }
 
     public String getTitle() {
@@ -205,5 +222,20 @@ public class Map extends Model {
 
     public void setImg(String img) {
         this.img = img;
+    }
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 }

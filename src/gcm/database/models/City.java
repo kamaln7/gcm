@@ -13,6 +13,7 @@ public class City extends Model {
     private Integer id;
     private String name, country;
     private Date createdAt, updatedAt;
+    double subscription_price, purchase_price;
 
     // create User object with info from ResultSet
     public City(ResultSet rs) throws SQLException {
@@ -27,12 +28,21 @@ public class City extends Model {
         this.country = country;
     }
 
+    public City(String name, String country, double subscription_price, double purchase_price) {
+        this.name = name;
+        this.country = country;
+        this.subscription_price = subscription_price;
+        this.purchase_price = purchase_price;
+    }
+
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
         this.name = rs.getString("name");
         this.country = rs.getString("country");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
+        this.subscription_price=rs.getDouble("subscription_price");
+        this.purchase_price=rs.getDouble("purchase_price");
     }
 
 
@@ -88,9 +98,11 @@ public class City extends Model {
                 }
             }
             // insert city to table
-            try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into cities (name, country) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into cities (name, country, subscription_price, purchase_price) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, this.getName());
                 preparedStatement.setString(2, this.getCountry());
+                preparedStatement.setDouble(3, this.subscription_price);
+                preparedStatement.setDouble(4, this.purchase_price);
                 // run the insert command
                 preparedStatement.executeUpdate();
                 // get the auto generated id

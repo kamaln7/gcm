@@ -27,19 +27,17 @@ import java.net.URL;
 public class ShowMapController {
 
     @FXML
-    private static Text title;
+    private  Text title;
 
     @FXML
-    private static Text one_off_price;
+    private  Text cityId;
+
 
     @FXML
-    private static Text subscription_Price;
+    private  Text version;
 
     @FXML
-    private static Text version;
-
-    @FXML
-    private Text description;
+    private  Text description;
 
     @FXML
     private ImageView img;
@@ -53,29 +51,30 @@ public class ShowMapController {
         }
     }
 
-
-
-    public  void loadView(Stage primaryStage, Map map) throws IOException {
+    public void setMapFields(Map map) {
         title.setTextContent(map.getTitle());
-        one_off_price.setTextContent(String.valueOf(map.getOne_off_price()));
-        subscription_Price.setTextContent(String.valueOf(map.getSubscription_price()));
         version.setTextContent(map.getVersion());
         description.setTextContent(map.getDescription());
+        cityId.setTextContent(String.valueOf(map.getCityId()));
+    }
 
 
-        File file = new File(map.getImg());
-        Image image = new Image(file.toURI().toString());
-        img = new ImageView(image);
+    public static void loadView(Stage primaryStage, Map map) throws IOException {
+        URL url = ShowMapController.class.getResource("/gcm/client/views/ShowMap.fxml");
+        FXMLLoader loader = new FXMLLoader(url);
+        ShowMapController controller = loader.getController();
+        controller.setMapFields(map);
 
-
-        URL url = MainScreenController.class.getResource("/gcm/client/views/ShowMap.fxml");
-        AnchorPane pane = FXMLLoader.load(url);
+        AnchorPane pane = loader.load();
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
         primaryStage.setTitle("GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
+
     }
 }
+
+
 
