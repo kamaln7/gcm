@@ -21,6 +21,11 @@ import java.net.URL;
 
 public class AddCityController {
     @FXML
+    private TextField subscription_price_field;
+
+    @FXML
+    private TextField purchase_price_field;
+    @FXML
     private TextField namefield;
 
     @FXML
@@ -40,8 +45,17 @@ public class AddCityController {
     void addCityToDB(ActionEvent event) {
         String name = namefield.getText();
         String county = countryfield.getText();
+        if (!validate(subscription_price_field.getText()) || !validate(purchase_price_field.getText())){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "prices are Numbers only");
+            alert.show();
+            return;
+        }
+        double subscription_price = Double.parseDouble(subscription_price_field.getText());
+        double purchase_price = Double.parseDouble(purchase_price_field.getText());
 
-        Input input = new AddCityToDataBaseCommand.Input(name, county);
+
+
+        Input input = new AddCityToDataBaseCommand.Input(name, county, subscription_price, purchase_price);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -55,6 +69,10 @@ public class AddCityController {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
+    }
+    private boolean validate(String text)
+    {
+        return text.matches("[0-9]*");
     }
 }
 

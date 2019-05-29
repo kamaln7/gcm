@@ -81,5 +81,16 @@ public class MainScreenController implements Initializable {
             e.printStackTrace();
         }
     }
+
+
+    @FXML
+    void getMap(ActionEvent event) {
+        try {
+            ClientGUI.getClient().logout();
+            GetMapController.loadView(ClientGUI.getPrimaryStage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 
