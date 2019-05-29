@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class Map extends Model {
     // fields
-    private Integer id, cityId;
+    private Integer id, cityId, verification; // 1 is verified 0 is not verified
     private String title, description, version, img, cityName;
     private Date createdAt, updatedAt;
 
@@ -55,6 +55,7 @@ public class Map extends Model {
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
         this.img = rs.getString("img");
+        this.verification= rs.getInt("verification");
     }
 
 
