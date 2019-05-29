@@ -15,13 +15,11 @@
         </Text>
       <Text layoutX="27.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Title:" />
       <Button layoutX="322.0" layoutY="701.0" mnemonicParsing="false" onAction="#back" text="Back" />
-      <Text layoutX="27.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="One Off Price:" />
-      <Text layoutX="27.0" layoutY="140.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subscription Price:" />
+      <Text layoutX="27.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CityId" />
       <Text layoutX="27.0" layoutY="170.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Version:" />
       <Text layoutX="33.0" layoutY="612.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" />
       <Text fx:id="title" layoutX="64.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="240.13671875" />
-      <Text fx:id="one_off_price" layoutX="110.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="156.13672154396772" />
-      <Text fx:id="subscription_Price" layoutX="132.0" layoutY="140.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="156.13671875" />
+      <Text fx:id="cityId" layoutX="110.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="156.13672154396772" />
       <Text fx:id="version" layoutX="79.0" layoutY="170.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="232.18359185010195" />
       <Text fx:id="description" layoutX="45.0" layoutY="646.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="574.13671875" />
       <ImageView fx:id="img" fitHeight="383.0" fitWidth="414.0" layoutX="147.0" layoutY="196.0" pickOnBounds="true" preserveRatio="true" />

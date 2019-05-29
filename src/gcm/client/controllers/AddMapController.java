@@ -18,8 +18,11 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 
 public class AddMapController {
 
@@ -29,17 +32,17 @@ public class AddMapController {
     @FXML
     private TextField title_field;
 
-    @FXML
-    private TextField one_off_price_field;
 
     @FXML
-    private TextField subscription_price_field;
+    private TextField city_field;
 
     @FXML
     private TextField version_field;
 
     @FXML
     private TextField imgPath;
+
+    private byte[] imageBytes;
 
 
     public static void loadView(Stage primaryStage) throws IOException {
@@ -57,20 +60,10 @@ public class AddMapController {
         String description = description_field.getText();
         String title = title_field.getText();
         String version = version_field.getText();
-        String img = imgPath.getText();
-        try {
-            if (!validate(one_off_price_field.getText()) || !validate(subscription_price_field.getText())) {
-                throw new Map.WrongType();
-            }
-        }catch (Map.WrongType e){
-            Alert alert = new Alert(Alert.AlertType.ERROR, "The price fields are numbers only");
-            alert.show();
-            return;
-        }
-        int one_off_price = Integer.parseInt(one_off_price_field.getText());
-        int subscription_price = Integer.parseInt(subscription_price_field.getText());
+        String cityName = city_field.getText();
 
-        Input input = new AddMapCommand.Input(title,description,version,one_off_price,subscription_price, img);
+
+        Input input = new AddMapCommand.Input(title, description, version, imageBytes, cityName);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -80,7 +73,10 @@ public class AddMapController {
         } catch (Map.AlreadyExists e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Can not add city already exist");
             alert.show();
-        } catch (Exception e) {
+        } catch (City.NotFound e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "No City with that name in the DB");
+            alert.show();
+        }catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
@@ -97,7 +93,14 @@ public class AddMapController {
         File f = fc.showOpenDialog(null);
 
         if (f != null){
-            imgPath.setText("Selected File::"+ f.getAbsolutePath());
+            imgPath.setText(f.getAbsolutePath());
+            try {
+                imageBytes = Files.readAllBytes(f.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Could not read image");
+                alert.show();
+            }
         }
     }
 }

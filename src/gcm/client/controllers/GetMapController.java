@@ -65,7 +65,7 @@ public class GetMapController {
 
 
 
-    public void loadView(Stage primaryStage) throws IOException {
+    public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/GetMap.fxml");
         AnchorPane pane = FXMLLoader.load(url);
         Scene scene = new Scene(pane);
