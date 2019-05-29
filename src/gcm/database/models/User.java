@@ -33,6 +33,15 @@ public class User extends Model {
         this.role = role;
     }
 
+    public static User fakeGuestUser() {
+        User user = new User("guest", "", "", "", "guest");
+        user.id = -1;
+        user.setCreatedAt(new Date());
+        user.setUpdatedAt(new Date());
+
+        return user;
+    }
+
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
         this.username = rs.getString("username");

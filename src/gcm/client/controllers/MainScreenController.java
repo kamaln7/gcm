@@ -18,10 +18,13 @@ public class MainScreenController implements Initializable {
     @FXML
     private Text userDetailsText;
 
+    @FXML
+    private AnchorPane mainContentAnchorPane;
+
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
         userDetailsText.setText(String.format(
-                "Welcome to GCM, %s!",
+                "Welcome, %s!",
                 ClientGUI.getCurrentUser().getUsername()
         ));
     }
@@ -36,12 +39,13 @@ public class MainScreenController implements Initializable {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
     @FXML
     void createCity(ActionEvent event) {
         try {
             AddCityController.loadView(ClientGUI.getPrimaryStage());
-        }catch (Exception e){
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -49,8 +53,8 @@ public class MainScreenController implements Initializable {
     void createMap(ActionEvent event) {
         try {
             AddMapController.loadView(ClientGUI.getPrimaryStage());
-        }catch (Exception e){
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -58,8 +62,18 @@ public class MainScreenController implements Initializable {
     void editMap(ActionEvent event) {
         try {
             EditMapController.loadView(ClientGUI.getPrimaryStage());
-        }catch (Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    @FXML
+    public void logOut(ActionEvent actionEvent) {
+        try {
+            ClientGUI.getClient().logout();
+            LoginController.loadView(ClientGUI.getPrimaryStage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

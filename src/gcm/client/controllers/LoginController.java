@@ -68,6 +68,15 @@ public class LoginController implements Initializable {
         }
     }
 
+    @FXML
+    void continueAsGuest(ActionEvent event) {
+        try {
+            ClientGUI.setCurrentUser(User.fakeGuestUser());
+            MainScreenController.loadView(ClientGUI.getPrimaryStage());
+        } catch (Exception e) {
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         usernameField.setTextFormatter(new TextFormatter<String>(change -> {
