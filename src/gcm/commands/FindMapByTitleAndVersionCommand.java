@@ -31,10 +31,10 @@ public class FindMapByTitleAndVersionCommand implements Command {
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
         Map map = Map.findByTitleAndVersion(input.title, input.version);
-        //File file = new File(map.getImg());
+        File file = new File(map.getImg());
 
-        //byte[] img= Files.readAllBytes(file.toPath());
-        byte[] img= new byte[]{1,1,1,1,1,1,};
+        byte[] img= Files.readAllBytes(file.toPath());
+
 
         return new Output(map,img);
     }
