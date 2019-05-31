@@ -1,10 +1,14 @@
 package gcm.database.models;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Map extends Model {
@@ -12,7 +16,6 @@ public class Map extends Model {
     private Integer id, cityId, verification; // 1 is verified 0 is not verified
     private String title, description, version, img, cityName;
     private Date createdAt, updatedAt;
-
     // create User object with info from ResultSet
     public Map(ResultSet rs) throws SQLException {
         super();
@@ -70,7 +73,7 @@ public class Map extends Model {
      * @throws SQLException
      * @throws NotFound     if no such user
      */
-    public static Map findById(Integer id) throws SQLException, NotFound {
+    public static Map findById(Integer id) throws Exception {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where id = ?")) {
             preparedStatement.setInt(1, id);
 
@@ -102,6 +105,22 @@ public class Map extends Model {
                     throw new Map.NotFound();
                 }
 
+                Map map = new Map(rs);
+                return map;
+            }
+        }
+    }
+
+
+    public static Map findByTitleAndVersion(String title, String version) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where title = ? And version = ?")) {
+            preparedStatement.setString(1, title);
+            preparedStatement.setString(2, version);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    throw new Map.NotFound();
+                }
                 Map map = new Map(rs);
                 return map;
             }
@@ -168,6 +187,7 @@ public class Map extends Model {
     }
     public static class WrongType extends Exception {
     }
+
 
     // getters and setters
     public Integer getId() {
@@ -239,4 +259,5 @@ public class Map extends Model {
     public void setCityName(String cityName) {
         this.cityName = cityName;
     }
+
 }

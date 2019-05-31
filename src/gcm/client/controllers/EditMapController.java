@@ -1,10 +1,9 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.AddMapCommand;
-import gcm.commands.Input;
-import gcm.commands.Response;
+import gcm.commands.*;
 import gcm.database.models.Map;
+import gcm.database.models.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,7 +41,30 @@ public class EditMapController {
 
     @FXML
     void editMapOptions(ActionEvent event) {
+//        Input input = new FindMapByTitleAndVersionCommand.Input(title_field.getText(), version_field.getText());
+//
+//        try {
+//            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+//            FindMapByTitleCommand.Output output = response.getOutput(FindMapByTitleCommand.Output.class);
+//
+//
+//            MapEditOptionsController.loadView(ClientGUI.getPrimaryStage(), output.map);
+//        } catch (Map.NotFound e) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR, "Map Not Found.");
+//            alert.show();
+//        } catch (Exception e) {
+//            ClientGUI.showErrorTryAgain();
+//            e.printStackTrace();
+//        }
+    }
 
+    @FXML
+    void back(ActionEvent event) {
+        try {
+            MainScreenController.loadView(ClientGUI.getPrimaryStage());
+        }catch (Exception e){
+
+        }
     }
 
 }

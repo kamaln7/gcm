@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
@@ -47,29 +48,44 @@ public class MainScreenController implements Initializable {
 
     @FXML
     void createCity(ActionEvent event) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddCity.fxml"));
+        Parent root1 = null;
         try {
-            AddCityController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
+            root1 =  fxmlLoader.load();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        stage.show();
     }
 
     @FXML
     void createMap(ActionEvent event) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddMap.fxml"));
+        Parent root1 = null;
         try {
-            AddMapController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
+            root1 =  fxmlLoader.load();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        stage.show();
     }
 
     @FXML
     void editMap(ActionEvent event) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/MapEditOptions.fxml"));
+        Parent root1 = null;
         try {
-            EditMapController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
+            root1 =  fxmlLoader.load();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        stage.show();
     }
 
     @FXML
