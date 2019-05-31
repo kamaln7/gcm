@@ -26,18 +26,21 @@ import java.net.URL;
 
 public class GetMapController {
 
+    @FXML
+    private Button cancel_button;
 
     @FXML
-    private Button showMap;
+    private TextField title_field;
 
     @FXML
-    private TextField title;
+    private TextField city_field;
+
 
 
     @FXML
     void showMap(ActionEvent event) {
 
-        Input input = new FindMapByTitleCommand.Input(title.getText());
+        Input input = new FindMapByTitleCommand.Input(title_field.getText());
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -52,15 +55,14 @@ public class GetMapController {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
+
     }
 
     @FXML
-    void back(ActionEvent event) {
-        try {
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
-        }catch (Exception e){
-
-        }
+    void Cancel(ActionEvent event) {
+        Stage stage2 = (Stage) cancel_button.getScene().getWindow();
+        // do what you have to do
+        stage2.close();
     }
 
 
