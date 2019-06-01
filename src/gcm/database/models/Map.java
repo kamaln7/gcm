@@ -23,6 +23,9 @@ public class Map extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
+    public Map() {
+    }
+
     public Map(String title, String description, String version, String img) {
 
         this.title = title;
@@ -127,6 +130,26 @@ public class Map extends Model {
         }
     }
 
+    public static void updateImage(String new_image, String version, String title) throws SQLException, NotFound {
+
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE maps SET img = ? WHERE title = ? AND version = ?", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, new_image);
+            preparedStatement.setString(2, title);
+            preparedStatement.setString(3, version);
+
+            preparedStatement.executeUpdate();
+//            // get the auto generated id
+//            ResultSet rs = preparedStatement.getGeneratedKeys();
+//            if (!rs.next()) {
+//                throw new Map.NotFound();
+//            }
+//            try {
+//                return Map.findById(rs.getInt(1));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+        }
+    }
 
 
     public void insert() throws SQLException, Map.NotFound, Map.AlreadyExists, City.NotFound {
