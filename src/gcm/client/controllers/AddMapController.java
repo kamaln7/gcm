@@ -85,6 +85,7 @@ public class AddMapController {
             e.printStackTrace();
         }
     }
+
     private boolean validate(String text)
     {
         return text.matches("[0-9]*");
