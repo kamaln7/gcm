@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="" prefHeight="573.0" prefWidth="331.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.AddMapController">
+<AnchorPane fx:id="" prefHeight="669.0" prefWidth="331.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.AddMapController">
     <children>
         <Text layoutX="14.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add Map">
             <font>
@@ -16,15 +16,14 @@
         </Text>
       <TextField fx:id="title_field" layoutX="22.0" layoutY="96.0" />
       <Text layoutX="34.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
-      <Button layoutX="242.0" layoutY="531.0" mnemonicParsing="false" onAction="#addMapToDB" text="Submmit" />
-      <TextField fx:id="one_off_price_field" layoutX="22.0" layoutY="155.0" />
-      <Text layoutX="34.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" text="One Off Price" />
-      <TextField fx:id="subscription_price_field" layoutX="22.0" layoutY="218.0" />
-      <Text layoutX="34.0" layoutY="205.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subscription Price" />
+      <Button layoutX="131.0" layoutY="590.0" mnemonicParsing="false" onAction="#addMapToDB" text="Submmit" />
+      <TextField fx:id="city_field" layoutX="22.0" layoutY="155.0" />
+      <Text layoutX="34.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" text="City" />
       <TextField fx:id="version_field" layoutX="22.0" layoutY="285.0" />
       <Text layoutX="34.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Version" />
-      <Text layoutX="34.0" layoutY="335.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
-      <TextArea fx:id="description_field" layoutX="20.0" layoutY="355.0" prefHeight="143.0" prefWidth="286.0" />
-      <Button layoutX="22.0" layoutY="531.0" mnemonicParsing="false" onAction="#backToMainScreen" text="Back" />
+      <Text layoutX="34.0" layoutY="418.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+      <TextArea fx:id="description_field" layoutX="20.0" layoutY="438.0" prefHeight="143.0" prefWidth="286.0" />
+      <Button layoutX="208.0" layoutY="364.0" mnemonicParsing="false" onAction="#fileChooser" text="choose image" />
+      <TextField fx:id="imgPath" layoutX="23.0" layoutY="328.0" prefHeight="25.0" prefWidth="297.0" />
     </children>
 </AnchorPane>

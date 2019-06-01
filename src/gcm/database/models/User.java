@@ -7,12 +7,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.HashMap;
 
 public class User extends Model {
     // fields
     private Integer id;
     private String username, password, email, phone, role;
     private Date createdAt, updatedAt;
+
+    public static HashMap<String, Integer> ROLES = new HashMap<>();
+
+    static {
+        ROLES.put("guest", 0);
+        ROLES.put("user", 1);
+        ROLES.put("employee", 2);
+        ROLES.put("content_manager", 3);
+        ROLES.put("company_manager", 4);
+        ROLES.put("admin", 5);
+    }
 
     // create User object with info from ResultSet
     public User(ResultSet rs) throws SQLException {
@@ -31,6 +43,15 @@ public class User extends Model {
         this.email = email;
         this.phone = phone;
         this.role = role;
+    }
+
+    public static User fakeGuestUser() {
+        User user = new User("guest", "", "", "", "guest");
+        user.id = -1;
+        user.setCreatedAt(new Date());
+        user.setUpdatedAt(new Date());
+
+        return user;
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -236,5 +257,24 @@ public class User extends Model {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+
+    /**
+     * @param role Role to check if user has access to
+     * @return Boolean if user has given role or higher
+     */
+    public Boolean hasRole(Integer role) {
+        Integer userRole = ROLES.getOrDefault(getRole(), ROLES.get("guest"));
+
+        return userRole >= role;
+    }
+
+    /**
+     * @param role Role to check if user has access to
+     * @return Boolean if user has given role or higher
+     */
+    public Boolean hasRole(String role) {
+        return this.hasRole(ROLES.getOrDefault(role, 100000));
     }
 }
