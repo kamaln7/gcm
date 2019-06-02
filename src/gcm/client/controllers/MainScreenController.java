@@ -184,14 +184,6 @@ public class MainScreenController implements Initializable {
         }
     }
 
-    @FXML
-    void searchButtonClick(ActionEvent event) {
-        cityInfoPane.setOpacity(0);
-
-        String query = searchQueryTF.getText();
-        this.loadListOfCities(query);
-    }
-
     static class CityListCell extends ListCell<City> {
         protected City city;
 
