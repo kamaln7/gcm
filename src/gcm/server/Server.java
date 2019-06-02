@@ -35,6 +35,7 @@ public class Server extends AbstractServer {
         this.chatIF = chatIF;
 
         this.chatIF.display("Initializing server");
+        this.chatIF.displayf("Using directory [%s] for files", this.settings.filesPath);
 
         this.chatIF.display("Connecting to the database");
 
@@ -130,5 +131,9 @@ public class Server extends AbstractServer {
 
         loggedInUserIds.remove(id);
         client.setInfo("userId", null);
+    }
+
+    public String getFilesPath() {
+        return this.settings.filesPath;
     }
 }
