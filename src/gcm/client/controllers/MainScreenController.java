@@ -15,10 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -49,9 +46,10 @@ public class MainScreenController implements Initializable {
     private ObservableList cityMapsListItems = FXCollections.observableArrayList();
 
     @FXML
-    private Text cityNameT;
+    private Label cityInfoLabel;
+
     @FXML
-    private Text cityCountryT;
+    private TextField searchQueryTF;
 
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
@@ -64,17 +62,13 @@ public class MainScreenController implements Initializable {
         // show admin tab if has access
         adminTab.setDisable(!ClientGUI.getCurrentUser().hasRole("employee"));
 
-        // prepare list views
-        citiesList.setCellFactory((Callback<ListView<City>, CityListCell>) listView -> new CityListCell());
-        cityMapsList.setCellFactory((Callback<ListView<City>, MapListCell>) listView -> new MapListCell());
-
         // get list of cities
         loadListOfCities("");
         cityInfoPane.setOpacity(0);
     }
 
     private void loadListOfCities(String searchQuery) {
-        CitySearchCommand.Input input = new CitySearchCommand.Input("");
+        CitySearchCommand.Input input = new CitySearchCommand.Input(searchQuery);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -82,6 +76,7 @@ public class MainScreenController implements Initializable {
 
             citiesListItems.setAll(output.cities);
             citiesList.setItems(citiesListItems);
+            citiesList.setCellFactory((Callback<ListView<City>, CityListCell>) listView -> new CityListCell());
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, "Couldn't load list of cities.").show();
         }
@@ -101,9 +96,10 @@ public class MainScreenController implements Initializable {
     @FXML
     void citiesListSelectCity(MouseEvent event) {
         City city = (City) citiesList.getSelectionModel().getSelectedItem();
+        if (city == null) {
+            return;
+        }
         // selected city, load info
-        cityNameT.setText(city.getName());
-        cityCountryT.setText(city.getCountry());
 
         Input input = new FindMapsByCityIdCommand.Input(city.getId());
         try {
@@ -112,6 +108,12 @@ public class MainScreenController implements Initializable {
 
             cityMapsListItems.setAll(output.maps);
             cityMapsList.setItems(cityMapsListItems);
+            cityMapsList.setCellFactory((Callback<ListView<City>, MapListCell>) listView -> new MapListCell());
+
+            cityInfoLabel.setText(String.format("%s, %s\n\n%d maps",
+                    city.getName(),
+                    city.getCountry(),
+                    output.maps.size()));
         } catch (Exception e) {
             e.printStackTrace();
             ClientGUI.showErrorTryAgain();
@@ -122,36 +124,29 @@ public class MainScreenController implements Initializable {
     @FXML
     void cityMapsListSelectMap(MouseEvent event) {
         Map map = (Map) cityMapsList.getSelectionModel().getSelectedItem();
+        if (map == null) {
+            return;
+        }
         // selected map, load view
         new Alert(Alert.AlertType.INFORMATION, "You selected map " + map.getTitle()).show();
     }
 
     @FXML
     void createCity(ActionEvent event) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddCity.fxml"));
-        Parent root1 = null;
         try {
-            root1 = fxmlLoader.load();
+            AddCityController.loadView(new Stage());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        stage.show();
     }
 
     @FXML
     void createMap(ActionEvent event) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddMap.fxml"));
-        Parent root1 = null;
         try {
-            root1 = fxmlLoader.load();
+            AddMapController.loadView(new Stage());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        stage.show();
     }
 
     @FXML
@@ -182,11 +177,16 @@ public class MainScreenController implements Initializable {
     @FXML
     void getMap(ActionEvent event) {
         try {
-            ClientGUI.getClient().logout();
             GetMapController.loadView(ClientGUI.getPrimaryStage());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    void searchButtonClick(ActionEvent event) {
+        String query = searchQueryTF.getText();
+        this.loadListOfCities(query);
     }
 
     static class CityListCell extends ListCell<City> {
