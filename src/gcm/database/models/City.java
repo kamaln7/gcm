@@ -89,29 +89,35 @@ public City(){
         }
     }
 
-    public static String[] findUnapproved() throws SQLException, NotFound {
-        String[] result = null;
-        int i = 0;
+    public static ArrayList findUnapproved() throws SQLException, NotFound {
+        ArrayList result = new ArrayList<String>();
+        int num = 8;
+        String cityName = "haifa";
+        String countryName = "israel";
+        System.out.println("findUnapproved");
+
       //  try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price = NULL AND new_sub_price = NULL")) {
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE name = ?")){
-        preparedStatement.setString(1, "haifa");
-        //    preparedStatement.setDouble(2, 8000);
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE name = ? AND country = ?")){
+            preparedStatement.setString(1, cityName);
+            preparedStatement.setString(2, countryName);
+            System.out.println("keeptrying");
 
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
                     throw new NotFound();
                 }
+                System.out.println("resultset is"+rs);
                 while(rs.next()){
-                    result[i++]=rs.getString("name");
-                    result[i++]=rs.getString("country");
-                    result[i++]=String.format("%.2f", rs.getString("purchase_price"));
-                    result[i++]=String.format("%.2f", rs.getString("subscription_price"));
-                    result[i++]=String.format("%.2f", rs.getString("new_purchase_price"));
-                    result[i++]=String.format("%.2f", rs.getString("new_sub_price"));
+                    result.add(rs.getString("name"));
+                    result.add(rs.getString("country"));
+                    result.add(String.format("%.2f", rs.getString("purchase_price")));
+                    result.add(String.format("%.2f", rs.getString("subscription_price")));
+                    result.add(String.format("%.2f", rs.getString("new_purchase_price")));
+                    result.add(String.format("%.2f", rs.getString("new_sub_price")));
                 }
-
+                System.out.println("resultset 2 is"+rs);
                 return result;
             }
 
