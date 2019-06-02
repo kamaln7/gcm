@@ -3,6 +3,7 @@ package gcm.database.models;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class City extends Model {
@@ -18,7 +19,9 @@ public class City extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
+public City(){
 
+}
     public City(String name, String country) {
         this.name = name;
         this.country = country;
@@ -86,20 +89,32 @@ public class City extends Model {
         }
     }
 
-    public static ResultSet findUnapproved() throws SQLException, NotFound {
-        //try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price = ? AND new_sub_price = ?")) {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE id = ? ")){
-        preparedStatement.setInt(1, 8);
+    public static String[] findUnapproved() throws SQLException, NotFound {
+        String[] result = null;
+        int i = 0;
+      //  try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price = NULL AND new_sub_price = NULL")) {
+
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE name = ?")){
+        preparedStatement.setString(1, "haifa");
         //    preparedStatement.setDouble(2, 8000);
+
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
                     throw new NotFound();
                 }
+                while(rs.next()){
+                    result[i++]=rs.getString("name");
+                    result[i++]=rs.getString("country");
+                    result[i++]=String.format("%.2f", rs.getString("purchase_price"));
+                    result[i++]=String.format("%.2f", rs.getString("subscription_price"));
+                    result[i++]=String.format("%.2f", rs.getString("new_purchase_price"));
+                    result[i++]=String.format("%.2f", rs.getString("new_sub_price"));
+                }
 
-
-                return rs;
+                return result;
             }
+
         }
     }
     public static City changePrice(String cityName, String countryName, double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
@@ -116,9 +131,7 @@ public class City extends Model {
                 }
             City city = findCity(cityName,countryName);
                 return city;
-            /*ResultSet rs = preparedStatement.executeQuery();
-            City city = new City(rs);
-            return city;*/
+
             }
         }
 
