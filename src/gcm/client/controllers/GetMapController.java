@@ -3,10 +3,8 @@ package gcm.client.controllers;
 import gcm.client.bin.ClientGUI;
 import gcm.commands.FindMapByTitleCommand;
 import gcm.commands.Input;
-import gcm.commands.LoginUserCommand;
 import gcm.commands.Response;
 import gcm.database.models.Map;
-import gcm.database.models.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,13 +12,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import javax.xml.soap.Text;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -36,7 +30,6 @@ public class GetMapController {
     private TextField city_field;
 
 
-
     @FXML
     void showMap(ActionEvent event) {
 
@@ -48,7 +41,7 @@ public class GetMapController {
 
 
             ShowMapController.loadView(ClientGUI.getPrimaryStage(), output.map);
-        } catch (User.NotFound e) {
+        } catch (Map.NotFound e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect login details.");
             alert.show();
         } catch (Exception e) {
@@ -64,7 +57,6 @@ public class GetMapController {
         // do what you have to do
         stage2.close();
     }
-
 
 
     public static void loadView(Stage primaryStage) throws IOException {

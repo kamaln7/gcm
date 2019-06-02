@@ -57,7 +57,8 @@ public class ServerConsole implements ChatIF {
         this.server = new Server(
                 new Settings(
                         args.getPort(),
-                        args.getConnectionString()
+                        args.getConnectionString(),
+                        args.getFilesPath()
                 ),
                 this
         );
