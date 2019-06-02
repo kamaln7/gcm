@@ -48,44 +48,29 @@ public class MainScreenController implements Initializable {
 
     @FXML
     void createCity(ActionEvent event) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddCity.fxml"));
-        Parent root1 = null;
         try {
-            root1 =  fxmlLoader.load();
+            AddCityController.loadView(new Stage());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        stage.show();
     }
 
     @FXML
     void createMap(ActionEvent event) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddMap.fxml"));
-        Parent root1 = null;
         try {
-            root1 =  fxmlLoader.load();
+            AddMapController.loadView(new Stage());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        stage.show();
     }
 
     @FXML
     void editMap(ActionEvent event) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/MapEditOptions.fxml"));
-        Parent root1 = null;
         try {
-            root1 =  fxmlLoader.load();
+            MapEditOptionsController.loadView(new Stage());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        stage.show();
     }
 
     @FXML
@@ -103,7 +88,7 @@ public class MainScreenController implements Initializable {
     void getMap(ActionEvent event) {
         try {
             ClientGUI.getClient().logout();
-            GetMapController.loadView(ClientGUI.getPrimaryStage());
+            GetMapController.loadView(new Stage());
         } catch (Exception e) {
             e.printStackTrace();
         }
