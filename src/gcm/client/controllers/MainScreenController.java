@@ -115,5 +115,16 @@ public class MainScreenController implements Initializable {
         }
     }
 
+
+    @FXML
+    void Approve(ActionEvent event) {
+        try {
+            ApprovePriceController.loadView(ClientGUI.getPrimaryStage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
 

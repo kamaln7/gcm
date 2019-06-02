@@ -2,10 +2,7 @@ package gcm.database.models;
 // this sparta
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Date;
 
 public class City extends Model {
@@ -32,6 +29,14 @@ public class City extends Model {
         this.country = country;
         this.subscription_price = subscription_price;
         this.purchase_price = purchase_price;
+    }
+    public City(String name, String country, double subscription_price, double purchase_price, double new_purchase_price, double new_subscription_price) {
+        this.name = name;
+        this.country = country;
+        this.subscription_price = subscription_price;
+        this.purchase_price = purchase_price;
+        this.new_purchase_price = new_purchase_price;
+        this.new_subscription_price = new_subscription_price;
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -77,6 +82,23 @@ public class City extends Model {
 
                 City city = new City(rs);
                 return city;
+            }
+        }
+    }
+
+    public static ResultSet findUnapproved() throws SQLException, NotFound {
+        //try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price = ? AND new_sub_price = ?")) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE id = ? ")){
+        preparedStatement.setInt(1, 8);
+        //    preparedStatement.setDouble(2, 8000);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    throw new NotFound();
+                }
+
+
+                return rs;
             }
         }
     }
