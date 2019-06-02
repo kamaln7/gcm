@@ -61,7 +61,10 @@ public class AddCityController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             AddCityToDataBaseCommand.Output output = response.getOutput(AddCityToDataBaseCommand.Output.class);
 
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
+            Stage stage2 = (Stage) countryfield.getScene().getWindow();
+            // do what you have to do
+            stage2.close();
+
         } catch (City.AlreadyExists e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Can not add city already exist");
             alert.show();
