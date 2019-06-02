@@ -14,6 +14,9 @@ import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -35,7 +38,12 @@ public class Server extends AbstractServer {
         this.chatIF = chatIF;
 
         this.chatIF.display("Initializing server");
-        this.chatIF.displayf("Using directory [%s] for files", this.settings.filesPath);
+        this.chatIF.displayf("Using directory [%s] for files", this.getFilesPath());
+        Path filesPathDir = Paths.get(this.getFilesPath());
+        if (!Files.exists(filesPathDir)) {
+            this.chatIF.displayf("Created directory [%s] because it didn't exist", filesPathDir);
+            Files.createDirectory(filesPathDir);
+        }
 
         this.chatIF.display("Connecting to the database");
 
