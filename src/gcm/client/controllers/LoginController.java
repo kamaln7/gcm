@@ -5,6 +5,7 @@ import gcm.commands.Input;
 import gcm.commands.LoginUserCommand;
 import gcm.commands.Response;
 import gcm.database.models.User;
+import gcm.exceptions.AlreadyLoggedIn;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,6 +55,8 @@ public class LoginController implements Initializable {
         } catch (User.NotFound e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect login details.");
             alert.show();
+        } catch (AlreadyLoggedIn e) {
+            new Alert(Alert.AlertType.WARNING, "This user is already logged in.").show();
         } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
