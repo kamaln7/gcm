@@ -10,8 +10,6 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.IOException;
-
 public class ClientGUI extends Application {
     private static Client client;
     private static Stage primaryStage;
@@ -55,8 +53,9 @@ public class ClientGUI extends Application {
             @Override
             public void handle(WindowEvent t) {
                 try {
+                    client.logout();
                     client.stop();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 Platform.exit();
