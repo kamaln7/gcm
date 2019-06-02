@@ -56,7 +56,7 @@
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="469.0" prefWidth="663.0">
                                  <children>
                                     <TextField fx:id="searchQueryTF" layoutX="14.0" layoutY="16.0" prefHeight="27.0" prefWidth="337.0" />
-                                    <ButtonBar layoutX="274.0" layoutY="23.0" prefHeight="40.0" prefWidth="78.0" />
+                                    <ButtonBar layoutX="360.0" layoutY="10.0" prefHeight="40.0" prefWidth="78.0" />
                                   <Button layoutX="360.0" layoutY="16.0" mnemonicParsing="false" onAction="#searchButtonClick" text="Search" />
                                     <ListView fx:id="citiesList" layoutX="14.0" layoutY="83.0" onMouseClicked="#citiesListSelectCity" prefHeight="331.0" prefWidth="167.0">
                                        <cursor>

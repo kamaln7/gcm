@@ -55,15 +55,16 @@ public class Map extends Model {
     public static List<Map> findAllByCityId(Integer cityId) throws SQLException {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where cityId = ? and verification = 1 order by title asc")) {
             preparedStatement.setInt(1, cityId);
-            ResultSet rs = preparedStatement.executeQuery();
+            try (ResultSet rs = preparedStatement.executeQuery()) {
 
-            List<Map> maps = new ArrayList<>();
-            while (rs.next()) {
-                Map map = new Map(rs);
-                maps.add(map);
+                List<Map> maps = new ArrayList<>();
+                while (rs.next()) {
+                    Map map = new Map(rs);
+                    maps.add(map);
+                }
+
+                return maps;
             }
-
-            return maps;
         }
     }
 
