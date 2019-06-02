@@ -16,10 +16,10 @@ public class ApprovePriceCommand implements Command {
     }
 
     public static class Output extends gcm.commands.Output {
-        public ArrayList result;
+        public ArrayList<City> result;
 
 
-        public Output(ArrayList result) {
+        public Output(ArrayList<City> result) {
             this.result= result;
         }
     }
@@ -27,8 +27,11 @@ public class ApprovePriceCommand implements Command {
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
-        ArrayList result = City.findUnapproved();
-
+        ArrayList<City> result = City.findUnapproved();
+        System.out.println("amin run on server");
+        for (int i = 0; i <result.size() ; i++) {
+            System.out.println(result.get(i).getName());
+        }
         return new Output(result);
     }
 }
