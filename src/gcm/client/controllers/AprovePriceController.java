@@ -76,23 +76,20 @@ public class AprovePriceController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private TableView<cities> tableList;
 
     @FXML
-    private TextField cityField;
+    void ApprovePrice(ActionEvent event) {
 
-
-    @FXML
-    private TextField countryField;
+    }
 
     @FXML
-    private TextField NewSubPriceField;
+    void DeclinePrice(ActionEvent event) {
 
-    @FXML
-    private TextField NewPurchasePriceField;
-    @FXML
-    private TextField PurchasePriceField;
-    @FXML
-    private TextField SubPriceField;
+    }
+
+
     @FXML
     void back(ActionEvent event) {
         try {
