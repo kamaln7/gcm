@@ -6,19 +6,20 @@ import ocsf.server.ConnectionToClient;
 
 import java.sql.Array;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class ApprovePriceCommand implements Command {
     public static class Input extends gcm.commands.Input {
-
-
+      /*  public ArrayList result;
+        public Input(){this.result = new ArrayList();}*/
 
     }
 
     public static class Output extends gcm.commands.Output {
-        public String[] result;
+        public ArrayList result;
 
 
-        public Output(String[] result) {
+        public Output(ArrayList result) {
             this.result= result;
         }
     }
@@ -26,7 +27,7 @@ public class ApprovePriceCommand implements Command {
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
-        String[] result = City.findUnapproved();
+        ArrayList result = City.findUnapproved();
 
         return new Output(result);
     }

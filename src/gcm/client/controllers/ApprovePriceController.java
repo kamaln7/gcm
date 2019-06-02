@@ -42,6 +42,7 @@ public class ApprovePriceController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ApprovePriceCommand.Output output = response.getOutput(ApprovePriceCommand.Output.class);
+          //  System.out.println("amin"+output.result);
 
 
         } catch (City.NotFound e) {
