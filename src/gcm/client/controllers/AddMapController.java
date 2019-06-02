@@ -7,6 +7,7 @@ import gcm.database.models.Map;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
@@ -17,14 +18,13 @@ import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 
 public class AddMapController {
+
 
     @FXML
     private TextArea description_field;
@@ -69,7 +69,11 @@ public class AddMapController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             AddMapCommand.Output output = response.getOutput(AddMapCommand.Output.class);
 
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
+            Stage stage2 = (Stage) description_field.getScene().getWindow();
+            // do what you have to do
+            stage2.close();
+
+
         } catch (Map.AlreadyExists e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Can not add city already exist");
             alert.show();
@@ -81,6 +85,7 @@ public class AddMapController {
             e.printStackTrace();
         }
     }
+
     private boolean validate(String text)
     {
         return text.matches("[0-9]*");
@@ -92,16 +97,36 @@ public class AddMapController {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image files", "*.jpg", "*.png"));
         File f = fc.showOpenDialog(null);
 
+
         if (f != null){
             imgPath.setText(f.getAbsolutePath());
+            BufferedImage bImage = null;
             try {
-                imageBytes = Files.readAllBytes(f.toPath());
+                bImage = ImageIO.read(new File(f.getAbsolutePath()));
             } catch (IOException e) {
                 e.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Could not read image");
-                alert.show();
             }
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            try {
+                ImageIO.write(bImage, "jpg", bos );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            imageBytes = bos.toByteArray();
         }
+
+
+//        if (f != null){
+//            imgPath.setText(f.getAbsolutePath());
+//            try {
+//                imageBytes = Files.readAllBytes(f.toPath());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Alert alert = new Alert(Alert.AlertType.ERROR, "Could not read image");
+//                alert.show();
+//            }
+//        }
     }
+
 }
 

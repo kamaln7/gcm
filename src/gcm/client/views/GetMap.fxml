@@ -13,9 +13,11 @@
                 <Font size="24.0" />
             </font>
         </Text>
-      <Button layoutX="42.0" layoutY="190.0" mnemonicParsing="false" onAction="#back" text="Back" />
+      <Button fx:id="cancel_button" layoutX="42.0" layoutY="190.0" mnemonicParsing="false" onAction="#Cancel" text="Cancel" />
       <Button layoutX="166.0" layoutY="190.0" mnemonicParsing="false" onAction="#showMap" text="Show" />
-      <Text layoutX="39.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="title:" wrappingWidth="61.220703125" />
-      <TextField fx:id="title" layoutX="62.0" layoutY="105.0" />
+      <Text layoutX="39.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Title" wrappingWidth="61.220703125" />
+      <TextField fx:id="title_field" layoutX="70.0" layoutY="66.0" />
+      <Text layoutX="39.0" layoutY="127.0" strokeType="OUTSIDE" strokeWidth="0.0" text="City" wrappingWidth="61.220703125" />
+      <TextField fx:id="city_field" layoutX="70.0" layoutY="110.0" />
     </children>
 </AnchorPane>
