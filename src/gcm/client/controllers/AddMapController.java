@@ -83,14 +83,7 @@ public class AddMapController {
     }
 
 
-    @FXML
-    void backToMainScreen(ActionEvent event) {
-        try {
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
-        }catch (Exception e){
 
-        }
-    }
     private boolean validate(String text)
     {
         return text.matches("[0-9]*");
