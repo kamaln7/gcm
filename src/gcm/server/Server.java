@@ -8,12 +8,15 @@ import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
 import gcm.database.models.Model;
+import gcm.database.models.User;
+import gcm.exceptions.AlreadyLoggedIn;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -23,6 +26,7 @@ public class Server extends AbstractServer {
     private Settings settings;
     private ChatIF chatIF;
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
+    private ArrayList<Integer> loggedInUserIds = new ArrayList<>();
     private Connection db;
 
     public Server(Settings settings, ChatIF chatIF) throws Exception {
@@ -106,5 +110,25 @@ public class Server extends AbstractServer {
 
     public void handleMessageFromServerConsole(String msg) {
         this.chatIF.displayf("server console commands are not implemented");
+    }
+
+    public void login(ConnectionToClient client, User user) throws AlreadyLoggedIn {
+        Integer id = user.getId();
+        if (loggedInUserIds.contains(id)) {
+            throw new AlreadyLoggedIn();
+        }
+
+        client.setInfo("userId", id);
+        loggedInUserIds.add(id);
+    }
+
+    public void logout(ConnectionToClient client) {
+        Integer id = (Integer) client.getInfo("userId");
+        if (id == null) {
+            return;
+        }
+
+        loggedInUserIds.remove(id);
+        client.setInfo("userId", null);
     }
 }
