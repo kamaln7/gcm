@@ -61,10 +61,15 @@ public class MainScreenController implements Initializable {
 
         // show admin tab if has access
         adminTab.setDisable(!ClientGUI.getCurrentUser().hasRole("employee"));
+        cityInfoPane.setOpacity(0);
+
+        citiesList.setItems(citiesListItems);
+        citiesList.setCellFactory((Callback<ListView<City>, CityListCell>) listView -> new CityListCell());
+        cityMapsList.setItems(cityMapsListItems);
+        cityMapsList.setCellFactory((Callback<ListView<City>, MapListCell>) listView -> new MapListCell());
 
         // get list of cities
         loadListOfCities("");
-        cityInfoPane.setOpacity(0);
     }
 
     private void loadListOfCities(String searchQuery) {
@@ -75,8 +80,6 @@ public class MainScreenController implements Initializable {
             CitySearchCommand.Output output = response.getOutput(CitySearchCommand.Output.class);
 
             citiesListItems.setAll(output.cities);
-            citiesList.setItems(citiesListItems);
-            citiesList.setCellFactory((Callback<ListView<City>, CityListCell>) listView -> new CityListCell());
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, "Couldn't load list of cities.").show();
         }
@@ -107,8 +110,6 @@ public class MainScreenController implements Initializable {
             FindMapsByCityIdCommand.Output output = response.getOutput(FindMapsByCityIdCommand.Output.class);
 
             cityMapsListItems.setAll(output.maps);
-            cityMapsList.setItems(cityMapsListItems);
-            cityMapsList.setCellFactory((Callback<ListView<City>, MapListCell>) listView -> new MapListCell());
 
             cityInfoLabel.setText(String.format("%s, %s\n\n%d maps",
                     city.getName(),
@@ -185,6 +186,8 @@ public class MainScreenController implements Initializable {
 
     @FXML
     void searchButtonClick(ActionEvent event) {
+        cityInfoPane.setOpacity(0);
+
         String query = searchQueryTF.getText();
         this.loadListOfCities(query);
     }
@@ -197,6 +200,7 @@ public class MainScreenController implements Initializable {
             super.updateItem(item, empty);
             if (empty) {
                 setGraphic(null);
+                setText(null);
             } else {
                 this.city = item;
                 setText(String.format("%s, %s", city.getName(), city.getCountry()));
@@ -212,6 +216,7 @@ public class MainScreenController implements Initializable {
             super.updateItem(item, empty);
             if (empty) {
                 setGraphic(null);
+                setText(null);
             } else {
                 this.map = item;
                 setText(this.map.getTitle());

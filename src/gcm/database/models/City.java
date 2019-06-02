@@ -40,20 +40,33 @@ public class City extends Model {
             return findAll();
         }
 
-        return new ArrayList<>();
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where name like ? or country like ? order by country, name asc")) {
+            preparedStatement.setString(1, "%" + searchQuery + "%");
+            preparedStatement.setString(2, "%" + searchQuery + "%");
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<City> cities = new ArrayList<>();
+                while (rs.next()) {
+                    City city = new City(rs);
+                    cities.add(city);
+                }
+
+                return cities;
+            }
+        }
     }
 
     private static List<City> findAll() throws SQLException {
         try (Statement statement = getDb().createStatement()) {
-            ResultSet rs = statement.executeQuery("select * from cities order by country, name asc");
+            try (ResultSet rs = statement.executeQuery("select * from cities order by country, name asc")) {
+                List<City> cities = new ArrayList<>();
+                while (rs.next()) {
+                    City city = new City(rs);
+                    cities.add(city);
+                }
 
-            List<City> cities = new ArrayList<>();
-            while (rs.next()) {
-                City city = new City(rs);
-                cities.add(city);
+                return cities;
             }
-
-            return cities;
         }
     }
 
