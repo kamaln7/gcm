@@ -22,7 +22,7 @@ public class Attraction extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public Attraction(Integer cityId, Boolean accessibleSpecial, String name, String description, String type, String location) {
+    public Attraction(Integer cityId, String name, String description, String type, String location, Boolean accessibleSpecial) {
         this.cityId = cityId;
         this.accessibleSpecial = accessibleSpecial;
         this.name = name;

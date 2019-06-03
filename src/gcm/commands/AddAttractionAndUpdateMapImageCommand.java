@@ -51,7 +51,7 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
 
         mapToUpdate.updateImage(imageName, input.map_version, input.map_title);
 
-        Attraction attraction = new Attraction(input.attraction_name, mapToUpdate.getCityId(), input.attraction_type, input.getAttraction_location);
+        Attraction attraction = new Attraction(mapToUpdate.getCityId(), input.attraction_name, "description here", input.attraction_type, input.getAttraction_location, false);
         attraction.insert();
 
         return new Output();
