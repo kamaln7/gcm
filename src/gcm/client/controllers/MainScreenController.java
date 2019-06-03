@@ -53,9 +53,6 @@ public class MainScreenController implements Initializable {
     @FXML
     private Label cityInfoLabel;
 
-    @FXML
-    private TextField searchQueryTF;
-
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
         // set welcome text
@@ -144,47 +141,10 @@ public class MainScreenController implements Initializable {
     }
 
     @FXML
-    void createCity(ActionEvent event) {
-        try {
-            AddCityController.loadView(new Stage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    void createMap(ActionEvent event) {
-        try {
-            AddMapController.loadView(new Stage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    void editMap(ActionEvent event) {
-        try {
-            MapEditOptionsController.loadView(new Stage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     public void logOut(ActionEvent actionEvent) {
         try {
             ClientGUI.getClient().logout();
             LoginController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @FXML
-    void getMap(ActionEvent event) {
-        try {
-            GetMapController.loadView(new Stage());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -221,25 +181,5 @@ public class MainScreenController implements Initializable {
             }
         }
     }
-
-    @FXML
-    void changePrice(ActionEvent event) {
-        try {
-            ChangePriceController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @FXML
-    void Approve(ActionEvent event) {
-        try {
-            ApprovePriceController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
 
