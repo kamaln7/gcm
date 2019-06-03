@@ -90,7 +90,7 @@ public class User extends Model {
 
                 try (ResultSet rs1 = preparedStatement1.executeQuery()) {
                     if (!rs1.next()) {
-                        throw new User.NotFound();
+                        throw new NotFound();
                     }
 
                     this.fillFieldsFromResultSet(rs1);
