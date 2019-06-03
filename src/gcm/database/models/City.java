@@ -11,9 +11,9 @@ import java.util.List;
 public class City extends Model {
     // fields
     private Integer id;
-    private String name, country, description;
+    private String name, country;
     private Date createdAt, updatedAt;
-    private double subscription_price, purchase_price, new_subscription_price, new_purchase_price;
+    private double subscriptionPrice, purchasePrice, newSubscriptionPrice, newPurchasePrice;
 
     // create User object with info from ResultSet
     public City(ResultSet rs) throws SQLException {
@@ -26,29 +26,11 @@ public class City extends Model {
 
     }
 
-    public City(String name, String country) {
-        super();
-
+    public City(String name, String country, double subscriptionPrice, double purchasePrice) {
         this.name = name;
         this.country = country;
-    }
-
-    public City(String name, String country, double subscription_price, double purchase_price) {
-        super();
-
-        this.name = name;
-        this.country = country;
-        this.subscription_price = subscription_price;
-        this.purchase_price = purchase_price;
-    }
-
-    public City(String name, String country, double subscription_price, double purchase_price, double new_purchase_price, double new_subscription_price) {
-        this.name = name;
-        this.country = country;
-        this.subscription_price = subscription_price;
-        this.purchase_price = purchase_price;
-        this.new_purchase_price = new_purchase_price;
-        this.new_subscription_price = new_subscription_price;
+        this.subscriptionPrice = subscriptionPrice;
+        this.purchasePrice = purchasePrice;
     }
 
     public static List<City> searchByName(String searchQuery) throws SQLException {
@@ -89,20 +71,20 @@ public class City extends Model {
         this.id = rs.getInt("id");
         this.name = rs.getString("name");
         this.country = rs.getString("country");
-        this.description = rs.getString("description");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
-        this.subscription_price = rs.getDouble("subscription_price");
-        this.purchase_price = rs.getDouble("purchase_price");
-        this.new_purchase_price = rs.getDouble("new_purchase_price");
-        this.new_subscription_price = rs.getDouble("new_sub_price");
+        this.subscriptionPrice = rs.getDouble("subscription_price");
+        this.purchasePrice = rs.getDouble("purchase_price");
+        this.newPurchasePrice = rs.getDouble("new_purchase_price");
+        this.newSubscriptionPrice = rs.getDouble("new_sub_price");
     }
 
 
     /* QUERIES */
-    public static City findByUsername(String name) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where name = ?")) {
+    public static City findByNameAndCountry(String name, String country) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where name = ? and country = ?")) {
             preparedStatement.setString(1, name);
+            preparedStatement.setString(2, country);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
@@ -115,47 +97,21 @@ public class City extends Model {
         }
     }
 
-    /* Amin update: find city by name and country */
-
-    public static City findCity(String cityName, String countryName) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE name = ? AND country = ?")) {
-            preparedStatement.setString(1, cityName);
-            preparedStatement.setString(2, countryName);
-
+    public static List<City> findUnapproved() throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price IS NOT NULL OR new_sub_price IS NOT NULL")) {
             try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    throw new NotFound();
+                List<City> cities = new ArrayList<>();
+                while (rs.next()) {
+                    City city = new City(rs);
+                    cities.add(city);
                 }
 
-                City city = new City(rs);
-                return city;
+                return cities;
             }
-        }
-    }
-
-    public static ArrayList<City> findUnapproved() throws SQLException, NotFound {
-        ArrayList result = new ArrayList<City>();
-
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price > 0 OR new_sub_price > 0 ")) {
-
-
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    throw new NotFound();
-                }
-                do {
-                    result.add(new City(rs));
-                } while (rs.next());
-
-
-                return result;
-            }
-
         }
     }
 
     public static City changePrice(String cityName, String countryName, double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
-
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE name = ? AND country = ?")) {
             preparedStatement.setDouble(1, new_purchase_price);
             preparedStatement.setDouble(2, new_sub_price);
@@ -166,21 +122,12 @@ public class City extends Model {
             if (status == 0) {
                 throw new NotFound();
             }
-            City city = findCity(cityName, countryName);
+            City city = findByNameAndCountry(cityName, countryName);
             return city;
 
         }
     }
 
-
-    /**
-     * Find a user by its id
-     *
-     * @param id The user id to find
-     * @return User The requested user
-     * @throws SQLException
-     * @throws NotFound     if no such user
-     */
     public static City findById(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where id = ?")) {
             preparedStatement.setInt(1, id);
@@ -198,19 +145,23 @@ public class City extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into cities (name, country, subscription_price, purchase_price, description) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into cities (name, country, subscription_price, purchase_price) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getName());
             preparedStatement.setString(2, this.getCountry());
-            preparedStatement.setDouble(3, this.subscription_price);
-            preparedStatement.setDouble(4, this.purchase_price);
-            preparedStatement.setString(5, this.description);
+            preparedStatement.setDouble(3, this.subscriptionPrice);
+            preparedStatement.setDouble(4, this.purchasePrice);
             // run the insert command
             preparedStatement.executeUpdate();
+
             // get the auto generated id
-            try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
-                if (!rs.next()) {
+            try (ResultSet rsGenerated = preparedStatement.getGeneratedKeys()) {
+                if (!rsGenerated.next()) {
                     throw new NotFound();
                 }
+
+                // find the new attraction details
+                Integer id = rsGenerated.getInt(1);
+                this.updateWithNewDetailsById(id, "cities");
             }
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new AlreadyExists();
@@ -282,44 +233,36 @@ public class City extends Model {
         this.updatedAt = updatedAt;
     }
 
-    public double getSubscription_price() {
-        return subscription_price;
+    public double getSubscriptionPrice() {
+        return subscriptionPrice;
     }
 
-    public void setSubscription_price(double subscription_price) {
-        this.subscription_price = subscription_price;
+    public void setSubscriptionPrice(double subscriptionPrice) {
+        this.subscriptionPrice = subscriptionPrice;
     }
 
-    public double getPurchase_price() {
-        return purchase_price;
+    public double getPurchasePrice() {
+        return purchasePrice;
     }
 
-    public void setPurchase_price(double purchase_price) {
-        this.purchase_price = purchase_price;
+    public void setPurchasePrice(double purchasePrice) {
+        this.purchasePrice = purchasePrice;
     }
 
-    public double getNew_subscription_price() {
-        return new_subscription_price;
+    public double getNewSubscriptionPrice() {
+        return newSubscriptionPrice;
     }
 
-    public void setNew_subscription_price(double new_subscription_price) {
-        this.new_subscription_price = new_subscription_price;
+    public void setNewSubscriptionPrice(double newSubscriptionPrice) {
+        this.newSubscriptionPrice = newSubscriptionPrice;
     }
 
-    public double getNew_purchase_price() {
-        return new_purchase_price;
+    public double getNewPurchasePrice() {
+        return newPurchasePrice;
     }
 
-    public void setNew_purchase_price(double new_purchase_price) {
-        this.new_purchase_price = new_purchase_price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setNewPurchasePrice(double newPurchasePrice) {
+        this.newPurchasePrice = newPurchasePrice;
     }
 
     @Override
