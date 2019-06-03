@@ -129,26 +129,17 @@ public class Attraction extends Model {
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
-            ResultSet rs = preparedStatement.getGeneratedKeys();
-            if (!rs.next()) {
-                throw new NotFound();
-            }
-
-            // find the new attraction details
-            Integer id = rs.getInt(1);
-            try (PreparedStatement preparedStatement1 = getDb().prepareStatement("select * from attractions where id = ?")) {
-                preparedStatement1.setInt(1, id);
-
-                try (ResultSet rs1 = preparedStatement1.executeQuery()) {
-                    if (!rs1.next()) {
-                        throw new NotFound();
-                    }
-
-                    this.fillFieldsFromResultSet(rs1);
+            try (ResultSet rsGenerated = preparedStatement.getGeneratedKeys()) {
+                if (!rsGenerated.next()) {
+                    throw new NotFound();
                 }
+
+                // find the new attraction details
+                Integer id = rsGenerated.getInt(1);
+                this.updateWithNewDetailsById(id, "attractions");
             }
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
-            throw new Attraction.AlreadyExists();
+            throw new AlreadyExists();
         }
     }
 
