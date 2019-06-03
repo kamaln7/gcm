@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="663.0"
-            stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.MainScreenController">
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="663.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.MainScreenController">
     <children>
-        <BorderPane prefHeight="396.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <BorderPane prefHeight="396.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
                 <AnchorPane prefHeight="34.0" prefWidth="488.0" BorderPane.alignment="CENTER">
                     <children>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="663.0" AnchorPane.leftAnchor="0.0"
-                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="663.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="GCM">
                                     <font>
-                                        <Font size="24.0"/>
+                                        <Font size="24.0" />
                                     </font>
                                     <HBox.margin>
-                                        <Insets left="8.0"/>
+                                        <Insets left="8.0" />
                                     </HBox.margin>
                                 </Text>
-                                <Pane HBox.hgrow="ALWAYS"/>
-                                <Text fx:id="userDetailsText" strokeType="OUTSIDE" strokeWidth="0.0"
-                                      text="* user details here *"/>
+                                <Pane HBox.hgrow="ALWAYS" />
+                                <Text fx:id="userDetailsText" strokeType="OUTSIDE" strokeWidth="0.0" text="* user details here *" />
                                 <Hyperlink focusTraversable="false" onAction="#logOut" text="Log out">
                                     <HBox.margin>
-                                        <Insets left="2.0" right="2.0"/>
+                                        <Insets left="2.0" right="2.0" />
                                     </HBox.margin>
                                 </Hyperlink>
                             </children>
@@ -39,60 +40,23 @@
                 </AnchorPane>
             </top>
             <center>
-                <AnchorPane id="#mainContentAnchorPane" prefHeight="348.0" prefWidth="582.0"
-                            BorderPane.alignment="CENTER">
+                <AnchorPane id="#mainContentAnchorPane" prefHeight="348.0" prefWidth="582.0" BorderPane.alignment="CENTER">
                     <children>
-                        <TabPane id="mainScreenTabPane" fx:id="mainTabPane" prefHeight="464.0" prefWidth="663.0"
-                                 tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
-                                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TabPane id="mainScreenTabPane" fx:id="mainTabPane" prefHeight="464.0" prefWidth="663.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <tabs>
                                 <Tab text="Home">
                                     <content>
-                                        <fx:include source="SearchCityOrAttraction.fxml"/>
+                                        <fx:include source="SearchCityOrAttraction.fxml" />
                                     </content>
                                 </Tab>
                                 <Tab fx:id="subscriptionsTab" text="Subscriptions">
                                     <content>
-                                        <fx:include source="UserSubscriptions.fxml"/>
-                                    </content>
-                                </Tab>
-                                <Tab text="Explore">
-                                    <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="469.0" prefWidth="663.0">
-                                            <children>
-                                                <ListView fx:id="citiesList" layoutX="14.0" layoutY="31.0"
-                                                          onMouseClicked="#citiesListSelectCity" prefHeight="386.0"
-                                                          prefWidth="167.0">
-                                                    <cursor>
-                                                        <Cursor fx:constant="HAND"/>
-                                                    </cursor>
-                                                </ListView>
-                                                <Text layoutX="14.0" layoutY="24.0" strokeType="OUTSIDE"
-                                                      strokeWidth="0.0" text="Cities"/>
-                                                <Pane fx:id="cityInfoPane" layoutX="191.0" layoutY="10.0"
-                                                      prefHeight="413.0" prefWidth="459.0">
-                                                    <children>
-                                                        <ListView fx:id="cityMapsList" layoutX="230.0" layoutY="25.0"
-                                                                  onMouseClicked="#cityMapsListSelectMap"
-                                                                  prefHeight="382.0" prefWidth="207.0">
-                                                            <cursor>
-                                                                <Cursor fx:constant="HAND"/>
-                                                            </cursor>
-                                                        </ListView>
-                                                        <Text layoutX="230.0" layoutY="19.0" strokeType="OUTSIDE"
-                                                              strokeWidth="0.0" text="Maps"/>
-                                                        <Label fx:id="cityInfoLabel" alignment="TOP_LEFT" layoutX="14.0"
-                                                               layoutY="23.0" prefHeight="367.0" prefWidth="199.0"
-                                                               text="selected city info"/>
-                                                    </children>
-                                                </Pane>
-                                            </children>
-                                        </AnchorPane>
+                                        <fx:include source="UserSubscriptions.fxml" />
                                     </content>
                                 </Tab>
                                 <Tab fx:id="adminTab" text="Admin">
                                     <content>
-                                        <fx:include source="AdminMainScreen.fxml"/>
+                                        <fx:include source="AdminMainScreen.fxml" />
                                     </content>
                                 </Tab>
                             </tabs>
