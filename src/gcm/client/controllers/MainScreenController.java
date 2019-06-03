@@ -18,16 +18,10 @@ import java.util.ResourceBundle;
 
 public class MainScreenController implements Initializable {
     @FXML
-    public Tab adminTab;
-
-    @FXML
     private Text userDetailsText;
 
     @FXML
     private TabPane mainTabPane;
-
-    @FXML
-    private Tab subscriptionsTab;
 
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
@@ -38,12 +32,26 @@ public class MainScreenController implements Initializable {
         ));
 
         // show admin tab if has access
-        if (!ClientGUI.getCurrentUser().hasRole("employee")) {
-            mainTabPane.getTabs().remove(adminTab);
+        if (ClientGUI.getCurrentUser().hasRole("employee")) {
+            try {
+                Tab tab = new Tab();
+                tab.setText("Admin");
+                tab.setContent(FXMLLoader.load(this.getClass().getResource("/gcm/client/views/AdminMainScreen.fxml")));
+                mainTabPane.getTabs().add(tab);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         // show subscriptions tab only if user is a user role
-        if (!ClientGUI.getCurrentUser().hasExactRole("user")) {
-            mainTabPane.getTabs().remove(subscriptionsTab);
+        if (ClientGUI.getCurrentUser().hasExactRole("user")) {
+            try {
+                Tab tab = new Tab();
+                tab.setText("Subscriptions");
+                tab.setContent(FXMLLoader.load(this.getClass().getResource("/gcm/client/views/UserSubscriptions.fxml")));
+                mainTabPane.getTabs().add(tab);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
