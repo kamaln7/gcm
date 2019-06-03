@@ -11,8 +11,9 @@ import java.util.List;
 
 public class Map extends Model {
     // fields
-    private Integer id, cityId, verification; // 1 is verified 0 is not verified
-    private String title, description, version, img, cityName;
+    private Integer id, cityId;
+    private Boolean verification = false; // 1 is verified 0 is not verified
+    private String title, description, version, img;
     private Date createdAt, updatedAt;
 
     // create User object with info from ResultSet
@@ -25,25 +26,6 @@ public class Map extends Model {
     public Map() {
     }
 
-    public Map(String title, String description, String version, String img) {
-
-        this.title = title;
-        this.description = description;
-        this.version = version;
-        this.img = img;
-
-    }
-
-    public Map(String title, String description, String version, String img, String cityName) {
-
-        this.title = title;
-        this.description = description;
-        this.version = version;
-        this.img = img;
-        this.cityName = cityName;
-
-    }
-
     public Map(String title, String description, String version, String img, int cityId) {
         this.title = title;
         this.description = description;
@@ -53,8 +35,13 @@ public class Map extends Model {
     }
 
     public static List<Map> findAllByCityId(Integer cityId) throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where city_id = ? and verification = 1 order by title asc")) {
+        return findAllByCityId(cityId, true);
+    }
+
+    public static List<Map> findAllByCityId(Integer cityId, Boolean verifiedOnly) throws SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where city_id = ? and verification = ? order by title asc")) {
             preparedStatement.setInt(1, cityId);
+            preparedStatement.setBoolean(2, verifiedOnly);
             try (ResultSet rs = preparedStatement.executeQuery()) {
 
                 List<Map> maps = new ArrayList<>();
@@ -77,28 +64,20 @@ public class Map extends Model {
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
         this.img = rs.getString("img");
-        this.verification = rs.getInt("verification");
+        this.verification = rs.getBoolean("verification");
     }
 
 
 
     /* QUERIES */
 
-    /**
-     * Find a user by its id
-     *
-     * @param id The user id to find
-     * @return User The requested user
-     * @throws SQLException
-     * @throws NotFound     if no such user
-     */
     public static Map findById(Integer id) throws Exception {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
-                    throw new Map.NotFound();
+                    throw new NotFound();
                 }
 
                 Map map = new Map(rs);
@@ -107,21 +86,13 @@ public class Map extends Model {
         }
     }
 
-    /**
-     * Find a user by its username
-     *
-     * @param title The username to find
-     * @return User The requested user
-     * @throws SQLException
-     * @throws NotFound     if no such user
-     */
     public static Map findByTitle(String title) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where title = ?")) {
             preparedStatement.setString(1, title);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
-                    throw new Map.NotFound();
+                    throw new NotFound();
                 }
 
                 Map map = new Map(rs);
@@ -129,7 +100,6 @@ public class Map extends Model {
             }
         }
     }
-
 
     public static Map findByTitleAndVersion(String title, String version) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where title = ? And version = ?")) {
@@ -138,7 +108,7 @@ public class Map extends Model {
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
-                    throw new Map.NotFound();
+                    throw new NotFound();
                 }
                 Map map = new Map(rs);
                 return map;
@@ -147,55 +117,17 @@ public class Map extends Model {
     }
 
     public static void updateImage(String new_image, String version, String title) throws SQLException, NotFound {
-
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE maps SET img = ? WHERE title = ? AND version = ?", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE maps SET img = ? WHERE title = ? AND version = ?")) {
             preparedStatement.setString(1, new_image);
             preparedStatement.setString(2, title);
             preparedStatement.setString(3, version);
 
             preparedStatement.executeUpdate();
-//            // get the auto generated id
-//            ResultSet rs = preparedStatement.getGeneratedKeys();
-//            if (!rs.next()) {
-//                throw new Map.NotFound();
-//            }
-//            try {
-//                return Map.findById(rs.getInt(1));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
         }
     }
 
 
-    public void insert() throws SQLException, Map.NotFound, Map.AlreadyExists, City.NotFound {
-
-        //check if the city already exist
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM maps WHERE title = ? AND version = ?")) {
-            preparedStatement.setString(1, this.getTitle());
-            preparedStatement.setString(2, this.getVersion());
-            //query
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (rs.next()) {
-                    throw new Map.AlreadyExists();
-                }
-            }
-        }
-
-        // get city id
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("Select id from cities where name = ?")) {
-            preparedStatement.setString(1, this.getCityName());
-
-            // run the insert command
-            preparedStatement.executeQuery();
-            // get the auto generated id
-            ResultSet rs = preparedStatement.getResultSet();
-            if (!rs.next()) {
-                throw new City.NotFound();
-            }
-            this.cityId = rs.getInt("id");
-        }
-
+    public void insert() throws SQLException, NotFound {
         // insert map to table
         try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, description, img, city_id) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
@@ -208,12 +140,15 @@ public class Map extends Model {
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
-            ResultSet rs = preparedStatement.getGeneratedKeys();
-            if (!rs.next()) {
-                throw new Map.NotFound();
+            try (ResultSet rsGenerated = preparedStatement.getGeneratedKeys()) {
+                if (!rsGenerated.next()) {
+                    throw new NotFound();
+                }
+
+                // find the new attraction details
+                Integer id = rsGenerated.getInt(1);
+                this.updateWithNewDetailsById(id, "maps");
             }
-
-
         }
     }
 
@@ -294,12 +229,11 @@ public class Map extends Model {
         this.cityId = cityId;
     }
 
-    public String getCityName() {
-        return cityName;
+    public Boolean getVerification() {
+        return verification;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
+    public void setVerification(Boolean verification) {
+        this.verification = verification;
     }
-
 }
