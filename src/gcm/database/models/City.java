@@ -11,7 +11,7 @@ public class City extends Model {
     private Integer id;
     private String name, country;
     private Date createdAt, updatedAt;
-    double subscription_price, purchase_price, new_subscription_price, new_purchase_price  ;
+    private double subscription_price, purchase_price, new_subscription_price, new_purchase_price  ;
     // create User object with info from ResultSet
     public City(ResultSet rs) throws SQLException {
         super();
