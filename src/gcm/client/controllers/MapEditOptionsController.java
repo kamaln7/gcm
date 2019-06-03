@@ -23,12 +23,6 @@ public class MapEditOptionsController {
 
 
 
-    @FXML
-    private TextField title_field;
-
-    @FXML
-    private TextField version_field;
-
 
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/MapEditOptions.fxml");
@@ -72,11 +66,16 @@ public class MapEditOptionsController {
     }
 
 
-
     @FXML
     void editMapDescription(ActionEvent event) {
 
     }
+
+    @FXML
+    void editMapTitle(ActionEvent event) {
+
+    }
+
 
 //    @FXML
 //    void back(ActionEvent event) {

@@ -17,6 +17,6 @@
       <Button layoutX="111.0" layoutY="122.0" mnemonicParsing="false" onAction="#editMapDescription" text="Edit Description" />
       <Hyperlink layoutX="189.0" layoutY="244.0" onAction="#addMap" text="Add Map" />
       <Text layoutX="76.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Map Does Not Exist?," />
-      <Button layoutX="111.0" layoutY="158.0" mnemonicParsing="false" onAction="#editMapDescription" text="Edit Description" />
+      <Button layoutX="130.0" layoutY="159.0" mnemonicParsing="false" onAction="#editMapTitle" text="Edit Title" />
     </children>
 </AnchorPane>
