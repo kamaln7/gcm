@@ -22,9 +22,10 @@ public class City extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-public City(){
+    public City() {
 
-}
+    }
+
     public City(String name, String country) {
         super();
 
@@ -40,6 +41,7 @@ public City(){
         this.subscription_price = subscription_price;
         this.purchase_price = purchase_price;
     }
+
     public City(String name, String country, double subscription_price, double purchase_price, double new_purchase_price, double new_subscription_price) {
         this.name = name;
         this.country = country;
@@ -134,17 +136,16 @@ public City(){
     public static ArrayList<City> findUnapproved() throws SQLException, NotFound {
         ArrayList result = new ArrayList<City>();
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price > 0 OR new_sub_price > 0 ")){
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price > 0 OR new_sub_price > 0 ")) {
 
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
                     throw new NotFound();
                 }
-                do{
+                do {
                     result.add(new City(rs));
-                } while(rs.next());
-
+                } while (rs.next());
 
 
                 return result;
@@ -152,6 +153,7 @@ public City(){
 
         }
     }
+
     public static City changePrice(String cityName, String countryName, double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
 
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE name = ? AND country = ?")) {
@@ -161,14 +163,14 @@ public City(){
             preparedStatement.setString(4, countryName);
 
             int status = preparedStatement.executeUpdate();
-                if (status == 0) {
-                    throw new NotFound();
-                }
-            City city = findCity(cityName,countryName);
-                return city;
-
+            if (status == 0) {
+                throw new NotFound();
             }
+            City city = findCity(cityName, countryName);
+            return city;
+
         }
+    }
 
 
     /**
@@ -218,7 +220,7 @@ public City(){
     public void lookupCountsOfRelated() throws SQLException {
         try (PreparedStatement preparedStatement = getDb().prepareStatement(
                 "select\n" +
-                        "(select count(*) from maps where maps.cityId = ?) as map_count,\n" +
+                        "(select count(*) from maps where maps.city_id = ?) as map_count,\n" +
                         "(select count(*) from attractions where attractions.city_id = ?) as attraction_count"
         )) {
             preparedStatement.setInt(1, this.getId());

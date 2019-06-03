@@ -53,7 +53,7 @@ public class Map extends Model {
     }
 
     public static List<Map> findAllByCityId(Integer cityId) throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where cityId = ? and verification = 1 order by title asc")) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where city_id = ? and verification = 1 order by title asc")) {
             preparedStatement.setInt(1, cityId);
             try (ResultSet rs = preparedStatement.executeQuery()) {
 
@@ -70,7 +70,7 @@ public class Map extends Model {
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
-        this.cityId = rs.getInt("cityId");
+        this.cityId = rs.getInt("city_id");
         this.title = rs.getString("title");
         this.description = rs.getString("description");
         this.version = rs.getString("version");
@@ -197,7 +197,7 @@ public class Map extends Model {
         }
 
         // insert map to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, description, img, cityId) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, description, img, city_id) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, this.getTitle());
             preparedStatement.setString(2, this.getVersion());
