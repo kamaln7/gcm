@@ -16,7 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
 import java.net.URL;
@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 public class AdminCitiesAndMapsController implements Initializable {
 
     @FXML
-    private Pane cityInfoPane;
+    private AnchorPane cityInfoPane;
 
     @FXML
     private ListView citiesList;
