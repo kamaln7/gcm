@@ -10,17 +10,16 @@ import java.util.UUID;
 
 public class AddMapCommand implements Command {
     public static class Input extends gcm.commands.Input {
-        private String title, description, version, city;
+        private String title, description, version;
         int cityId;
         private byte[] img;
 
-        public Input(String title, String description, String version, byte[] img, String city) {
+        public Input(String title, String description, String version, byte[] img, Integer cityId) {
             this.title = title;
             this.description = description;
             this.version = version;
             this.img = img;
-            this.city = city;
-
+            this.cityId = cityId;
         }
     }
 
@@ -39,7 +38,7 @@ public class AddMapCommand implements Command {
         String imageName = UUID.randomUUID().toString();
         Files.write(Paths.get(server.getFilesPath(), imageName), input.img);
 
-        Map map = new Map(input.title, input.description, input.version, imageName, input.city);
+        Map map = new Map(input.title, input.description, input.version, imageName, input.cityId);
         map.insert();
 
 

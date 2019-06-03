@@ -72,13 +72,12 @@ public class SearchCityOrAttractionController implements Initializable {
             } else {
                 this.city = item;
                 setText(String.format(
-                        "%s, %s\n\n%s maps\n%s attractions\n%s tours\n\n%s",
+                        "%s, %s\n\n%s maps\n%s attractions\n%s tours",
                         city.getName(),
                         city.getCountry(),
                         city._extraInfo.getOrDefault("mapCount", "X"),
                         city._extraInfo.getOrDefault("attractionCount", "X"),
-                        city._extraInfo.getOrDefault("tourCount", "X"),
-                        city.getDescription()
+                        city._extraInfo.getOrDefault("tourCount", "X")
                 ));
             }
         }

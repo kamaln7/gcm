@@ -1,7 +1,10 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
+import gcm.commands.ChangePriceCommand;
+import gcm.commands.FindCityCommand;
+import gcm.commands.Input;
+import gcm.commands.Response;
 import gcm.database.models.City;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,6 +29,7 @@ public class ChangePriceController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
     @FXML
     void getPrice(ActionEvent event) {
         String cityName = cityField.getText();
@@ -36,10 +40,10 @@ public class ChangePriceController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindCityCommand.Output output = response.getOutput(FindCityCommand.Output.class);
-            Double price1 = output.city.getPurchase_price();
-            Double price2 = output.city.getSubscription_price();
-            PurchasePriceField.setText(String.format("%.2f",price1));
-            SubPriceField.setText(String.format("%.2f",price2));
+            Double price1 = output.city.getPurchasePrice();
+            Double price2 = output.city.getSubscriptionPrice();
+            PurchasePriceField.setText(String.format("%.2f", price1));
+            SubPriceField.setText(String.format("%.2f", price2));
 
         } catch (City.NotFound e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
@@ -51,6 +55,7 @@ public class ChangePriceController {
 
 
     }
+
     @FXML
     void UpdatePrice(ActionEvent event) {
         String cityName = cityField.getText();
@@ -90,6 +95,7 @@ public class ChangePriceController {
     private TextField PurchasePriceField;
     @FXML
     private TextField SubPriceField;
+
     @FXML
     void back(ActionEvent event) {
         try {
@@ -98,8 +104,6 @@ public class ChangePriceController {
             e.printStackTrace();
         }
     }
-
-
 
 
 }
