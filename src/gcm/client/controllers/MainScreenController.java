@@ -34,6 +34,12 @@ public class MainScreenController implements Initializable {
     private Text userDetailsText;
 
     @FXML
+    private TabPane mainTabPane;
+
+    @FXML
+    private Tab subscriptionsTab;
+
+    @FXML
     private Pane cityInfoPane;
 
     @FXML
@@ -59,7 +65,13 @@ public class MainScreenController implements Initializable {
         ));
 
         // show admin tab if has access
-        adminTab.setDisable(!ClientGUI.getCurrentUser().hasRole("employee"));
+        if (!ClientGUI.getCurrentUser().hasRole("employee")) {
+            mainTabPane.getTabs().remove(adminTab);
+        }
+        // show subscriptions tab only if user is a user role
+        if (!ClientGUI.getCurrentUser().hasExactRole("user")) {
+            mainTabPane.getTabs().remove(subscriptionsTab);
+        }
         cityInfoPane.setOpacity(0);
 
         citiesList.setItems(citiesListItems);
@@ -90,8 +102,8 @@ public class MainScreenController implements Initializable {
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
+        primaryStage.setResizable(true);
         primaryStage.setTitle("GCM 2019");
-        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

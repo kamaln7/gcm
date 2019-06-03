@@ -259,6 +259,11 @@ public class User extends Model {
         this.updatedAt = updatedAt;
     }
 
+    public Boolean hasExactRole(String role) {
+        Integer userRole = ROLES.getOrDefault(getRole(), -1);
+
+        return userRole == ROLES.getOrDefault(role, -2);
+    }
 
     /**
      * @param role Role to check if user has access to
