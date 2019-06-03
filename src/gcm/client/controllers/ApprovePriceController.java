@@ -1,29 +1,28 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
+import gcm.commands.ApprovePriceCommand;
+import gcm.commands.Input;
+import gcm.commands.Response;
 import gcm.database.models.City;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.ResultSet;
-import java.util.ResourceBundle;
 
 public class ApprovePriceController {
     private ObservableList<City> oblist = FXCollections.observableArrayList();
+
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ApprovePrice.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -34,6 +33,7 @@ public class ApprovePriceController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
     @FXML
     void getPrice(ActionEvent event) {
 
@@ -42,7 +42,7 @@ public class ApprovePriceController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ApprovePriceCommand.Output output = response.getOutput(ApprovePriceCommand.Output.class);
-          //  System.out.println("amin"+output.result);
+            //  System.out.println("amin"+output.result);
 
 
         } catch (City.NotFound e) {
@@ -58,7 +58,6 @@ public class ApprovePriceController {
 
     @FXML
     private TableView tableList;
-
 
 
     @FXML
@@ -89,15 +88,6 @@ public class ApprovePriceController {
 
     }
 
-
-    @FXML
-    void back(ActionEvent event) {
-        try {
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 /*
 @Override
