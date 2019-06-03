@@ -38,7 +38,7 @@ public class City extends Model {
             return findAll();
         }
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where match (name, country, description) against (?) order by country, name asc")) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where match (name, country) against (?) order by country, name asc")) {
             preparedStatement.setString(1, searchQuery);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
