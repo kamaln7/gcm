@@ -96,15 +96,6 @@ public class ChangePriceController {
     @FXML
     private TextField SubPriceField;
 
-    @FXML
-    void back(ActionEvent event) {
-        try {
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
 }
 

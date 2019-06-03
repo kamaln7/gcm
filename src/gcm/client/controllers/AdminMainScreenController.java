@@ -1,6 +1,5 @@
 package gcm.client.controllers;
 
-import gcm.client.bin.ClientGUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
@@ -48,7 +47,7 @@ public class AdminMainScreenController {
     @FXML
     void changePrice(ActionEvent event) {
         try {
-            ChangePriceController.loadView(ClientGUI.getPrimaryStage());
+            ChangePriceController.loadView(new Stage());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,7 +57,7 @@ public class AdminMainScreenController {
     @FXML
     void Approve(ActionEvent event) {
         try {
-            ApprovePriceController.loadView(ClientGUI.getPrimaryStage());
+            ApprovePriceController.loadView(new Stage());
         } catch (Exception e) {
             e.printStackTrace();
         }
