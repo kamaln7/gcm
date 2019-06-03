@@ -108,7 +108,7 @@ public class Attraction extends Model {
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
-                    throw new Attraction.NotFound();
+                    throw new NotFound();
                 }
 
                 Attraction attraction = new Attraction(rs);
