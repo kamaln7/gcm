@@ -1,8 +1,6 @@
 package gcm.commands;
 
-import gcm.database.models.City;
 import gcm.database.models.Map;
-import gcm.database.models.User;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
@@ -20,8 +18,8 @@ public class AddMapCommand implements Command {
             this.title = title;
             this.description = description;
             this.version = version;
-            this.img=img;
-            this.city=city;
+            this.img = img;
+            this.city = city;
 
         }
     }
@@ -35,13 +33,13 @@ public class AddMapCommand implements Command {
     }
 
     @Override
-    public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception, City.NotFound {
+    public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
 
         String imageName = UUID.randomUUID().toString();
-        Files.write(Paths.get(imageName), input.img);
+        Files.write(Paths.get(server.getFilesPath(), imageName), input.img);
 
-        Map map = new Map(input.title,input.description,input.version, imageName, input.city);
+        Map map = new Map(input.title, input.description, input.version, imageName, input.city);
         map.insert();
 
 
