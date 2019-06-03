@@ -1,7 +1,6 @@
 package gcm.commands;
 
 import gcm.database.models.City;
-import gcm.database.models.Map;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
@@ -11,7 +10,8 @@ public class FindCityCommand implements Command {
         public String countryName;
 
         public Input(String city, String country) {
-            this.cityName = city; this.countryName=country;
+            this.cityName = city;
+            this.countryName = country;
         }
     }
 
@@ -26,7 +26,7 @@ public class FindCityCommand implements Command {
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
-        City city = City.findCity(input.cityName, input.countryName);
+        City city = City.findByNameAndCountry(input.cityName, input.countryName);
 
         return new Output(city);
     }
