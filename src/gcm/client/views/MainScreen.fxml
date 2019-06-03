@@ -16,13 +16,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="512.0" prefWidth="663.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.MainScreenController">
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="663.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.MainScreenController">
     <children>
         <BorderPane prefHeight="396.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
                 <AnchorPane prefHeight="34.0" prefWidth="488.0" BorderPane.alignment="CENTER">
                     <children>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="663.0">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="663.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="GCM">
                                     <font>
@@ -47,11 +47,16 @@
             <center>
                 <AnchorPane id="#mainContentAnchorPane" prefHeight="348.0" prefWidth="582.0" BorderPane.alignment="CENTER">
                     <children>
-                        <TabPane id="mainScreenTabPane" prefHeight="464.0" prefWidth="663.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TabPane id="mainScreenTabPane" fx:id="mainTabPane" prefHeight="464.0" prefWidth="663.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <tabs>
                                 <Tab text="Home">
                                     <content>
                                         <fx:include source="SearchCityOrAttraction.fxml" />
+                                    </content>
+                                </Tab>
+                                <Tab fx:id="subscriptionsTab" text="Subscriptions">
+                                    <content>
+                                        <fx:include source="UserSubscriptions.fxml" />
                                     </content>
                                 </Tab>
                                 <Tab text="Explore">
@@ -85,11 +90,11 @@
                                             <children>
                                                 <TabPane layoutX="14.0" layoutY="14.0" prefHeight="315.0" prefWidth="582.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <tabs>
-                                          <Tab text="Untitled Tab">
-                                            <content>
-                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                            </content>
-                                          </Tab>
+                                                        <Tab text="View Cities and Maps">
+                                                            <content>
+                                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                            </content>
+                                                        </Tab>
                                                         <Tab text="Worker">
                                                             <content>
                                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -112,17 +117,19 @@
                                                         <Tab fx:id="adminContentManagerTab" text="Content Manager">
                                                             <content>
                                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                   <children>
-                                                      <Button layoutX="34.0" layoutY="41.0" mnemonicParsing="false" onAction="#changePrice" prefHeight="31.0" prefWidth="111.0" text="Change Price" />
-                                                   </children></AnchorPane>
+                                                                    <children>
+                                                                        <Button layoutX="34.0" layoutY="41.0" mnemonicParsing="false" onAction="#changePrice" prefHeight="31.0" prefWidth="111.0" text="Change Price" />
+                                                                    </children>
+                                                                </AnchorPane>
                                                             </content>
                                                         </Tab>
                                                         <Tab fx:id="adminCompanyManagerTab" text="Company Manager">
                                                             <content>
                                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                   <children>
-                                                      <Button layoutX="38.0" layoutY="47.0" mnemonicParsing="false" onAction="#Approve" text="Approve Price Changes" />
-                                                   </children></AnchorPane>
+                                                                    <children>
+                                                                        <Button layoutX="38.0" layoutY="47.0" mnemonicParsing="false" onAction="#Approve" text="Approve Price Changes" />
+                                                                    </children>
+                                                                </AnchorPane>
                                                             </content>
                                                         </Tab>
                                                     </tabs>
