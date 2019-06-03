@@ -72,6 +72,7 @@ public class Server extends AbstractServer {
 
     @Override
     protected synchronized void clientDisconnected(ConnectionToClient client) {
+        logout(client);
         this.chatIF.displayf("Client [%s] [id=%s] disconnected", client, client.getInfo("id"));
     }
 
