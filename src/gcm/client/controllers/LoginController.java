@@ -68,6 +68,7 @@ public class LoginController implements Initializable {
         try {
             RegisterController.loadView(ClientGUI.getPrimaryStage());
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -77,6 +78,7 @@ public class LoginController implements Initializable {
             ClientGUI.setCurrentUser(User.fakeGuestUser());
             MainScreenController.loadView(ClientGUI.getPrimaryStage());
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,21 +1,20 @@
 package gcm.database.models;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Map extends Model {
     // fields
     private Integer id, cityId, verification; // 1 is verified 0 is not verified
     private String title, description, version, img, cityName;
     private Date createdAt, updatedAt;
+
     // create User object with info from ResultSet
     public Map(ResultSet rs) throws SQLException {
         super();
@@ -34,22 +33,39 @@ public class Map extends Model {
         this.img = img;
 
     }
+
     public Map(String title, String description, String version, String img, String cityName) {
 
         this.title = title;
         this.description = description;
         this.version = version;
         this.img = img;
-        this.cityName= cityName;
+        this.cityName = cityName;
 
     }
-    public Map(String title, String description, String version, String img, int cityId) {
 
+    public Map(String title, String description, String version, String img, int cityId) {
         this.title = title;
         this.description = description;
         this.version = version;
         this.img = img;
-        this.cityId=cityId;
+        this.cityId = cityId;
+    }
+
+    public static List<Map> findAllByCityId(Integer cityId) throws SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where cityId = ? and verification = 1 order by title asc")) {
+            preparedStatement.setInt(1, cityId);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+
+                List<Map> maps = new ArrayList<>();
+                while (rs.next()) {
+                    Map map = new Map(rs);
+                    maps.add(map);
+                }
+
+                return maps;
+            }
+        }
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -61,7 +77,7 @@ public class Map extends Model {
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
         this.img = rs.getString("img");
-        this.verification= rs.getInt("verification");
+        this.verification = rs.getInt("verification");
     }
 
 
@@ -94,7 +110,7 @@ public class Map extends Model {
     /**
      * Find a user by its username
      *
-     * @param username The username to find
+     * @param title The username to find
      * @return User The requested user
      * @throws SQLException
      * @throws NotFound     if no such user
@@ -155,12 +171,12 @@ public class Map extends Model {
     public void insert() throws SQLException, Map.NotFound, Map.AlreadyExists, City.NotFound {
 
         //check if the city already exist
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM maps WHERE title = ? AND version = ?")){
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM maps WHERE title = ? AND version = ?")) {
             preparedStatement.setString(1, this.getTitle());
             preparedStatement.setString(2, this.getVersion());
             //query
-            try(ResultSet rs = preparedStatement.executeQuery()) {
-                if (rs.next()){
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
                     throw new Map.AlreadyExists();
                 }
             }
@@ -177,7 +193,7 @@ public class Map extends Model {
             if (!rs.next()) {
                 throw new City.NotFound();
             }
-            this.cityId= rs.getInt("id");
+            this.cityId = rs.getInt("id");
         }
 
         // insert map to table
@@ -202,12 +218,13 @@ public class Map extends Model {
     }
 
 
-
     // exceptions
     public static class NotFound extends Exception {
     }
+
     public static class AlreadyExists extends Exception {
     }
+
     public static class WrongType extends Exception {
     }
 
@@ -260,6 +277,7 @@ public class Map extends Model {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
     public String getImg() {
         return img;
     }
@@ -267,6 +285,7 @@ public class Map extends Model {
     public void setImg(String img) {
         this.img = img;
     }
+
     public Integer getCityId() {
         return cityId;
     }

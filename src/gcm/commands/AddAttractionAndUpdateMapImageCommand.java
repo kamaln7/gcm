@@ -1,7 +1,6 @@
 package gcm.commands;
 
 import gcm.database.models.Attraction;
-import gcm.database.models.City;
 import gcm.database.models.Map;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
@@ -52,9 +51,7 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
 
         mapToUpdate.updateImage(imageName, input.map_version, input.map_title);
 
-        City city = City.findById(mapToUpdate.getCityId());
-
-        Attraction attraction = new Attraction(input.attraction_name, city.getName(), input.attraction_type, input.getAttraction_location);
+        Attraction attraction = new Attraction(input.attraction_name, mapToUpdate.getCityId(), input.attraction_type, input.getAttraction_location);
         attraction.insert();
 
         return new Output();
