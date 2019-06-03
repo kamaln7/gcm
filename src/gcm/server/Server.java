@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -134,11 +135,12 @@ public class Server extends AbstractServer {
 
     public void logout(ConnectionToClient client) {
         Integer id = (Integer) client.getInfo("userId");
+        chatIF.displayf("Client [%s] logged out userId=%s", client, String.valueOf(id));
         if (id == null) {
             return;
         }
 
-        loggedInUserIds.remove(id);
+        loggedInUserIds.removeAll(Arrays.asList(id));
         client.setInfo("userId", null);
     }
 
