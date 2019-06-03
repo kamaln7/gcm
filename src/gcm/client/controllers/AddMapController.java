@@ -34,9 +34,9 @@ public class AddMapController {
     @FXML
     private TextField title_field;
 
-
     @FXML
     private TextField city_field;
+    private City city;
 
     @FXML
     private TextField version_field;
@@ -63,7 +63,7 @@ public class AddMapController {
         String description = description_field.getText();
         String title = title_field.getText();
         String version = version_field.getText();
-        Integer cityId = Integer.valueOf(city_field.getText());
+        Integer cityId = city.getId();
 
 
         Input input = new AddMapCommand.Input(title, description, version, imageBytes, cityId);
@@ -130,5 +130,15 @@ public class AddMapController {
 //        }
     }
 
+    public void openCityPicker(ActionEvent actionEvent) {
+        try {
+            City city = AdminTablePickerCityController.loadViewAndWait(new Stage());
+            this.city = city;
+            city_field.setText(city.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
+    }
 }
 
