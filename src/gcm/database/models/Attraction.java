@@ -11,6 +11,7 @@ import java.util.List;
 public class Attraction extends Model {
     // fields
     private Integer id, cityId;
+    private Boolean accessibleSpecial;
     private String name, description, type, location;
     private Date createdAt, updatedAt;
 
@@ -21,13 +22,14 @@ public class Attraction extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public Attraction(String name, Integer cityId, String type, String location) {
-        this.name = name;
+    public Attraction(Integer cityId, Boolean accessibleSpecial, String name, String description, String type, String location) {
         this.cityId = cityId;
+        this.accessibleSpecial = accessibleSpecial;
+        this.name = name;
+        this.description = description;
         this.type = type;
         this.location = location;
     }
-
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
@@ -35,6 +37,7 @@ public class Attraction extends Model {
         this.cityId = rs.getInt("city_id");
         this.location = rs.getString("location");
         this.type = rs.getString("type");
+        this.accessibleSpecial = rs.getBoolean("accessible_special");
         this.description = rs.getString("description");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
@@ -116,18 +119,33 @@ public class Attraction extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into attractions (name, city_id, type, location, description) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into attractions (name, city_id, type, location, description, accessible_special) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getName());
             preparedStatement.setInt(2, this.getCityId());
             preparedStatement.setString(3, this.getType());
             preparedStatement.setString(4, this.getLocation());
             preparedStatement.setString(5, this.getDescription());
+            preparedStatement.setBoolean(6, this.getAccessibleSpecial());
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
             ResultSet rs = preparedStatement.getGeneratedKeys();
             if (!rs.next()) {
                 throw new NotFound();
+            }
+
+            // find the new attraction details
+            Integer id = rs.getInt(1);
+            try (PreparedStatement preparedStatement1 = getDb().prepareStatement("select * from attractions where id = ?")) {
+                preparedStatement1.setInt(1, id);
+
+                try (ResultSet rs1 = preparedStatement1.executeQuery()) {
+                    if (!rs1.next()) {
+                        throw new NotFound();
+                    }
+
+                    this.fillFieldsFromResultSet(rs1);
+                }
             }
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new Attraction.AlreadyExists();
@@ -206,5 +224,13 @@ public class Attraction extends Model {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Boolean getAccessibleSpecial() {
+        return accessibleSpecial;
+    }
+
+    public void setAccessibleSpecial(Boolean accessibleSpecial) {
+        this.accessibleSpecial = accessibleSpecial;
     }
 }
