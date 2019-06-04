@@ -47,6 +47,9 @@ public class ClientGUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         setPrimaryStage(primaryStage);
 
+        LoginController.loadView(primaryStage);
+        client.chatIF.display("Started GUI");
+
         primaryStage.setOnCloseRequest(t -> {
             try {
                 client.logout();
@@ -57,8 +60,5 @@ public class ClientGUI extends Application {
             Platform.exit();
             System.exit(0);
         });
-
-        LoginController.loadView(primaryStage);
-        client.chatIF.display("Started GUI");
     }
 }
