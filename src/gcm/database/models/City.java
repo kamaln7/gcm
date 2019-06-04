@@ -111,20 +111,16 @@ public class City extends Model {
         }
     }
 
-    public static City changePrice(String cityName, String countryName, double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE name = ? AND country = ?")) {
+    public void changePrice(double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE id = ?")) {
             preparedStatement.setDouble(1, new_purchase_price);
             preparedStatement.setDouble(2, new_sub_price);
-            preparedStatement.setString(3, cityName);
-            preparedStatement.setString(4, countryName);
+            preparedStatement.setInt(3, getId());
 
             int status = preparedStatement.executeUpdate();
             if (status == 0) {
                 throw new NotFound();
             }
-            City city = findByNameAndCountry(cityName, countryName);
-            return city;
-
         }
     }
 
