@@ -12,12 +12,12 @@ import java.util.UUID;
 
 public class AddAttractionAndUpdateMapImageCommand implements Command {
     public static class Input extends gcm.commands.Input {
-        public String map_title, map_version, attraction_type, attraction_name, getAttraction_location;
+        public Integer mapId;
+        public String attraction_type, attraction_name, getAttraction_location;
         byte[] new_map_image;
 
-        public Input(String map_title, String map_version, String attraction_type, String attraction_name, String getAttraction_location, byte[] new_map_image) {
-            this.map_title = map_title;
-            this.map_version = map_version;
+        public Input(Integer mapId, String attraction_type, String attraction_name, String getAttraction_location, byte[] new_map_image) {
+            this.mapId = mapId;
             this.attraction_type = attraction_type;
             this.attraction_name = attraction_name;
             this.getAttraction_location = getAttraction_location;
@@ -26,12 +26,6 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
     }
 
     public static class Output extends gcm.commands.Output {
-        public Map map;
-
-        public Output(Map map) {
-            this.map = map;
-        }
-
         public Output() {
         }
     }
@@ -43,13 +37,12 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
         String imageName = UUID.randomUUID().toString();
         Files.write(Paths.get(server.getFilesPath(), imageName), input.new_map_image);
 
-        Map mapToUpdate = Map.findByTitleAndVersion(input.map_title, input.map_version);
+        Map mapToUpdate = Map.findById(input.mapId);
         //delete the old file from the server
         File file = new File(server.getFilesPath(), mapToUpdate.getImg());
         file.delete();
 
-
-        mapToUpdate.updateImage(imageName, input.map_version, input.map_title);
+        mapToUpdate.updateImage(imageName);
 
         Attraction attraction = new Attraction(mapToUpdate.getCityId(), input.attraction_name, "description here", input.attraction_type, input.getAttraction_location, false);
         attraction.insert();

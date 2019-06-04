@@ -2,8 +2,8 @@ package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
 import gcm.commands.AddAttractionAndUpdateMapImageCommand;
-import gcm.commands.FindMapByTitleAndVersionCommand;
 import gcm.commands.Input;
+import gcm.commands.ReadMapImageById;
 import gcm.commands.Response;
 import gcm.database.models.Attraction;
 import gcm.database.models.Map;
@@ -39,14 +39,6 @@ public class AddAttractionController {
     @FXML
     private ImageView mapImg;
 
-
-    @FXML
-    private TextField map_title_field;
-
-    @FXML
-    private TextField map_version_field;
-
-
     @FXML
     private TextField Xcord;
 
@@ -62,11 +54,15 @@ public class AddAttractionController {
     @FXML
     private TextField attraction_location_field;
 
+    private Map map;
+
+    @FXML
+    private TextField mapTF;
+
     private int X;
     private int Y;
 
     public void initialize() {
-
         attraction_choiceBox.getItems().add("Museum");
         attraction_choiceBox.getItems().add("Temple");
         attraction_choiceBox.getItems().add("Sex Shop");
@@ -102,19 +98,14 @@ public class AddAttractionController {
     }
 
     @FXML
-    void showMap(ActionEvent event) {
+    void chooseMap(ActionEvent event) {
         try {
-            AdminTablePickerMapController.loadViewAndWait(new Stage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (1 != 2) {
-            return;
-        }
-        Input input = new FindMapByTitleAndVersionCommand.Input(map_title_field.getText(), map_version_field.getText());
-        try {
+            this.map = AdminTablePickerMapController.loadViewAndWait(new Stage());
+            this.mapTF.setText(String.format("%s - %s", this.map.getTitle(), this.map._extraInfo.get("cityTitle")));
+
+            Input input = new ReadMapImageById.Input(this.map.getId());
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            FindMapByTitleAndVersionCommand.Output output = response.getOutput(FindMapByTitleAndVersionCommand.Output.class);
+            ReadMapImageById.Output output = response.getOutput(ReadMapImageById.Output.class);
 
             BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(output.imgBytes));
             Image image = SwingFXUtils.toFXImage(bImage, null);
@@ -140,12 +131,10 @@ public class AddAttractionController {
                     Image image2 = SwingFXUtils.toFXImage(bImage2, null);
                     mapImg.setImage(image2);
                     s.close();
-                    Input input2 = new AddAttractionAndUpdateMapImageCommand.Input(map_title_field.getText(), map_version_field.getText(),
-                            attraction_choiceBox.getValue(), attraction_name_field.getText(), attraction_location_field.getText(), res);
+                    Input input2 = new AddAttractionAndUpdateMapImageCommand.Input(this.map.getId(), attraction_choiceBox.getValue(), attraction_name_field.getText(), attraction_location_field.getText(), res);
 
                     Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
-                    AddAttractionAndUpdateMapImageCommand.Output output2 = response2.getOutput(AddAttractionAndUpdateMapImageCommand.Output.class);
-
+                    response2.getOutput(AddAttractionAndUpdateMapImageCommand.Output.class);
                 } catch (Attraction.AlreadyExists x) {
                     Alert alert2 = new Alert(Alert.AlertType.ERROR, "attraction already exist");
                     alert2.show();

@@ -38,7 +38,6 @@ public class AdminTablePickerMapController implements Initializable {
     private TreeTableColumn<Object, String> publishedCol;
     @FXML
     private TreeTableColumn<Object, Void> buttonCol;
-//    private ObservableList<Map> maps = FXCollections.observableArrayList();
 
     private Map map;
 
@@ -76,7 +75,9 @@ public class AdminTablePickerMapController implements Initializable {
                     @Override
                     public void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (empty || !(this.getTreeTableRow().getItem() instanceof Map)) {
+                        if (empty) {
+                            setGraphic(null);
+                        } else if (this.getTreeTableRow().getItem() instanceof WorkaroundCityThing) {
                             setGraphic(null);
                         } else {
                             setGraphic(btn);
