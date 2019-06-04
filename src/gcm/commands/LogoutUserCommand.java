@@ -13,7 +13,6 @@ public class LogoutUserCommand implements Command {
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) {
         server.logout(client);
-        server.getChatIF().displayf("Client [%s] logged out", client);
 
         return new Output();
     }
