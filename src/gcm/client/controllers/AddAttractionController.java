@@ -76,7 +76,7 @@ public class AddAttractionController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+//        chooseMap(null);
     }
 
     public static void loadView(Stage primaryStage) throws IOException {
