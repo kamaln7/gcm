@@ -2,7 +2,6 @@ package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
 import gcm.commands.ChangePriceCommand;
-import gcm.commands.FindCityCommand;
 import gcm.commands.Input;
 import gcm.commands.Response;
 import gcm.database.models.City;
@@ -19,57 +18,34 @@ import java.io.IOException;
 import java.net.URL;
 
 public class ChangePriceController {
+    private City city;
+    @FXML
+    private TextField cityField;
+
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ChangePrice.fxml");
         AnchorPane pane = FXMLLoader.load(url);
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Change City Price");
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
     @FXML
-    void getPrice(ActionEvent event) {
-        String cityName = cityField.getText();
-        String countyName = countryField.getText();
-
-        Input input = new FindCityCommand.Input(cityName, countyName);
-
-        try {
-            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            FindCityCommand.Output output = response.getOutput(FindCityCommand.Output.class);
-            Double price1 = output.city.getPurchasePrice();
-            Double price2 = output.city.getSubscriptionPrice();
-            PurchasePriceField.setText(String.format("%.2f", price1));
-            SubPriceField.setText(String.format("%.2f", price2));
-
-        } catch (City.NotFound e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
-            alert.show();
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }
-
-
-    }
-
-    @FXML
     void UpdatePrice(ActionEvent event) {
-        String cityName = cityField.getText();
-        String countyName = countryField.getText();
         double new_purchase_price = Double.parseDouble(NewPurchasePriceField.getText());
         double new_sub_price = Double.parseDouble(NewSubPriceField.getText());
 
-        Input input = new ChangePriceCommand.Input(cityName, countyName, new_purchase_price, new_sub_price);
+        Input input = new ChangePriceCommand.Input(this.city.getId(), new_purchase_price, new_sub_price);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            ChangePriceCommand.Output output = response.getOutput(ChangePriceCommand.Output.class);
+            response.getOutput(ChangePriceCommand.Output.class);
 
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
+            new Alert(Alert.AlertType.INFORMATION, "Price change request sent!").showAndWait();
+            ((Stage) NewPurchasePriceField.getScene().getWindow()).close();
         } catch (City.NotFound e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
             alert.show();
@@ -78,13 +54,6 @@ public class ChangePriceController {
             e.printStackTrace();
         }
     }
-
-    @FXML
-    private TextField cityField;
-
-
-    @FXML
-    private TextField countryField;
 
     @FXML
     private TextField NewSubPriceField;
@@ -96,6 +65,19 @@ public class ChangePriceController {
     @FXML
     private TextField SubPriceField;
 
-
+    public void openCityPicker(ActionEvent actionEvent) {
+        try {
+            City city = AdminTablePickerCityController.loadViewAndWait(new Stage());
+            this.city = city;
+            cityField.setText(city.toString());
+            PurchasePriceField.setText(String.format("%.2f", this.city.getPurchasePrice()));
+            SubPriceField.setText(String.format("%.2f", this.city.getSubscriptionPrice()));
+            NewPurchasePriceField.setText(String.format("%.2f", this.city.getNewPurchasePrice()));
+            NewSubPriceField.setText(String.format("%.2f", this.city.getNewSubscriptionPrice()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
+    }
 }
 
