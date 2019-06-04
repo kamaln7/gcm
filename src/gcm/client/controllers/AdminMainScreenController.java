@@ -1,5 +1,6 @@
 package gcm.client.controllers;
 
+import gcm.client.bin.ClientGUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
@@ -12,6 +13,7 @@ public class AdminMainScreenController {
         try {
             AddCityController.loadView(new Stage());
         } catch (IOException e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
@@ -21,6 +23,7 @@ public class AdminMainScreenController {
         try {
             AddMapController.loadView(new Stage());
         } catch (IOException e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
@@ -30,6 +33,7 @@ public class AdminMainScreenController {
         try {
             MapEditOptionsController.loadView(new Stage());
         } catch (IOException e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
@@ -39,6 +43,7 @@ public class AdminMainScreenController {
         try {
             GetMapController.loadView(new Stage());
         } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
@@ -49,6 +54,7 @@ public class AdminMainScreenController {
         try {
             ChangePriceController.loadView(new Stage());
         } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
@@ -59,9 +65,18 @@ public class AdminMainScreenController {
         try {
             ApprovePriceController.loadView(new Stage());
         } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
 
+    public void addAttraction(ActionEvent actionEvent) {
+        try {
+            AddAttractionController.loadView(new Stage());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+    }
 }
 

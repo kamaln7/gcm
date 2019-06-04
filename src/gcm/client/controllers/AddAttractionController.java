@@ -1,11 +1,12 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
+import gcm.commands.AddAttractionAndUpdateMapImageCommand;
+import gcm.commands.FindMapByTitleAndVersionCommand;
+import gcm.commands.Input;
+import gcm.commands.Response;
 import gcm.database.models.Attraction;
 import gcm.database.models.Map;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,10 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import sun.plugin2.util.ColorUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -31,7 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static java.awt.Color.*;
+import static java.awt.Color.BLACK;
 
 public class AddAttractionController {
 
@@ -56,7 +54,7 @@ public class AddAttractionController {
     private TextField Ycord;
 
     @FXML
-    public ChoiceBox<String>  attraction_choiceBox;
+    public ChoiceBox<String> attraction_choiceBox;
 
     @FXML
     private TextField attraction_name_field;
@@ -67,7 +65,7 @@ public class AddAttractionController {
     private int X;
     private int Y;
 
-    public void initialize(){
+    public void initialize() {
 
         attraction_choiceBox.getItems().add("Museum");
         attraction_choiceBox.getItems().add("Temple");
@@ -76,7 +74,7 @@ public class AddAttractionController {
         attraction_choiceBox.getItems().add("Stadium");
         attraction_choiceBox.setValue("null");
         try {
-            BufferedImage bufferedImage= ImageIO.read(new File("thumb-1920-44975.jpg"));
+            BufferedImage bufferedImage = ImageIO.read(new File("thumb-1920-44975.jpg"));
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
             mapImg.setImage(image);
         } catch (IOException e) {
@@ -95,6 +93,7 @@ public class AddAttractionController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
     @FXML
     void finishJop(ActionEvent event) {
         Stage stage = (Stage) pane.getScene().getWindow();
@@ -104,6 +103,14 @@ public class AddAttractionController {
 
     @FXML
     void showMap(ActionEvent event) {
+        try {
+            AdminTablePickerMapController.loadViewAndWait(new Stage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (1 != 2) {
+            return;
+        }
         Input input = new FindMapByTitleAndVersionCommand.Input(map_title_field.getText(), map_version_field.getText());
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -115,11 +122,11 @@ public class AddAttractionController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please fill the fields down below, \nbefore you click on the map image!");
             alert.show();
             mapImg.setOnMouseClicked(e -> {
-                System.out.println("["+e.getX()+", "+e.getY()+"]");
+                System.out.println("[" + e.getX() + ", " + e.getY() + "]");
                 Xcord.setText(String.valueOf(e.getX()));
                 Ycord.setText(String.valueOf(e.getY()));
-                X=(int) Math.round(e.getX());
-                Y=(int) Math.round(e.getY());
+                X = (int) Math.round(e.getX());
+                Y = (int) Math.round(e.getY());
                 //Circle c = new Circle(e.getX(), e.getY(), 5, javafx.scene.paint.Color.RED);
                 //pane.getChildren().add(c);
                 mapImg.setOnMouseClicked(null);
@@ -134,15 +141,15 @@ public class AddAttractionController {
                     mapImg.setImage(image2);
                     s.close();
                     Input input2 = new AddAttractionAndUpdateMapImageCommand.Input(map_title_field.getText(), map_version_field.getText(),
-                            attraction_choiceBox.getValue(), attraction_name_field.getText(),attraction_location_field.getText(),res);
+                            attraction_choiceBox.getValue(), attraction_name_field.getText(), attraction_location_field.getText(), res);
 
                     Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
                     AddAttractionAndUpdateMapImageCommand.Output output2 = response2.getOutput(AddAttractionAndUpdateMapImageCommand.Output.class);
 
-                }catch (Attraction.AlreadyExists x){
+                } catch (Attraction.AlreadyExists x) {
                     Alert alert2 = new Alert(Alert.AlertType.ERROR, "attraction already exist");
                     alert2.show();
-                }catch (Exception e1){
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             });
@@ -157,7 +164,7 @@ public class AddAttractionController {
 
     }
 
-    private BufferedImage  createImageWithText() throws IOException {
+    private BufferedImage createImageWithText() throws IOException {
 
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(mapImg.getImage(), null);
         Graphics2D g2d = bufferedImage.createGraphics();
@@ -165,7 +172,7 @@ public class AddAttractionController {
 
 
         g2d.setFont(new Font("SansSerif", Font.BOLD, 60));
-        g2d.drawString("•"+attraction_choiceBox.getValue().charAt(0),bufferedImage.getWidth()*X/672, bufferedImage.getHeight()*Y/376);
+        g2d.drawString("•" + attraction_choiceBox.getValue().charAt(0), bufferedImage.getWidth() * X / 672, bufferedImage.getHeight() * Y / 376);
 
         //ImageIO.write(bufferedImage, "png", new File("afterAdding.png") );
         g2d.dispose();

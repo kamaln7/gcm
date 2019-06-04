@@ -5,10 +5,8 @@ import gcm.client.controllers.LoginController;
 import gcm.database.models.User;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class ClientGUI extends Application {
     private static Client client;
@@ -49,18 +47,15 @@ public class ClientGUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         setPrimaryStage(primaryStage);
 
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                try {
-                    client.logout();
-                    client.stop();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Platform.exit();
-                System.exit(0);
+        primaryStage.setOnCloseRequest(t -> {
+            try {
+                client.logout();
+                client.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            Platform.exit();
+            System.exit(0);
         });
 
         LoginController.loadView(primaryStage);
