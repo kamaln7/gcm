@@ -68,9 +68,7 @@ public class Map extends Model {
     }
 
 
-
     /* QUERIES */
-
     public static Map findById(Integer id) throws Exception {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where id = ?")) {
             preparedStatement.setInt(1, id);
@@ -112,6 +110,23 @@ public class Map extends Model {
                 }
                 Map map = new Map(rs);
                 return map;
+            }
+        }
+    }
+
+    public static List<Map> findAllWithCityTitle() throws SQLException {
+        try (Statement statement = getDb().createStatement()) {
+            try (ResultSet rs = statement.executeQuery("select maps.*, concat(cities.name, \", \", cities.country) as city_title\n" +
+                    "from maps\n" +
+                    "left join cities\n" +
+                    "on maps.city_id = cities.id")) {
+                ArrayList<Map> maps = new ArrayList<>();
+                while (rs.next()) {
+                    Map map = new Map(rs);
+                    map._extraInfo.put("cityTitle", rs.getString("city_title"));
+                    maps.add(map);
+                }
+                return maps;
             }
         }
     }
