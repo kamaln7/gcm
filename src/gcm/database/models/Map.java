@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Map extends Model {
     // fields
@@ -54,6 +57,44 @@ public class Map extends Model {
             }
         }
     }
+
+    public static java.util.Map<Integer, List<Map>> findAllForCities(Set<Integer> cityIds) throws SQLException {
+        if (cityIds.isEmpty()) {
+            return new java.util.HashMap<>();
+        }
+
+        List<Integer> cityIdsList = new ArrayList<>(cityIds);
+
+
+        String query = String.format(
+                "select * from maps where city_id in (%s) order by title asc",
+                IntStream
+                        .range(0, cityIds.size())
+                        .mapToObj(s -> "?")
+                        .collect(Collectors.joining(", "))
+        );
+
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+            // bind ids
+            int bound = cityIds.size();
+            for (int i = 0; i < bound; i++) {
+                preparedStatement.setInt(i + 1, cityIdsList.get(i));
+            }
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Map> maps = new ArrayList<>();
+                while (rs.next()) {
+                    Map map = new Map(rs);
+                    maps.add(map);
+                }
+
+                return maps
+                        .stream()
+                        .collect(Collectors.groupingBy(Map::getCityId));
+            }
+        }
+    }
+
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");

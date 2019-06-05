@@ -53,6 +53,11 @@ public class CityDetailCardController extends AnchorPane {
     }
 
     public void setMaps(List<Map> maps) {
+        if (maps == null) {
+            mapsTilePane.getChildren().clear();
+            return;
+        }
+
         mapsTilePane.getChildren().setAll(
                 maps
                         .parallelStream()

@@ -6,19 +6,19 @@ import gcm.commands.Response;
 import gcm.commands.SearchCityOrAttractionCommand;
 import gcm.database.models.Attraction;
 import gcm.database.models.City;
+import gcm.database.models.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class SearchCityOrAttractionController implements Initializable {
     @FXML
@@ -35,9 +35,14 @@ public class SearchCityOrAttractionController implements Initializable {
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
         citiesList.setItems(citiesListItems);
-        citiesList.setCellFactory((Callback<ListView<City>, CityListCell>) listView -> new CityListCell());
+        citiesList.setCellFactory((Callback<ListView<CityWithMapsList>, CityListCell>) listView -> new CityListCell() {
+            {
+                prefWidthProperty().bind(citiesList.widthProperty().subtract(4));
+                setMaxWidth(Control.USE_PREF_SIZE);
+            }
+        });
         attractionsList.setItems(attractionsListItems);
-        attractionsList.setCellFactory((Callback<ListView<City>, AttractionListCell>) listView -> new AttractionListCell());
+        attractionsList.setCellFactory((Callback<ListView<CityWithMapsList>, AttractionListCell>) listView -> new AttractionListCell());
     }
 
     @FXML
@@ -53,7 +58,12 @@ public class SearchCityOrAttractionController implements Initializable {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             SearchCityOrAttractionCommand.Output output = response.getOutput(SearchCityOrAttractionCommand.Output.class);
 
-            citiesListItems.setAll(output.cities);
+            citiesListItems.setAll(
+                    output.cities
+                            .parallelStream()
+                            .map(c -> new CityWithMapsList(output.cityMaps.get(c.getId()), c))
+                            .collect(Collectors.toList())
+            );
             attractionsListItems.setAll(output.attractions);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,24 +71,20 @@ public class SearchCityOrAttractionController implements Initializable {
         }
     }
 
-    static class CityListCell extends ListCell<City> {
-        protected City city;
-
+    static class CityListCell extends ListCell<CityWithMapsList> {
         @Override
-        protected void updateItem(City item, boolean empty) {
-            super.updateItem(item, empty);
+        protected void updateItem(CityWithMapsList city, boolean empty) {
+            super.updateItem(city, empty);
+
             if (empty) {
-                setText(null);
+                setGraphic(null);
             } else {
-                this.city = item;
-                setText(String.format(
-                        "%s, %s\n\n%s maps\n%s attractions\n%s tours",
-                        city.getName(),
-                        city.getCountry(),
-                        city._extraInfo.getOrDefault("mapCount", "X"),
-                        city._extraInfo.getOrDefault("attractionCount", "X"),
-                        city._extraInfo.getOrDefault("tourCount", "X")
-                ));
+                CityDetailCardController cdc = new CityDetailCardController();
+                cdc.setCity(city.getCity());
+                cdc.setMaps(city.maps);
+                cdc.prefWidthProperty().bind(widthProperty().subtract(30));
+                cdc.setMaxWidth(Control.USE_PREF_SIZE);
+                setGraphic(cdc);
             }
         }
     }
@@ -95,6 +101,24 @@ public class SearchCityOrAttractionController implements Initializable {
                 this.attraction = item;
                 setText(String.format("%s", attraction.getName()));
             }
+        }
+    }
+
+    private static class CityWithMapsList {
+        private List<Map> maps;
+        private City city;
+
+        public CityWithMapsList(List<Map> maps, City city) {
+            this.maps = maps;
+            this.city = city;
+        }
+
+        public List<Map> getMaps() {
+            return maps;
+        }
+
+        public City getCity() {
+            return city;
         }
     }
 }
