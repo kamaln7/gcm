@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="111.0" prefWidth="135.0" style="-fx-border-color: #666; -fx-border-style: solid; -fx-border-width: 1px; -fx-border-radius: 2px;" stylesheets="@../stylesheets/main.css" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <VBox prefHeight="111.0" prefWidth="135.0" spacing="5.0">
+            <children>
+                <Text fx:id="titleText" strokeType="OUTSIDE" strokeWidth="0.0" text="Title">
+                    <font>
+                        <Font name="Tahoma Bold" size="13.0" />
+                    </font>
+                </Text>
+                <TextFlow prefHeight="94.0" prefWidth="138.0">
+                    <Text fx:id="descriptionText" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+                </TextFlow>
+            </children>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+        </VBox>
+    </children>
+</fx:root>
