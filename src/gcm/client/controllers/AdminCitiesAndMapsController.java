@@ -11,18 +11,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.TilePane;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class AdminCitiesAndMapsController implements Initializable {
+
+    @FXML
+    private TilePane tilePaneTemp;
 
     @FXML
     private AnchorPane cityInfoPane;
@@ -77,6 +83,19 @@ public class AdminCitiesAndMapsController implements Initializable {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindMapsByCityIdCommand.Output output = response.getOutput(FindMapsByCityIdCommand.Output.class);
+
+            {
+                CityDetailCardController cdc = new CityDetailCardController();
+                cdc.setCity(city);
+                cdc.setMaps(output.maps);
+                Scene scene = new Scene(cdc);
+                // setting the stage
+                Stage primaryStage = new Stage();
+                primaryStage.setScene(scene);
+                primaryStage.setResizable(true);
+                primaryStage.setTitle("GCM 2019");
+                primaryStage.show();
+            }
 
             cityMapsListItems.setAll(output.maps);
 
