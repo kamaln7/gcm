@@ -140,6 +140,15 @@ public class Map extends Model {
         }
     }
 
+    public void updateDescriptionAndTitle() throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE maps SET title = ?, description = ? WHERE id = ?")) {
+            preparedStatement.setString(1,this.title);
+            preparedStatement.setString(2, this.description);
+            preparedStatement.setInt(3, this.id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
 
     public void insert() throws SQLException, NotFound {
         // insert map to table
