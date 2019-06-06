@@ -110,6 +110,32 @@ public class City extends Model {
             }
         }
     }
+    public static City approvePrice(int id) /*, double new_purchase_price, double new_subscription_price)*/ throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET purchase_price = new_purchase_price , subscription_price = new_sub_price, new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
+            preparedStatement.setInt(1, id);
+
+            int status = preparedStatement.executeUpdate();
+            if (status == 0) {
+                throw new NotFound();
+            }
+            City city = findById(id);
+            return city;
+        }
+    }
+
+    public static City declinePrice(int id) /*, double new_purchase_price, double new_subscription_price)*/ throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
+
+            preparedStatement.setInt(1, id);
+
+            int status = preparedStatement.executeUpdate();
+            if (status == 0) {
+                throw new NotFound();
+            }
+            City city = findById(id);
+            return city;
+        }
+    }
 
     public void changePrice(double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE id = ?")) {
