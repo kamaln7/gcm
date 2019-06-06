@@ -45,7 +45,7 @@ public class ChangePriceController {
             response.getOutput(ChangePriceCommand.Output.class);
 
             new Alert(Alert.AlertType.INFORMATION, "Price change request sent!").showAndWait();
-            ((Stage) NewPurchasePriceField.getScene().getWindow()).close();
+           // ((Stage) NewPurchasePriceField.getScene().getWindow()).close();
         } catch (City.NotFound e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
             alert.show();
