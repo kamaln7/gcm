@@ -158,6 +158,21 @@ public class Attraction extends Model {
         }
     }
 
+    public static List<Attraction> getAttractionForCity(int city_id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM attractions WHERE city_id = ?")) {
+            preparedStatement.setInt(1,city_id);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Attraction> attractions = new ArrayList<>();
+                while (rs.next()) {
+                    Attraction attraction = new Attraction(rs);
+                    attractions.add(attraction);
+                }
+
+                return attractions;
+            }
+        }
+    }
+
 
     // exceptions
     public static class NotFound extends Exception {
