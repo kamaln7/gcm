@@ -78,5 +78,15 @@ public class AdminMainScreenController {
             e.printStackTrace();
         }
     }
+    @FXML
+    void addExistingAttraction(ActionEvent event) {
+        try {
+            AddExistingAttractionToMapController.loadView(new Stage());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+    }
+
 }
 
