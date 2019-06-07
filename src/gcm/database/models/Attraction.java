@@ -60,6 +60,21 @@ public class Attraction extends Model {
         }
     }
 
+    public static List<Attraction> findAllByCityId(Integer cityId) throws SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where city_id = ? order by name asc")) {
+            preparedStatement.setInt(1, cityId);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Attraction> attractions = new ArrayList<>();
+                while (rs.next()) {
+                    Attraction attraction = new Attraction(rs);
+                    attractions.add(attraction);
+                }
+
+                return attractions;
+            }
+        }
+    }
+
     public static List<Attraction> searchByNameOrDescription(String searchQuery) throws SQLException {
         if (searchQuery.equals("")) {
             return findAll();
