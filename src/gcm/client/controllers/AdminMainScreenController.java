@@ -88,5 +88,15 @@ public class AdminMainScreenController {
         }
     }
 
+    @FXML
+    void createTour(ActionEvent event) {
+        try {
+            AddTourController.loadView(new Stage());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+    }
+
 }
 
