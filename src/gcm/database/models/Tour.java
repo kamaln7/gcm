@@ -57,7 +57,7 @@ public class Tour extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into attractions (city_id, description) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into tours (city_id, description) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, this.getCityId());
             preparedStatement.setString(2, this.getDescription());
             // run the insert command
