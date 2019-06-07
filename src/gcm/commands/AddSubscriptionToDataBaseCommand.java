@@ -12,13 +12,15 @@ public class AddSubscriptionToDataBaseCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public int user_id,city_id;
         public Date from,to;
+        public double price;
 
-        public Input(int user_id, int city_id, Date from, Date to) {
+        public Input(int user_id, int city_id, Date from, Date to, double price) {
 
             this.user_id = user_id;
             this.city_id = city_id;
             this.from = from;
             this.to = to;
+            this.price = price;
 
 
 
@@ -38,7 +40,7 @@ public class AddSubscriptionToDataBaseCommand implements Command {
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception{
         Input input = request.getInput(Input.class);
 
-        Subscription subscription = new Subscription(input.user_id, input.city_id, input.from, input.to);
+        Subscription subscription = new Subscription(input.user_id, input.city_id, input.from, input.to, input.price);
         subscription.insert();
 
         return new Output(subscription);
