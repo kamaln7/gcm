@@ -118,7 +118,7 @@ public class Attraction extends Model {
     }
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
-        // insert city to table
+        // insert attraction to table
         try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into attractions (name, city_id, type, location, description, accessible_special) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getName());
             preparedStatement.setInt(2, this.getCityId());
