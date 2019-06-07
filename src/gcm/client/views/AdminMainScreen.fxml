@@ -36,10 +36,11 @@
                                         <Insets />
                                     </opaqueInsets>
                                 </VBox>
-                        <VBox layoutX="137.0" layoutY="14.0" prefHeight="372.0" prefWidth="144.0" spacing="10.0">
+                        <VBox layoutX="137.0" layoutY="14.0" prefHeight="372.0" prefWidth="213.0" spacing="10.0">
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Attractions" />
-                              <Button mnemonicParsing="false" onAction="#addAttraction" prefHeight="27.0" prefWidth="122.0" text="Add Attraction" />
+                              <Button mnemonicParsing="false" onAction="#addAttraction" prefHeight="27.0" prefWidth="178.0" text="Add New Attraction To Map" />
+                              <Button mnemonicParsing="false" onAction="#addExistingAttraction" prefHeight="27.0" prefWidth="186.0" text="Add Existing Attraction To Map" />
                            </children>
                         </VBox>
                             </children>
