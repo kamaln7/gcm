@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
@@ -76,9 +77,7 @@ public class CityDetailCardController extends AnchorPane {
 
     public void buy(ActionEvent event) {
         try {
-
-
-            BuyCityController.loadView(ClientGUI.getPrimaryStage(), this.city);
+            BuyCityController.loadView(new Stage(), this.city);
         }
          catch (Exception e) {
             ClientGUI.showErrorTryAgain();
