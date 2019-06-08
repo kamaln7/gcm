@@ -44,7 +44,7 @@ public class ShowBoughtCityAttractionsController {
     @FXML
     private TableColumn<attractionInfo, String> accessibility_column;
 
-    private  City myCity;
+    private  int myCityID;
     @FXML
     void close(ActionEvent event) {
         Stage stage = (Stage) tableList.getScene().getWindow();
@@ -52,11 +52,11 @@ public class ShowBoughtCityAttractionsController {
         stage.close();
     }
 
-    private void setCity(City city){
-        this.myCity=city;
+    private void setCity(int cityID){
+        this.myCityID=cityID;
     }
     private void setAttractions(){
-        Input input = new GetCityAttractionsCommand.Input(myCity.getId());
+        Input input = new GetCityAttractionsCommand.Input(myCityID);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -80,7 +80,7 @@ public class ShowBoughtCityAttractionsController {
         }
     }
 
-    public static void loadView(Stage primaryStage, City city) throws IOException {
+    public static void loadView(Stage primaryStage, int cityID) throws IOException {
         URL url = ShowBoughtCityAttractionsController.class.getResource("/gcm/client/views/ShowBoughtCityAttractions.fxml");
         FXMLLoader loader = new FXMLLoader(url);
 
@@ -88,7 +88,7 @@ public class ShowBoughtCityAttractionsController {
         Scene scene = new Scene(pane);
 
         ShowBoughtCityAttractionsController controller = loader.getController();
-        controller.setCity(city);
+        controller.setCity(cityID);
         controller.setAttractions();
 
         // setting the stage
