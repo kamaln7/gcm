@@ -34,6 +34,13 @@ public class RegisterController implements Initializable {
     @FXML
     private TextField phoneField;
 
+    @FXML
+    private TextField first_name_field;
+
+    @FXML
+    private TextField last_name_field;
+
+
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = RegisterController.class.getResource("/gcm/client/views/Register.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -50,9 +57,11 @@ public class RegisterController implements Initializable {
         String username = usernameField.getText(),
                 password = passwordField.getText(),
                 email = emailField.getText(),
-                phone = phoneField.getText();
+                phone = phoneField.getText(),
+                first_name = first_name_field.getText(),
+                last_name = last_name_field.getText();
 
-        Input input = new RegisterUserCommand.Input(username, password, email, phone);
+        Input input = new RegisterUserCommand.Input(username, password, email, phone, first_name, last_name);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);

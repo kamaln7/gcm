@@ -60,6 +60,21 @@ public class Attraction extends Model {
         }
     }
 
+    public static List<Attraction> findAllByCityId(Integer cityId) throws SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where city_id = ? order by name asc")) {
+            preparedStatement.setInt(1, cityId);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Attraction> attractions = new ArrayList<>();
+                while (rs.next()) {
+                    Attraction attraction = new Attraction(rs);
+                    attractions.add(attraction);
+                }
+
+                return attractions;
+            }
+        }
+    }
+
     public static List<Attraction> searchByNameOrDescription(String searchQuery) throws SQLException {
         if (searchQuery.equals("")) {
             return findAll();
@@ -118,7 +133,7 @@ public class Attraction extends Model {
     }
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
-        // insert city to table
+        // insert attraction to table
         try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into attractions (name, city_id, type, location, description, accessible_special) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getName());
             preparedStatement.setInt(2, this.getCityId());
@@ -140,6 +155,21 @@ public class Attraction extends Model {
             }
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new AlreadyExists();
+        }
+    }
+
+    public static List<Attraction> getAttractionForCity(int city_id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM attractions WHERE city_id = ?")) {
+            preparedStatement.setInt(1,city_id);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Attraction> attractions = new ArrayList<>();
+                while (rs.next()) {
+                    Attraction attraction = new Attraction(rs);
+                    attractions.add(attraction);
+                }
+
+                return attractions;
+            }
         }
     }
 

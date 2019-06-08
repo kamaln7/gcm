@@ -1,38 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<AnchorPane prefHeight="569.0" prefWidth="539.0" stylesheets="@../stylesheets/main.css"
-            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="gcm.client.controllers.ApprovePriceController">
+
+<AnchorPane prefHeight="627.0" prefWidth="822.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.ApprovePriceController">
     <children>
-        <ButtonBar layoutX="7.0" layoutY="168.0" prefHeight="40.0" prefWidth="187.0"/>
+        <ButtonBar layoutX="7.0" layoutY="168.0" prefHeight="40.0" prefWidth="187.0" />
         <Text layoutX="14.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Approve Price Changing">
             <font>
-                <Font size="24.0"/>
+                <Font size="24.0" />
             </font>
         </Text>
-        <Button layoutX="119.0" layoutY="85.0" mnemonicParsing="false" onAction="#getPrice" prefHeight="31.0"
-                prefWidth="274.0" text="Get Price Changing Requests"/>
-        <Button layoutX="35.0" layoutY="400.0" mnemonicParsing="false" onAction="#ApprovePrice" prefHeight="31.0"
-                prefWidth="154.0" text="Approve Price"/>
-        <TableView id="cities" fx:id="tableList" editable="true" layoutX="35.0" layoutY="125.0" prefHeight="213.0"
-                   prefWidth="470.0">
+        <Button layoutX="35.0" layoutY="63.0" mnemonicParsing="false" onAction="#getPrice" prefHeight="31.0" prefWidth="274.0" text="Get Price Changing Requests" />
+        <Button layoutX="101.0" layoutY="511.0" mnemonicParsing="false" onAction="#ApprovePrice" prefHeight="31.0" prefWidth="154.0" text="Approve Changing" />
+        <TableView id="cities" fx:id="tableList" layoutX="35.0" layoutY="125.0" prefHeight="347.0" prefWidth="747.0">
             <columns>
-                <TableColumn id="city" fx:id="city" prefWidth="75.0" text="City"/>
-                <TableColumn id="country" fx:id="country" prefWidth="75.0" text="Country"/>
-                <TableColumn id="old_purchase" fx:id="old_purchase" prefWidth="75.0" text="Old Purchase Price"/>
-                <TableColumn id="new_purchase" fx:id="new_purchase" prefWidth="75.0" text="New Purchase Price"/>
-                <TableColumn id="old_sub" fx:id="old_sub" prefWidth="75.0" text="Old Subscription Price"/>
-                <TableColumn id="new_sub" fx:id="new_sub" prefWidth="75.0" text="New Subscribtion Price"/>
+                <TableColumn fx:id="id_column" minWidth="0.0" prefWidth="55.0" text="ID" />
+                <TableColumn id="city" fx:id="city_column" prefWidth="189.0" text="City (City, Cuntry)" />
+                <TableColumn id="old_purchase" fx:id="purchase_column" editable="false" prefWidth="235.0" text="Purchase Price (Old -&gt; New)" />
+                <TableColumn id="new_sub" fx:id="sub_column" prefWidth="267.0" text="Subscribtion Price  (Old -&gt; New)" />
             </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-            </columnResizePolicy>
         </TableView>
-        <Button layoutX="351.0" layoutY="400.0" mnemonicParsing="false" onAction="#DeclinePrice" prefHeight="31.0"
-                prefWidth="154.0" text="Decline Changing"/>
+        <Button layoutX="531.0" layoutY="511.0" mnemonicParsing="false" onAction="#DeclinePrice" prefHeight="31.0" prefWidth="154.0" text="Decline Changing" />
     </children>
 </AnchorPane>

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="947.0" prefWidth="929.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.AddAttractionController">
+<AnchorPane prefHeight="947.0" prefWidth="929.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.AddExistingAttractionToMapController">
     <children>
         <Text layoutX="14.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add Attraction">
             <font>
@@ -28,17 +26,20 @@
         <TextField fx:id="Ycord" layoutX="482.0" layoutY="674.0" prefHeight="25.0" prefWidth="73.0" />
         <Text layoutX="467.0" layoutY="691.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y:" />
         <Text layoutX="421.0" layoutY="661.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Coordinates" />
-        <ChoiceBox fx:id="attraction_choiceBox" layoutX="73.0" layoutY="762.0" prefWidth="150.0" />
-        <TextField fx:id="attraction_name_field" layoutX="254.0" layoutY="763.0" />
         <Text layoutX="254.0" layoutY="751.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Name" />
-        <TextField fx:id="attraction_location_field" layoutX="444.0" layoutY="764.0" />
         <Text layoutX="444.0" layoutY="751.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Location" />
         <Button layoutX="621.0" layoutY="850.0" mnemonicParsing="false" onAction="#finishJop" prefHeight="45.0" prefWidth="192.0" text="Add Attraction" />
       <Text layoutX="17.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Map" />
       <Text layoutX="73.0" layoutY="748.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Type" />
-      <ChoiceBox fx:id="accessible_choiceBox" layoutX="648.0" layoutY="764.0" prefWidth="150.0" />
       <Text layoutX="608.0" layoutY="751.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Accessible For Passengers With Disabilities?" />
-      <TextArea fx:id="description_field" layoutX="201.0" layoutY="809.0" prefHeight="103.0" prefWidth="278.0" />
-      <Text layoutX="118.0" layoutY="865.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+      <Text layoutX="88.0" layoutY="831.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+      <TextField fx:id="attractionTF" layoutX="17.0" layoutY="134.0" prefHeight="26.0" prefWidth="261.0" />
+      <Button layoutX="270.0" layoutY="134.0" mnemonicParsing="false" onAction="#chooseAttraction" prefHeight="26.0" prefWidth="115.0" text="Choose Attraction" />
+      <Text layoutX="17.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction" />
+      <Text fx:id="Attraction_Type" layoutX="77.0" layoutY="779.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Type" />
+      <Text fx:id="Attraction_Name" layoutX="254.0" layoutY="780.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Name" />
+      <Text fx:id="Attraction_Location" layoutX="444.0" layoutY="780.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Location" />
+      <Text fx:id="accessible" layoutX="691.0" layoutY="780.0" strokeType="OUTSIDE" strokeWidth="0.0" text="accessible" />
+      <Text fx:id="Description" layoutX="194.0" layoutY="831.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
     </children>
 </AnchorPane>

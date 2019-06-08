@@ -1,7 +1,10 @@
 package gcm.client.controllers;
 
+import gcm.client.bin.ClientGUI;
+import gcm.commands.Response;
 import gcm.database.models.City;
 import gcm.database.models.Map;
+import gcm.database.models.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
@@ -76,7 +80,13 @@ public class CityDetailCardController extends AnchorPane {
     }
 
     public void buy(ActionEvent event) {
-        new Alert(Alert.AlertType.WARNING, "Yalla waseem").show();
+        try {
+            BuyCityController.loadView(new Stage(), this.city);
+        }
+         catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
     }
 
     public void setWithBuyButton(Boolean withBuyButton) {

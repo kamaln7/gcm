@@ -1,10 +1,7 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.AddAttractionAndUpdateMapImageCommand;
-import gcm.commands.Input;
-import gcm.commands.ReadMapImageById;
-import gcm.commands.Response;
+import gcm.commands.*;
 import gcm.database.models.Attraction;
 import gcm.database.models.Map;
 import javafx.embed.swing.SwingFXUtils;
@@ -19,14 +16,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-
-
-import java.awt.Font;
-import java.awt.Graphics2D;
-
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +30,10 @@ import java.net.URL;
 
 import static java.awt.Color.BLACK;
 
-public class AddAttractionController {
+public class AddExistingAttractionToMapController {
+
+    @FXML
+    private TextField mapTF;
 
     @FXML
     private AnchorPane pane;
@@ -51,42 +48,32 @@ public class AddAttractionController {
     private TextField Ycord;
 
     @FXML
-    public ChoiceBox<String> attraction_choiceBox;
+    private TextField attractionTF;
 
     @FXML
-    private ChoiceBox<String> accessible_choiceBox;
+    private Text Attraction_Type;
 
     @FXML
-    private TextField attraction_name_field;
+    private Text Attraction_Name;
 
     @FXML
-    private TextField attraction_location_field;
+    private Text Attraction_Location;
 
     @FXML
-    private TextArea description_field;
+    private Text accessible;
+
+    @FXML
+    private Text Description;
+
 
     private Map map;
-
-    @FXML
-    private TextField mapTF;
+    private Attraction attraction;
 
     private int X;
     private int Y;
 
     public void initialize() {
-        attraction_choiceBox.getItems().add("Museum");
-        attraction_choiceBox.getItems().add("Historical Place");
-        attraction_choiceBox.getItems().add("Hotel");
-        attraction_choiceBox.getItems().add("Restaurant");
-        attraction_choiceBox.getItems().add("Public Institution");
-        attraction_choiceBox.getItems().add("Park");
-        attraction_choiceBox.getItems().add("Parking Lot");
-        attraction_choiceBox.getItems().add("Cinema");
-        attraction_choiceBox.setValue("Museum");
 
-        accessible_choiceBox.getItems().add("YES");
-        accessible_choiceBox.getItems().add("NO");
-        accessible_choiceBox.setValue("NO");
         try {
             BufferedImage bufferedImage = ImageIO.read(new File("thumb-1920-44975.jpg"));
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
@@ -94,11 +81,10 @@ public class AddAttractionController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        chooseMap(null);
     }
 
     public static void loadView(Stage primaryStage) throws IOException {
-        URL url = MainScreenController.class.getResource("/gcm/client/views/AddAttraction.fxml");
+        URL url = MainScreenController.class.getResource("/gcm/client/views/AddExitingAttractionToMap.fxml");
         AnchorPane pane = FXMLLoader.load(url);
         Scene scene = new Scene(pane);
         // setting the stage
@@ -128,7 +114,7 @@ public class AddAttractionController {
             BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(output.imgBytes));
             Image image = SwingFXUtils.toFXImage(bImage, null);
             mapImg.setImage(image);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please fill the fields down below, \nbefore you click on the map image!");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please Choose Attraction,\nBefore you click on the map image!");
             alert.show();
             mapImg.setOnMouseClicked(e -> {
 
@@ -148,17 +134,13 @@ public class AddAttractionController {
                     mapImg.setImage(image2);
                     s.close();
 
-                    boolean accessibility = getAccessibility();
 
-                    Input input2 = new AddAttractionAndUpdateMapImageCommand.Input(this.map.getId(), attraction_choiceBox.getValue(), attraction_name_field.getText(), attraction_location_field.getText(), res, accessibility, description_field.getText() );
-
+                    Input input2 = new AddOneToAttractionAndUpdateMapImageCommand.Input(this.map.getId(),this.attraction,res);
                     Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
-                    response2.getOutput(AddAttractionAndUpdateMapImageCommand.Output.class);
-                    
-                } catch (Attraction.AlreadyExists x) {
-                    Alert alert2 = new Alert(Alert.AlertType.ERROR, "attraction already exist");
-                    alert2.show();
-                } catch (Exception e1) {
+                    response2.getOutput(AddOneToAttractionAndUpdateMapImageCommand.Output.class);
+
+                }
+                catch (Exception e1) {
                     e1.printStackTrace();
                 }
             });
@@ -170,6 +152,24 @@ public class AddAttractionController {
 
     }
 
+    @FXML
+    void chooseAttraction(ActionEvent event) {
+        try {
+            this.attraction = AdminTablePickerAttractionForCityController.loadViewAndWait(new Stage(), this.map.getCityId());
+            this.attractionTF.setText(attraction.getName());
+            setAttractionValues();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void setAttractionValues(){
+        this.Attraction_Name.setText(attraction.getName());
+        this.Attraction_Type.setText(attraction.getType());
+        this.Attraction_Location.setText(attraction.getLocation());
+        this.accessible.setText(attraction.getAccessibleSpecial()?"YES":"NO");
+        this.Description.setText(attraction.getDescription());
+
+    }
     private BufferedImage createImageWithText() throws IOException {
 
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(mapImg.getImage(), null);
@@ -178,19 +178,15 @@ public class AddAttractionController {
 
 
         g2d.setFont(new Font("SansSerif", Font.BOLD, 60));
-        g2d.drawString("•" + attraction_name_field.getText(), bufferedImage.getWidth() * X / 672, bufferedImage.getHeight() * Y / 376);
+        g2d.drawString("•" + Attraction_Name.getText(), bufferedImage.getWidth() * X / 672, bufferedImage.getHeight() * Y / 376);
 
         //ImageIO.write(bufferedImage, "png", new File("afterAdding.png") );
         g2d.dispose();
 
         return bufferedImage;
     }
-    private boolean getAccessibility(){
-        if (accessible_choiceBox.getValue().equals("YES")){
-            return true;
-        }
-        return false;
-    }
+
+
 
 }
 

@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.*?>
-<AnchorPane prefHeight="346.0" prefWidth="274.0" stylesheets="@../stylesheets/main.css"
-            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="gcm.client.controllers.RegisterController">
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="488.0" prefWidth="274.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.RegisterController">
     <children>
-        <TextField fx:id="usernameField" layoutX="14.0" layoutY="76.0" prefHeight="27.0" prefWidth="240.0"/>
-        <PasswordField fx:id="passwordField" layoutX="14.0" layoutY="129.0" prefHeight="27.0" prefWidth="240.0"/>
-        <TextField fx:id="emailField" layoutX="14.0" layoutY="181.0" prefHeight="27.0" prefWidth="240.0"/>
-        <TextField fx:id="phoneField" layoutX="14.0" layoutY="233.0" prefHeight="27.0" prefWidth="240.0"/>
-        <ButtonBar layoutX="62.0" layoutY="266.0" prefHeight="40.0" prefWidth="200.0">
+        <TextField fx:id="usernameField" layoutX="14.0" layoutY="76.0" prefHeight="27.0" prefWidth="240.0" />
+        <PasswordField fx:id="passwordField" layoutX="14.0" layoutY="129.0" prefHeight="27.0" prefWidth="240.0" />
+        <TextField fx:id="emailField" layoutX="14.0" layoutY="181.0" prefHeight="27.0" prefWidth="240.0" />
+        <TextField fx:id="phoneField" layoutX="14.0" layoutY="233.0" prefHeight="27.0" prefWidth="240.0" />
+        <ButtonBar layoutX="60.0" layoutY="377.0" prefHeight="40.0" prefWidth="200.0">
             <buttons>
-                <Button minWidth="36.0" mnemonicParsing="false" onAction="#registerButtonClick" prefHeight="27.0"
-                        text="Register"/>
+                <Button minWidth="36.0" mnemonicParsing="false" onAction="#registerButtonClick" prefHeight="27.0" text="Register" />
             </buttons>
         </ButtonBar>
         <Text layoutX="15.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Register">
             <font>
-                <Font size="24.0"/>
+                <Font size="24.0" />
             </font>
         </Text>
-        <Text layoutX="14.0" layoutY="72.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username"/>
-        <Text layoutX="15.0" layoutY="124.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password"/>
-        <Hyperlink layoutX="17.0" layoutY="316.0" onAction="#openLoginView" prefHeight="25.0" prefWidth="240.0"
-                   text="Already have an account? Login"/>
-        <Text layoutX="15.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email"/>
-        <Text layoutX="15.0" layoutY="228.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone"/>
+        <Text layoutX="14.0" layoutY="72.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username" />
+        <Text layoutX="15.0" layoutY="124.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password" />
+        <Hyperlink layoutX="15.0" layoutY="427.0" onAction="#openLoginView" prefHeight="25.0" prefWidth="240.0" text="Already have an account? Login" />
+        <Text layoutX="15.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" />
+        <Text layoutX="15.0" layoutY="228.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone" />
+      <TextField fx:id="first_name_field" layoutX="14.0" layoutY="287.0" prefHeight="27.0" prefWidth="240.0" />
+      <TextField fx:id="last_name_field" layoutX="14.0" layoutY="339.0" prefHeight="27.0" prefWidth="240.0" />
+      <Text layoutX="15.0" layoutY="282.0" strokeType="OUTSIDE" strokeWidth="0.0" text="First name" />
+      <Text layoutX="15.0" layoutY="334.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last name" />
     </children>
 </AnchorPane>

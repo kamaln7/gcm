@@ -10,21 +10,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-public class AddAttractionAndUpdateMapImageCommand implements Command {
+public class AddOneToAttractionAndUpdateMapImageCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public Integer mapId;
-        public boolean accessibility;
-        public String attraction_type, attraction_name, getAttraction_location, description;
+        Attraction attraction;
         byte[] new_map_image;
 
-        public Input(Integer mapId, String attraction_type, String attraction_name, String getAttraction_location, byte[] new_map_image, boolean accessibility, String description) {
+        public Input(Integer mapId, Attraction attraction, byte[] new_map_image) {
             this.mapId = mapId;
-            this.attraction_type = attraction_type;
-            this.attraction_name = attraction_name;
-            this.getAttraction_location = getAttraction_location;
+            this.attraction = attraction;
             this.new_map_image = new_map_image;
-            this.accessibility = accessibility;
-            this.description = description;
         }
     }
 
@@ -47,8 +42,7 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
 
         mapToUpdate.updateImage(imageName);
 
-        Attraction attraction = new Attraction(mapToUpdate.getCityId(), input.attraction_name, input.description, input.attraction_type, input.getAttraction_location, input.accessibility);
-        attraction.insert();
+        //here we add attraction Id and map Id to many-many Table
 
         return new Output();
     }
