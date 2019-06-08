@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 
 public class MapAttraction extends Model {
     // fields
-    private Integer id, mapId, attractionId;
+    private Integer mapId, attractionId;
     private Date createdAt, updatedAt;
 
     // create User object with info from ResultSet
@@ -57,13 +57,12 @@ public class MapAttraction extends Model {
 
                 return mapAttractions
                         .stream()
-                        .collect(Collectors.groupingBy(MapAttraction::getMapId));
+                        .collect(Collectors.groupingBy(MapAttraction::getAttractionId));
             }
         }
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
-        this.id = rs.getInt("id");
         this.mapId = rs.getInt("map_id");
         this.attractionId = rs.getInt("attraction_id");
         this.createdAt = rs.getTimestamp("created_at");
@@ -106,14 +105,6 @@ public class MapAttraction extends Model {
     }
 
     // getters and setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getMapId() {
         return mapId;
     }
