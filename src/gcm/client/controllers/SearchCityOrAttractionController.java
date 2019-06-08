@@ -13,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
 import java.net.URL;
@@ -34,6 +35,8 @@ public class SearchCityOrAttractionController implements Initializable {
 
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
+        CityListCell.setWithBuyButton(ClientGUI.getCurrentUser().hasExactRole("user"));
+
         citiesList.setItems(citiesListItems);
         citiesList.setCellFactory((Callback<ListView<CityWithMapsList>, CityListCell>) listView -> new CityListCell() {
             {
@@ -72,6 +75,12 @@ public class SearchCityOrAttractionController implements Initializable {
     }
 
     static class CityListCell extends ListCell<CityWithMapsList> {
+        private static Boolean withBuyButton = true;
+
+        public static void setWithBuyButton(Boolean withBuyButton) {
+            CityListCell.withBuyButton = withBuyButton;
+        }
+
         @Override
         protected void updateItem(CityWithMapsList city, boolean empty) {
             super.updateItem(city, empty);
@@ -84,9 +93,16 @@ public class SearchCityOrAttractionController implements Initializable {
                 cdc.setMaps(city.maps);
                 cdc.prefWidthProperty().bind(widthProperty().subtract(30));
                 cdc.setMaxWidth(Control.USE_PREF_SIZE);
+                cdc.setWithBuyButton(withBuyButton);
                 setGraphic(cdc);
             }
         }
+    }
+
+    @FXML
+    private void listViewMouseClick(MouseEvent e) {
+        citiesList.getSelectionModel().clearSelection();
+        attractionsList.getSelectionModel().clearSelection();
     }
 
     static class AttractionListCell extends ListCell<Attraction> {
