@@ -1,12 +1,15 @@
 package gcm.database.models;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Subscription extends Model {
     private Integer id, userId, cityId;
     private Date fromDate, toDate, createdAt, updatedAt;
     private double price;
+    private boolean renew;
 
     @Override
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -18,6 +21,7 @@ public class Subscription extends Model {
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
         this.price = rs.getDouble("price");
+        this.renew = rs.getBoolean("renew");
     }
 
     public Subscription(ResultSet rs) throws SQLException {
@@ -26,12 +30,13 @@ public class Subscription extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public Subscription(Integer userId, Integer cityId, Date fromDate, Date toDate, double price) {
+    public Subscription(Integer userId, Integer cityId, Date fromDate, Date toDate, double price, boolean renew) {
         this.userId = userId;
         this.cityId = cityId;
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.price = price;
+        this.renew = renew;
     }
 
     public static Subscription findById(Integer id) throws SQLException, NotFound {
@@ -70,6 +75,24 @@ public class Subscription extends Model {
     }
 
 
+    public static List<Subscription> findAllByUserId(Integer user_id) throws SQLException, Subscription.NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ? order by created_at asc")) {
+            preparedStatement.setInt(1, user_id);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Subscription> subscriptions = new ArrayList<>();
+                while (rs.next()) {
+                    Subscription subscription = new Subscription(rs);
+                    subscriptions.add(subscription);
+                }
+
+
+                return subscriptions;
+            }
+        }
+    }
+
+
 
    /* public static Subscription findByUserId(Integer user_id) throws SQLException, NotFound, AlreadyExists {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ?")) {
@@ -96,12 +119,13 @@ public class Subscription extends Model {
     public void insert() throws SQLException, NotFound, AlreadyExists {
 
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into subscriptions (user_id, city_id, from_date, to_date, price) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into subscriptions (user_id, city_id, from_date, to_date, price, renew) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, getUserId());
             preparedStatement.setInt(2, getCityId());
             preparedStatement.setTimestamp(3, new Timestamp(getFromDate().getTime()));
             preparedStatement.setTimestamp(4, new Timestamp(getToDate().getTime()));
             preparedStatement.setDouble(5,getPrice());
+            preparedStatement.setBoolean(6,getRenew());
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
@@ -157,6 +181,14 @@ public class Subscription extends Model {
 
     public double getPrice() {
         return price;
+    }
+
+    public void setRenew(boolean renew) {
+        this.renew = renew;
+    }
+
+    public boolean getRenew() {
+        return renew;
     }
 
     public void setCityId(Integer cityId) {

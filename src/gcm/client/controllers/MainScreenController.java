@@ -53,6 +53,19 @@ public class MainScreenController implements Initializable {
                 e.printStackTrace();
             }
         }
+
+
+        // show order history tab only if user is a user role
+        if (ClientGUI.getCurrentUser().hasExactRole("user")) {
+            try {
+                Tab tab = new Tab();
+                tab.setText("Order History");
+                tab.setContent(FXMLLoader.load(this.getClass().getResource("/gcm/client/views/OrderHistory.fxml")));
+                mainTabPane.getTabs().add(tab);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void loadView(Stage primaryStage) throws IOException {
