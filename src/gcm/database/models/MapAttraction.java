@@ -3,7 +3,12 @@ package gcm.database.models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MapAttraction extends Model {
     // fields
@@ -20,6 +25,41 @@ public class MapAttraction extends Model {
     public MapAttraction(Integer mapId, Integer attractionId) {
         this.mapId = mapId;
         this.attractionId = attractionId;
+    }
+
+    public static java.util.Map<Integer, List<MapAttraction>> findAllForAttractions(Set<Integer> attractionIds) throws SQLException {
+        if (attractionIds.isEmpty()) {
+            return new java.util.HashMap<>();
+        }
+
+        List<Integer> attractionIdsList = new ArrayList<>(attractionIds);
+        String query = String.format(
+                "select * from maps_attractions where attraction_id in (%s)",
+                IntStream
+                        .range(0, attractionIdsList.size())
+                        .mapToObj(s -> "?")
+                        .collect(Collectors.joining(", "))
+        );
+
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+            // bind ids
+            int bound = attractionIdsList.size();
+            for (int i = 0; i < bound; i++) {
+                preparedStatement.setInt(i + 1, attractionIdsList.get(i));
+            }
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<MapAttraction> mapAttractions = new ArrayList<>();
+                while (rs.next()) {
+                    MapAttraction mapAttraction = new MapAttraction(rs);
+                    mapAttractions.add(mapAttraction);
+                }
+
+                return mapAttractions
+                        .stream()
+                        .collect(Collectors.groupingBy(MapAttraction::getMapId));
+            }
+        }
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
