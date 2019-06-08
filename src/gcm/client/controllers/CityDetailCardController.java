@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.text.Text;
@@ -27,6 +28,9 @@ public class CityDetailCardController extends AnchorPane {
 
     @FXML
     private TilePane mapsTilePane;
+
+    @FXML
+    private Button buyButton;
 
     private City city;
 
@@ -73,5 +77,9 @@ public class CityDetailCardController extends AnchorPane {
 
     public void buy(ActionEvent event) {
         new Alert(Alert.AlertType.WARNING, "Yalla waseem").show();
+    }
+
+    public void setWithBuyButton(Boolean withBuyButton) {
+        buyButton.setOpacity(withBuyButton ? 1 : 0);
     }
 }
