@@ -80,13 +80,20 @@ public class Attraction extends Model {
             return findAll();
         }
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where match (name, description) against (?) order by name asc")) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(
+                "select attractions.*, concat(cities.name, \", \", cities.country) as city_title" +
+                        " from attractions" +
+                        " left join cities on attractions.city_id = cities.id" +
+                        " where match (attractions.name, attractions.description) against (?)" +
+                        " order by attractions.name asc"
+        )) {
             preparedStatement.setString(1, searchQuery);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 List<Attraction> attractions = new ArrayList<>();
                 while (rs.next()) {
                     Attraction attraction = new Attraction(rs);
+                    attraction._extraInfo.put("cityTitle", rs.getString("city_title"));
                     attractions.add(attraction);
                 }
 
@@ -160,7 +167,7 @@ public class Attraction extends Model {
 
     public static List<Attraction> getAttractionForCity(int city_id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM attractions WHERE city_id = ?")) {
-            preparedStatement.setInt(1,city_id);
+            preparedStatement.setInt(1, city_id);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 List<Attraction> attractions = new ArrayList<>();
                 while (rs.next()) {

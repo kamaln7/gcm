@@ -45,7 +45,12 @@ public class SearchCityOrAttractionController implements Initializable {
             }
         });
         attractionsList.setItems(attractionsListItems);
-        attractionsList.setCellFactory((Callback<ListView<CityWithMapsList>, AttractionListCell>) listView -> new AttractionListCell());
+        attractionsList.setCellFactory((Callback<ListView<AttractionWithMapsList>, AttractionListCell>) listView -> new AttractionListCell() {
+            {
+                prefWidthProperty().bind(attractionsList.widthProperty().subtract(4));
+                setMaxWidth(Control.USE_PREF_SIZE);
+            }
+        });
     }
 
     @FXML
@@ -67,7 +72,12 @@ public class SearchCityOrAttractionController implements Initializable {
                             .map(c -> new CityWithMapsList(output.cityMaps.get(c.getId()), c))
                             .collect(Collectors.toList())
             );
-            attractionsListItems.setAll(output.attractions);
+            attractionsListItems.setAll(
+                    output.attractions
+                            .parallelStream()
+                            .map(a -> new AttractionWithMapsList(output.attractionMaps.get(a.getId()), a))
+                            .collect(Collectors.toList())
+            );
         } catch (Exception e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Couldn't load results.").show();
@@ -105,17 +115,20 @@ public class SearchCityOrAttractionController implements Initializable {
         attractionsList.getSelectionModel().clearSelection();
     }
 
-    static class AttractionListCell extends ListCell<Attraction> {
-        protected Attraction attraction;
-
+    static class AttractionListCell extends ListCell<AttractionWithMapsList> {
         @Override
-        protected void updateItem(Attraction item, boolean empty) {
-            super.updateItem(item, empty);
+        protected void updateItem(AttractionWithMapsList attraction, boolean empty) {
+            super.updateItem(attraction, empty);
+
             if (empty) {
-                setText(null);
+                setGraphic(null);
             } else {
-                this.attraction = item;
-                setText(String.format("%s", attraction.getName()));
+                AttractionDetailCardController adc = new AttractionDetailCardController();
+                adc.setAttraction(attraction.getAttraction());
+                adc.setMaps(attraction.getMaps());
+                adc.prefWidthProperty().bind(widthProperty().subtract(30));
+                adc.setMaxWidth(Control.USE_PREF_SIZE);
+                setGraphic(adc);
             }
         }
     }
@@ -135,6 +148,24 @@ public class SearchCityOrAttractionController implements Initializable {
 
         public City getCity() {
             return city;
+        }
+    }
+
+    private static class AttractionWithMapsList {
+        private List<Map> maps;
+        private Attraction attraction;
+
+        public AttractionWithMapsList(List<Map> maps, Attraction attraction) {
+            this.maps = maps;
+            this.attraction = attraction;
+        }
+
+        public List<Map> getMaps() {
+            return maps;
+        }
+
+        public Attraction getAttraction() {
+            return attraction;
         }
     }
 }

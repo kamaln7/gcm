@@ -112,6 +112,10 @@ public class Map extends Model {
                 .distinct()
                 .collect(Collectors.toList());
 
+        if (mapIdsList.isEmpty()) {
+            return new java.util.HashMap<>();
+        }
+
         String query = String.format(
                 "select * from maps where id in (%s) order by title asc",
                 IntStream
@@ -135,11 +139,14 @@ public class Map extends Model {
 
                 java.util.Map<Integer, List<Map>> result = new HashMap<>();
                 for (Integer attractionId : attractionIds) {
-                    result.put(attractionId, mapAttractionsList
-                            .get(attractionId)
-                            .stream()
-                            .map(ma -> maps.get(ma.getMapId()))
-                            .collect(Collectors.toList()));
+                    result.put(
+                            attractionId,
+                            mapAttractionsList
+                                    .get(attractionId)
+                                    .stream()
+                                    .map(ma -> maps.get(ma.getMapId()))
+                                    .collect(Collectors.toList())
+                    );
                 }
                 return result;
             }
