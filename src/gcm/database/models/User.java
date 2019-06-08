@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class User extends Model {
     // fields
     private Integer id;
-    private String username, password, email, phone, role;
+    private String username, password, email, phone, role, first_name, last_name;
     private Date createdAt, updatedAt;
 
     public static HashMap<String, Integer> ROLES = new HashMap<>();
@@ -33,20 +33,30 @@ public class User extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public User(String username, String password, String email, String phone) {
-        this(username, password, email, phone, "user");
+    public User(String username, String password, String email, String phone, String first_name, String last_name) {
+        this(username, password, email, phone, "user", first_name, last_name);
     }
 
-    public User(String username, String password, String email, String phone, String role) {
+//    public User(String username, String password, String email, String phone, String role) {
+//        this.username = username;
+//        this.setPassword(password);
+//        this.email = email;
+//        this.phone = phone;
+//        this.role = role;
+//    }
+
+    public User(String username, String password, String email, String phone, String role, String first_name, String last_name) {
         this.username = username;
-        this.setPassword(password);
+        this.password = password;
         this.email = email;
         this.phone = phone;
         this.role = role;
+        this.first_name = first_name;
+        this.last_name = last_name;
     }
 
     public static User fakeGuestUser() {
-        User user = new User("guest", "", "", "", "guest");
+        User user = new User("guest", "", "", "", "guest","guest","guest");
         user.id = -1;
         user.setCreatedAt(new Date());
         user.setUpdatedAt(new Date());
@@ -61,19 +71,22 @@ public class User extends Model {
         this.email = rs.getString("email");
         this.phone = rs.getString("phone");
         this.role = rs.getString("role");
+        this.first_name = rs.getString("first_name");
+        this.last_name = rs.getString("last_name");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
     }
 
     public User register() throws SQLException, NotFound, AlreadyExists {
         // insert user to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into users (username, password, email, phone, role) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into users (username, password, email, phone, role, first_name, last_name) values (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getUsername());
             preparedStatement.setString(2, this.getPassword());
             preparedStatement.setString(3, this.getEmail());
             preparedStatement.setString(4, this.getPhone());
             preparedStatement.setString(5, this.getRole());
-
+            preparedStatement.setString(6, this.getFirst_name());
+            preparedStatement.setString(7, this.getLast_name());
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
@@ -257,6 +270,22 @@ public class User extends Model {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getFirst_name() {
+        return first_name;
+    }
+
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
+    }
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
     public Boolean hasExactRole(String role) {
