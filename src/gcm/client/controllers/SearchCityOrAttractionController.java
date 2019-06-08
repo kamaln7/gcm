@@ -14,6 +14,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 import java.net.URL;
@@ -33,6 +35,13 @@ public class SearchCityOrAttractionController implements Initializable {
     private ListView attractionsList;
     private ObservableList attractionsListItems = FXCollections.observableArrayList();
 
+    @FXML
+    private VBox titledPanesVBox;
+    @FXML
+    private TitledPane citiesTitledPane;
+    @FXML
+    private TitledPane attractionsTitledPane;
+
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
         CityListCell.setWithBuyButton(ClientGUI.getCurrentUser().hasExactRole("user"));
@@ -40,17 +49,31 @@ public class SearchCityOrAttractionController implements Initializable {
         citiesList.setItems(citiesListItems);
         citiesList.setCellFactory((Callback<ListView<CityWithMapsList>, CityListCell>) listView -> new CityListCell() {
             {
-                prefWidthProperty().bind(citiesList.widthProperty().subtract(4));
+                prefWidthProperty().bind(titledPanesVBox.widthProperty().subtract(10));
                 setMaxWidth(Control.USE_PREF_SIZE);
             }
         });
         attractionsList.setItems(attractionsListItems);
         attractionsList.setCellFactory((Callback<ListView<AttractionWithMapsList>, AttractionListCell>) listView -> new AttractionListCell() {
             {
-                prefWidthProperty().bind(attractionsList.widthProperty().subtract(4));
+                prefWidthProperty().bind(titledPanesVBox.widthProperty().subtract(10));
                 setMaxWidth(Control.USE_PREF_SIZE);
             }
         });
+
+        citiesTitledPane.expandedProperty().addListener(
+                (obs, wasExpanded, isNowExpanded) -> {
+                    VBox.setVgrow(citiesTitledPane, isNowExpanded ? Priority.ALWAYS : Priority.NEVER);
+                    citiesTitledPane.setMaxHeight(isNowExpanded ? Double.MAX_VALUE : 26);
+                }
+        );
+        attractionsTitledPane.expandedProperty().addListener(
+                (obs, wasExpanded, isNowExpanded) ->
+                {
+                    VBox.setVgrow(attractionsTitledPane, isNowExpanded ? Priority.ALWAYS : Priority.NEVER);
+                    attractionsTitledPane.setMaxHeight(isNowExpanded ? Double.MAX_VALUE : 26);
+                }
+        );
     }
 
     @FXML
