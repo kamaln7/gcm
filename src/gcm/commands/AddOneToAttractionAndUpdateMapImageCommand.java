@@ -2,6 +2,7 @@ package gcm.commands;
 
 import gcm.database.models.Attraction;
 import gcm.database.models.Map;
+import gcm.database.models.MapAttraction;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
@@ -43,6 +44,8 @@ public class AddOneToAttractionAndUpdateMapImageCommand implements Command {
         mapToUpdate.updateImage(imageName);
 
         //here we add attraction Id and map Id to many-many Table
+        MapAttraction mapAttraction = new MapAttraction(mapToUpdate.getId(), input.attraction.getId());
+        mapAttraction.insert();
 
         return new Output();
     }

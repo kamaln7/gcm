@@ -76,6 +76,7 @@ public class MainScreenController implements Initializable {
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);
         primaryStage.setTitle("GCM 2019");
+        primaryStage.centerOnScreen();
         primaryStage.show();
     }
 
