@@ -70,7 +70,7 @@ public class ShowBoughtCityMapsController {
         next.setVisible(true);
     }
 
-    private  City myCity;
+    private  int myCityID;
     private List<Map> maps;
     private int current=0;
     private int size;
@@ -81,12 +81,12 @@ public class ShowBoughtCityMapsController {
         stage.close();
     }
 
-    private void setCity(City city){
-        this.myCity=city;
+    private void setCity(int cityID){
+        this.myCityID=cityID;
     }
 
     private void setMaps(){
-        Input input = new FindMapsByCityIdCommand.Input(myCity.getId());
+        Input input = new FindMapsByCityIdCommand.Input(myCityID);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -119,7 +119,7 @@ public class ShowBoughtCityMapsController {
         }
     }
 
-    public static void loadView(Stage primaryStage, City city) throws IOException {
+    public static void loadView(Stage primaryStage, int cityID) throws IOException {
         URL url = ShowBoughtCityMapsController.class.getResource("/gcm/client/views/ShowBoughtCityMaps.fxml");
         FXMLLoader loader = new FXMLLoader(url);
 
@@ -127,7 +127,7 @@ public class ShowBoughtCityMapsController {
         Scene scene = new Scene(pane);
 
         ShowBoughtCityMapsController controller = loader.getController();
-        controller.setCity(city);
+        controller.setCity(cityID);
         controller.setMaps();
 
         // setting the stage

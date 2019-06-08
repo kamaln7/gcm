@@ -141,9 +141,9 @@ public class BuyCityController {
 
 
             // show the attractions to the costumer
-            ShowBoughtCityAttractionsController.loadView(new Stage(),this.city);
+            ShowBoughtCityAttractionsController.loadView(new Stage(),this.city.getId());
             //show the maps to the costumer
-            ShowBoughtCityMapsController.loadView(new Stage(),this.city);
+            ShowBoughtCityMapsController.loadView(new Stage(),this.city.getId());
 
         }  catch (Exception e) {
             ClientGUI.showErrorTryAgain();

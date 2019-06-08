@@ -97,6 +97,14 @@ public class AdminMainScreenController {
             e.printStackTrace();
         }
     }
+    @FXML
+    void showProfile(ActionEvent event) {
+        try {
+            UserProfileController.loadView(new Stage(), ClientGUI.getCurrentUser());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
 
