@@ -9,6 +9,7 @@ import java.util.Date;
 public class Purchase extends Model {
     private Integer id, userId, cityId;
     private Date createdAt, updatedAt;
+    private double price;
 
     @Override
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -17,6 +18,7 @@ public class Purchase extends Model {
         this.cityId = rs.getInt("city_id");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
+        this.price = rs.getDouble("price");
     }
 
     public Purchase(ResultSet rs) throws SQLException {
@@ -25,9 +27,10 @@ public class Purchase extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public Purchase(Integer userId, Integer cityId) {
+    public Purchase(Integer userId, Integer cityId, double price) {
         this.userId = userId;
         this.cityId = cityId;
+        this.price = price;
     }
 
     public static Purchase findById(Integer id) throws SQLException, NotFound {
@@ -47,9 +50,10 @@ public class Purchase extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into purchases (user_id, city_id) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into purchases (user_id, city_id, price) values (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, getUserId());
             preparedStatement.setInt(2, getCityId());
+            preparedStatement.setDouble(3,getPrice());
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
@@ -87,5 +91,13 @@ public class Purchase extends Model {
 
     public void setCityId(Integer cityId) {
         this.cityId = cityId;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getPrice() {
+        return price;
     }
 }

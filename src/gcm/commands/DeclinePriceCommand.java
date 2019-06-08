@@ -4,9 +4,7 @@ import gcm.database.models.City;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-import java.util.ArrayList;
-
-public class ApprovePriceCommand implements Command {
+public class DeclinePriceCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public int id;
 
@@ -28,7 +26,7 @@ public class ApprovePriceCommand implements Command {
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
-        City city = City.approvePrice(input.id) ;
+        City city = City.declinePrice(input.id) ;
 
         return new Output(city);
     }

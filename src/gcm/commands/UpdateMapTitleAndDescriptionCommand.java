@@ -1,35 +1,33 @@
 package gcm.commands;
 
-import gcm.database.models.City;
+import gcm.database.models.Map;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.UUID;
 
-public class ApprovePriceCommand implements Command {
+public class UpdateMapTitleAndDescriptionCommand implements Command {
     public static class Input extends gcm.commands.Input {
-        public int id;
+        private Map map;
 
-        public Input(int id){
-            this.id = id;
+        public Input(Map map) {
+            this.map = map;
         }
     }
 
-
-
     public static class Output extends gcm.commands.Output {
-        public City city;
-
-        public Output(City city) {
-            this.city = city;
+        public Output() {
         }
     }
 
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
-        City city = City.approvePrice(input.id) ;
 
-        return new Output(city);
+        input.map.updateDescriptionAndTitle();
+
+        return new Output();
     }
 }

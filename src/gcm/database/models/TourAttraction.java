@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class TourAttraction extends Model {
     // fields
-    private Integer tourId, attractionId, orderIndex;
+    private Integer id, tourId, attractionId, orderIndex;
     private String time;
     private Date createdAt, updatedAt;
 
@@ -27,6 +27,7 @@ public class TourAttraction extends Model {
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
+        this.id = rs.getInt("id");
         this.tourId = rs.getInt("tour_id");
         this.attractionId = rs.getInt("attraction_id");
         this.orderIndex = rs.getInt("order_index");
@@ -53,26 +54,13 @@ public class TourAttraction extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into tours_attractions (tour_id, attraction_id, time, order_index) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into tours_attractions (tour_id, attraction_id, time, order_index) values (?, ?, ?, ?)")) {
             preparedStatement.setInt(1, this.getTourId());
             preparedStatement.setInt(2, this.getAttractionId());
             preparedStatement.setString(3, this.getTime());
             preparedStatement.setInt(4, this.getOrderIndex());
             // run the insert command
             preparedStatement.executeUpdate();
-            // get the auto generated id
-            try (ResultSet rsGenerated = preparedStatement.getGeneratedKeys()) {
-                if (!rsGenerated.next()) {
-                    throw new NotFound();
-                }
-
-                // find the new tour_attraction details
-                Integer tourId = rsGenerated.getInt(1),
-                        attractionId = rsGenerated.getInt(2);
-                TourAttraction newRow = this.findByIds(tourId, attractionId);
-                this.setCreatedAt(newRow.getCreatedAt());
-                this.setUpdatedAt(newRow.getUpdatedAt());
-            }
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new AlreadyExists();
         }
