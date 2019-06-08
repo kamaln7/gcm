@@ -89,13 +89,16 @@ public class RenewSubscriptionController {
         Calendar to_date = Calendar.getInstance();
         to_date.setTime(from_date);
         to_date.add(Calendar.MONTH, 6);
+        Calendar temp_date = Calendar.getInstance();
+        temp_date.setTime(from_date);
+        temp_date.add(Calendar.MONTH,1);
 
 
 
 
 
 
-        Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), newprice );
+        /*Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), newprice, true );
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -111,7 +114,53 @@ public class RenewSubscriptionController {
         }  catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
+        }*/
+
+        Input input1 = new FindSubscriptionCommand.Input(user_id, city_id, temp_date.getTime());
+        try{
+            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input1);
+            FindSubscriptionCommand.Output output = response.getOutput(FindSubscriptionCommand.Output.class);
+            try {
+                new Alert(Alert.AlertType.WARNING, "you already renewd").show();
+
+            }
+            catch (Exception e){
+                ClientGUI.showErrorTryAgain();
+                e.printStackTrace();
+            }
+            try {
+                MainScreenController.loadView(ClientGUI.getPrimaryStage());
+            }catch (Exception e){
+
+            }
         }
+        catch (Subscription.NotFound e){
+            Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), price, true);
+            try {
+                Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+                AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
+                new Alert(Alert.AlertType.INFORMATION, " your subscription end at: " + to_date.getTime()).show();
+                try {
+                    MainScreenController.loadView(ClientGUI.getPrimaryStage());
+                }catch (Exception e1){}
+            }
+            catch (Exception e1) {
+                ClientGUI.showErrorTryAgain();
+                e.printStackTrace();
+            }
+
+        }
+        catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
 
     }
 
