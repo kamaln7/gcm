@@ -75,22 +75,29 @@ public class Subscription extends Model {
     }
 
 
-    public static List<Subscription> findAllByUserId(Integer user_id) throws SQLException, Subscription.NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ? order by created_at asc")) {
-            preparedStatement.setInt(1, user_id);
+    public static List<Subscription> findAllByUserId(Integer userId) throws SQLException {
+        return findAllByUserId(userId, false);
+    }
 
+    public static List<Subscription> findAllByUserId(Integer userId, Boolean activeOnly) throws SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(
+                String.format("select * from subscriptions where user_id = ? %s order by from_date desc",
+                        activeOnly ? "and from_date <= now() and to_date >= now()" : "")
+        )) {
+            preparedStatement.setInt(1, userId);
             try (ResultSet rs = preparedStatement.executeQuery()) {
+
                 List<Subscription> subscriptions = new ArrayList<>();
                 while (rs.next()) {
                     Subscription subscription = new Subscription(rs);
                     subscriptions.add(subscription);
                 }
 
-
                 return subscriptions;
             }
         }
     }
+
 
 
 
