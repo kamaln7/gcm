@@ -5,10 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -95,6 +93,65 @@ public class Map extends Model {
         }
     }
 
+    public static java.util.Map<Integer, List<Map>> findAllForAttractions(Set<Integer> attractionIds) throws SQLException {
+        if (attractionIds.isEmpty()) {
+            return new java.util.HashMap<>();
+        }
+
+        java.util.Map<Integer, List<MapAttraction>> mapAttractionsList = MapAttraction.findAllForAttractions(attractionIds);
+
+        List<Integer> mapIdsList = mapAttractionsList
+                .values()
+                .parallelStream()
+                .map(lma -> lma
+                        .parallelStream()
+                        .map(ma -> ma.getMapId())
+                        .distinct()
+                )
+                .flatMap(Function.identity())
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (mapIdsList.isEmpty()) {
+            return new java.util.HashMap<>();
+        }
+
+        String query = String.format(
+                "select * from maps where id in (%s) order by title asc",
+                IntStream
+                        .range(0, mapIdsList.size())
+                        .mapToObj(s -> "?")
+                        .collect(Collectors.joining(", "))
+        );
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+            // bind ids
+            int bound = mapIdsList.size();
+            for (int i = 0; i < bound; i++) {
+                preparedStatement.setInt(i + 1, mapIdsList.get(i));
+            }
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                java.util.Map<Integer, Map> maps = new HashMap<>();
+                while (rs.next()) {
+                    Map map = new Map(rs);
+                    maps.put(map.getId(), map);
+                }
+
+                java.util.Map<Integer, List<Map>> result = new HashMap<>();
+                for (Integer attractionId : attractionIds) {
+                    result.put(
+                            attractionId,
+                            mapAttractionsList
+                                    .get(attractionId)
+                                    .stream()
+                                    .map(ma -> maps.get(ma.getMapId()))
+                                    .collect(Collectors.toList())
+                    );
+                }
+                return result;
+            }
+        }
+    }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
@@ -183,7 +240,7 @@ public class Map extends Model {
 
     public void updateDescriptionAndTitle() throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE maps SET title = ?, description = ? WHERE id = ?")) {
-            preparedStatement.setString(1,this.title);
+            preparedStatement.setString(1, this.title);
             preparedStatement.setString(2, this.description);
             preparedStatement.setInt(3, this.id);
             preparedStatement.executeUpdate();
