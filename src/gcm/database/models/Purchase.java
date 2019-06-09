@@ -1,10 +1,15 @@
 package gcm.database.models;
 
+
+import java.sql.*;
+import java.time.LocalDate;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +56,22 @@ public class Purchase extends Model {
     }
 
 
+    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
+        Timestamp fromDate = Timestamp.valueOf(from.atTime(0,0,0));
+        Timestamp toDate = Timestamp.valueOf(to.atTime(23,59,59));
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from purchases where city_id = ? and created_at >= ? and created_at <= ?")) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setTimestamp(2,fromDate);
+            preparedStatement.setTimestamp(3, toDate);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+
+                return rs.getInt("total");
+
+
     public static List<Purchase> findAllByUserId(Integer user_id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from purchases where user_id = ? order by created_at asc")) {
             preparedStatement.setInt(1, user_id);
@@ -64,9 +85,12 @@ public class Purchase extends Model {
 
 
                 return purchases;
+
             }
         }
     }
+
+
 
 
    /* public static List<Attraction> findAllByCityId(Integer cityId) throws SQLException {
@@ -83,6 +107,7 @@ public class Purchase extends Model {
             }
         }
     }*/
+
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
