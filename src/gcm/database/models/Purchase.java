@@ -1,6 +1,8 @@
 package gcm.database.models;
 
 
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -40,6 +42,10 @@ public class Purchase extends Model {
         this.price = price;
     }
 
+    public static Purchase findById() throws SQLException, NotFound {
+        return findById();
+    }
+
     public static Purchase findById(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from purchases where id = ?")) {
             preparedStatement.setInt(1, id);
@@ -57,11 +63,11 @@ public class Purchase extends Model {
 
 
     public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
-        Timestamp fromDate = Timestamp.valueOf(from.atTime(0,0,0));
-        Timestamp toDate = Timestamp.valueOf(to.atTime(23,59,59));
+        Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
+        Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from purchases where city_id = ? and created_at >= ? and created_at <= ?")) {
             preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2,fromDate);
+            preparedStatement.setTimestamp(2, fromDate);
             preparedStatement.setTimestamp(3, toDate);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -70,6 +76,9 @@ public class Purchase extends Model {
                 }
 
                 return rs.getInt("total");
+            }
+        }
+    }
 
 
     public static List<Purchase> findAllByUserId(Integer user_id) throws SQLException, NotFound {
