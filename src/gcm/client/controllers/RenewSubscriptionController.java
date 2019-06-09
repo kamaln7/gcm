@@ -34,8 +34,6 @@ public class RenewSubscriptionController {
 
     }
 
-
-
     public void setSubscription(Subscription subscription){
 
         this.subscription = subscription;
@@ -46,13 +44,6 @@ public class RenewSubscriptionController {
     {
         this.price = price;
     }
-
-
-
-
-
-
-
 
 
 
@@ -69,8 +60,6 @@ public class RenewSubscriptionController {
         controller.setSubscription(subscription);
 
         controller.setPrice(price);
-
-
         // setting the stage
         primaryStage.setScene(scene);
         primaryStage.setTitle("GCM 2019");
@@ -91,58 +80,30 @@ public class RenewSubscriptionController {
         to_date.add(Calendar.MONTH, 6);
         Calendar temp_date = Calendar.getInstance();
         temp_date.setTime(from_date);
-        temp_date.add(Calendar.MONTH,1);
-
-
-
-
-
-
-        /*Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), newprice, true );
-
-        try {
-            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
-
-            new Alert(Alert.AlertType.INFORMATION, "now your subscription end at: " + to_date.getTime()).show();
-            try {
-                MainScreenController.loadView(ClientGUI.getPrimaryStage());
-            }catch (Exception e){
-
-            }
-
-        }  catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }*/
+        temp_date.add(Calendar.SECOND,1);
 
         Input input1 = new FindSubscriptionCommand.Input(user_id, city_id, temp_date.getTime());
+
         try{
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input1);
             FindSubscriptionCommand.Output output = response.getOutput(FindSubscriptionCommand.Output.class);
             try {
-                new Alert(Alert.AlertType.WARNING, "you already renewd").show();
+                new Alert(Alert.AlertType.INFORMATION, "you already renewed your subscription for this city").show();
 
             }
             catch (Exception e){
                 ClientGUI.showErrorTryAgain();
                 e.printStackTrace();
             }
-            try {
-                MainScreenController.loadView(ClientGUI.getPrimaryStage());
-            }catch (Exception e){
 
-            }
         }
         catch (Subscription.NotFound e){
             Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), price, true);
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
-                new Alert(Alert.AlertType.INFORMATION, " your subscription end at: " + to_date.getTime()).show();
-                try {
-                    MainScreenController.loadView(ClientGUI.getPrimaryStage());
-                }catch (Exception e1){}
+                new Alert(Alert.AlertType.INFORMATION, " your subscription ends at: " + to_date.getTime()).show();
+
             }
             catch (Exception e1) {
                 ClientGUI.showErrorTryAgain();
@@ -156,22 +117,14 @@ public class RenewSubscriptionController {
         }
 
 
-
-
-
-
-
-
     }
 
     @FXML
-    void backtomainscreen(ActionEvent event) {
+    void close(ActionEvent event) {
 
-        try {
-            MainScreenController.loadView(ClientGUI.getPrimaryStage());
-        }catch (Exception e){
-
-        }
+        Stage stage = (Stage) renewtext.getScene().getWindow();
+        // do what you have to do
+        stage.close();
 
     }
 

@@ -36,7 +36,7 @@ public class OrderHistoryController {
     void showpurchasehistory(ActionEvent event) {
 
         try {
-            ShowPurchaseHistoryController.loadView(new Stage());
+            ShowPurchaseHistoryController.loadView(new Stage(),ClientGUI.getCurrentUser().getId());
         }
         catch (Exception e) {
             ClientGUI.showErrorTryAgain();
@@ -50,7 +50,7 @@ public class OrderHistoryController {
     void showsubscriptionhistory(ActionEvent event) {
 
         try {
-            ShowSubscriptionHistoryController.loadView(new Stage());
+            ShowSubscriptionHistoryController.loadView(new Stage(),ClientGUI.getCurrentUser().getId());
         }
         catch (Exception e) {
             ClientGUI.showErrorTryAgain();

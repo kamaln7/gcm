@@ -51,11 +51,27 @@ public class UserProfileController {
     @FXML
     void purchase_history(ActionEvent event) {
         //Waseem you can load ur view and send "myUser" as parameter
+
+        try {
+            ShowPurchaseHistoryController.loadView(new Stage(),myUser.getId());
+        }
+        catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
     }
 
     @FXML
     void subscription_history(ActionEvent event) {
         //Waseem you can load ur view and send "myUser" as parameter
+
+        try {
+            ShowSubscriptionHistoryController.loadView(new Stage(),myUser.getId());
+        }
+        catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
     }
     private void setFields(User user){
         myUser=user;
