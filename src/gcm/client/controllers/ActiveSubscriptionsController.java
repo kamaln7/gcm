@@ -36,7 +36,9 @@ public class ActiveSubscriptionsController {
 
     @FXML
     void close(ActionEvent event) {
-
+        Stage stage = (Stage) tableList.getScene().getWindow();
+        // do what you have to do
+        stage.close();
     }
 
     @FXML
