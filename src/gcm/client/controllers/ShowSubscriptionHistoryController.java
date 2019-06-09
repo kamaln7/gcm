@@ -3,6 +3,7 @@ package gcm.client.controllers;
 import gcm.client.bin.ClientGUI;
 import gcm.commands.*;
 import gcm.database.models.City;
+import gcm.database.models.User;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,11 +21,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ShowSubscriptionHistoryController implements Initializable {
+public class ShowSubscriptionHistoryController {
     @FXML
     private TableView<SubscriptionHistory> tableView;
 
@@ -48,6 +50,9 @@ public class ShowSubscriptionHistoryController implements Initializable {
 
     @FXML
     private TableColumn<SubscriptionHistory, String> toCol;
+
+    public User myUser;
+    public int myUserID;
 
     public class SubscriptionHistory{
         private SimpleIntegerProperty id;
@@ -92,15 +97,11 @@ public class ShowSubscriptionHistoryController implements Initializable {
 
 
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+
+    public void show(int currentUserID) {
 
 
-
-
-
-
-        Input input = new FindSubscriptionByUserIDCommand.Input(ClientGUI.getCurrentUser().getId());
+        Input input = new FindSubscriptionByUserIDCommand.Input(currentUserID);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindSubscriptionByUserIDCommand.Output output = response.getOutput(FindSubscriptionByUserIDCommand.Output.class);
@@ -135,7 +136,6 @@ public class ShowSubscriptionHistoryController implements Initializable {
                             output.subscriptions.get(i).getRenew() ? "Renew " : "New",
                             output.subscriptions.get(i).getFromDate().toString(),
                             output.subscriptions.get(i).getToDate().toString()));
-                    //System.out.println("DATE: " + output.purchases.get(i).getCreatedAt().toString());
                 }
                 catch (City.NotFound e) {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
@@ -158,54 +158,23 @@ public class ShowSubscriptionHistoryController implements Initializable {
         }
 
 
-
-
-        /*Input input = new FindPurchaseByUserIDCommand.Input(ClientGUI.getCurrentUser().getId());
-        try {
-            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            FindPurchaseByUserIDCommand.Output output = response.getOutput(FindPurchaseByUserIDCommand.Output.class);
-
-            idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-            dateCol.setCellValueFactory(new PropertyValueFactory<>("created_at"));
-            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-
-
-            ObservableList<Purchase> oblist = FXCollections.observableArrayList();
-
-
-            for(int i=0;i<output.purchases.size(); i ++) {
-                Purchase temp = new Purchase(output.purchases.get(i).getUserId(),
-                        output.purchases.get(i).getCityId(),
-                        output.purchases.get(i).getPrice());
-
-                temp.setId(output.purchases.get(i).getId());
-                temp.setCreatedAt(output.purchases.get(i).getCreatedAt());
-
-                System.out.println("DATE:" + output.purchases.get(i).getCreatedAt());
-
-
-
-                oblist.add(temp);
-
-            }
-
-            tableView.setItems(oblist);
-
-        } catch (City.NotFound e) {
-
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }*/
-
     }
 
-    public static void loadView(Stage stage) throws IOException {
+    public static void loadView(Stage stage,int currentUserID) throws IOException {
+
         URL url = MainScreenController.class.getResource("/gcm/client/views/ShowSubscriptionHistory.fxml");
         FXMLLoader loader = new FXMLLoader(url);
 
         AnchorPane pane = loader.load();
+
         Scene scene = new Scene(pane);
+
+         ShowSubscriptionHistoryController controller = loader.getController();
+
+         controller.show(currentUserID);
+
+
+
         // setting the stage
         stage.setScene(scene);
 
@@ -217,10 +186,6 @@ public class ShowSubscriptionHistoryController implements Initializable {
         stage.showAndWait();
 
     }
-
-
-
-
 
 
 }

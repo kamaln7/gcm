@@ -81,7 +81,7 @@ public class Subscription extends Model {
 
     public static List<Subscription> findAllByUserId(Integer userId, Boolean activeOnly) throws SQLException {
         try (PreparedStatement preparedStatement = getDb().prepareStatement(
-                String.format("select * from subscriptions where user_id = ? %s order by from_date desc",
+                String.format("select * from subscriptions where user_id = ? %s order by id asc",
                         activeOnly ? "and from_date <= now() and to_date >= now()" : "")
         )) {
             preparedStatement.setInt(1, userId);
@@ -97,31 +97,6 @@ public class Subscription extends Model {
             }
         }
     }
-
-
-
-
-   /* public static Subscription findByUserId(Integer user_id) throws SQLException, NotFound, AlreadyExists {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ?")) {
-            preparedStatement.setInt(1, user_id);
-
-
-
-
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (rs.next()) {
-                    throw new AlreadyExists();
-                }
-
-
-
-                Subscription subscription = new Subscription(rs);
-                return subscription;
-            }
-
-
-        }
-    }*/
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
 
@@ -150,19 +125,6 @@ public class Subscription extends Model {
         }
     }
 
-
-
-    /*try (PreparedStatement preparedStatement1 = getDb().prepareStatement("select * from cities where name = ?")) {
-        preparedStatement1.setString(1, this.getName());
-
-        try (ResultSet rs1 = preparedStatement1.executeQuery()) {
-            if (rs1.next()) {
-                throw new AlreadyExists();
-            }
-
-
-        }
-    }*/
 
     public static class AlreadyExists extends Exception {
     }
