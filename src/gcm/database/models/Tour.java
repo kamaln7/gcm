@@ -4,7 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Tour extends Model {
     // fields
@@ -51,6 +53,20 @@ public class Tour extends Model {
 
                 Tour tour = new Tour(rs);
                 return tour;
+            }
+        }
+    }
+    public static List<Tour> findAllByCityId(Integer city_id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours where city_id = ?")) {
+            preparedStatement.setInt(1, city_id);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Tour> tours = new ArrayList<>();
+                while (rs.next()) {
+                    Tour tour = new Tour(rs);
+                    tours.add(tour);
+                }
+                return tours;
             }
         }
     }

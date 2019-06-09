@@ -13,14 +13,16 @@ public class AddSubscriptionToDataBaseCommand implements Command {
         public int user_id,city_id;
         public Date from,to;
         public double price;
+        public boolean renew;
 
-        public Input(int user_id, int city_id, Date from, Date to, double price) {
+        public Input(int user_id, int city_id, Date from, Date to, double price, boolean renew) {
 
             this.user_id = user_id;
             this.city_id = city_id;
             this.from = from;
             this.to = to;
             this.price = price;
+            this.renew = renew;
 
 
 
@@ -40,7 +42,7 @@ public class AddSubscriptionToDataBaseCommand implements Command {
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception{
         Input input = request.getInput(Input.class);
 
-        Subscription subscription = new Subscription(input.user_id, input.city_id, input.from, input.to, input.price);
+        Subscription subscription = new Subscription(input.user_id, input.city_id, input.from, input.to, input.price, input.renew);
         subscription.insert();
 
         return new Output(subscription);

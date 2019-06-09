@@ -4,7 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class TourAttraction extends Model {
     // fields
@@ -27,7 +29,6 @@ public class TourAttraction extends Model {
     }
 
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
-        this.id = rs.getInt("id");
         this.tourId = rs.getInt("tour_id");
         this.attractionId = rs.getInt("attraction_id");
         this.orderIndex = rs.getInt("order_index");
@@ -48,6 +49,36 @@ public class TourAttraction extends Model {
 
                 TourAttraction tour = new TourAttraction(rs);
                 return tour;
+            }
+        }
+    }
+    public static List<Attraction> findAttractionsByTourId(Integer tourId) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours_attractions, attractions where tour_id = ? and tours_attractions.attraction_id = attractions.id ORDER BY tours_attractions.order_index ASC")) {
+            preparedStatement.setInt(1, tourId);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Attraction> attractions = new ArrayList<>();
+                while (rs.next()) {
+                    Attraction attraction = new Attraction(rs);
+                    attractions.add(attraction);
+                }
+
+                return attractions;
+            }
+        }
+    }
+    public static List<TourAttraction> findTourAttractionsByTourId(Integer tourId) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours_attractions where tour_id = ? ORDER BY tours_attractions.order_index ASC")) {
+            preparedStatement.setInt(1, tourId);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<TourAttraction> tourAttractionList = new ArrayList<>();
+                while (rs.next()) {
+                    TourAttraction tourAttraction = new TourAttraction(rs);
+                    tourAttractionList.add(tourAttraction);
+                }
+
+                return tourAttractionList;
             }
         }
     }
