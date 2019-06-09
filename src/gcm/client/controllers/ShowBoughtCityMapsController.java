@@ -2,20 +2,14 @@ package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
 import gcm.commands.*;
-import gcm.database.models.City;
 import gcm.database.models.Map;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -103,6 +97,17 @@ public class ShowBoughtCityMapsController {
     }
 
     private void showMap(Map map){
+        //add view to the map
+        Input viewInput = new AddViewCommand.Input(ClientGUI.getCurrentUser().getId(),map.getId(),"map");
+        try {
+            Response viewResponse = ClientGUI.getClient().sendInputAndWaitForResponse(viewInput);
+            AddViewCommand.Output viewOutput = viewResponse.getOutput(AddViewCommand.Output.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //set fields
         description_field.setText(map.getDescription());
         mapTitle.setText(map.getTitle());
         //show the image
