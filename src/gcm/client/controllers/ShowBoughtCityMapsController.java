@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -91,6 +92,18 @@ public class ShowBoughtCityMapsController {
             //show the first map
             showMap(this.maps.get(current));
             previous.setVisible(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    void download(ActionEvent event) {
+        Input input = new AddDownloadCommand.Input(ClientGUI.getCurrentUser().getId(),maps.get(current).getId(),"map");
+        try {
+            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+            AddDownloadCommand.Output output = response.getOutput(AddDownloadCommand.Output.class);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Map Downloaded!");
+            alert.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
