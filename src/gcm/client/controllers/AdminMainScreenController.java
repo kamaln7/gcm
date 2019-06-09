@@ -61,6 +61,15 @@ public class AdminMainScreenController {
 
 
     @FXML
+    void showUserInfo(ActionEvent event) {
+        /*try {
+            ShowUserInfoController.loadView(new Stage());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }*/
+    }
+    @FXML
     void Approve(ActionEvent event) {
         try {
             ApprovePriceController.loadView(new Stage());
@@ -102,6 +111,16 @@ public class AdminMainScreenController {
         try {
             UserProfileController.loadView(new Stage(), ClientGUI.getCurrentUser());
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void showActivityReport(ActionEvent event) {
+        try {
+            ActivityReportController.loadView(new Stage());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
     }
