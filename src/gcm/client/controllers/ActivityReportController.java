@@ -43,12 +43,14 @@ public class ActivityReportController {
     }
 
     public class ActivityReport{
-        private  SimpleStringProperty cityName;
-        private  SimpleIntegerProperty mapsNo, purchasesNo, subscriptionsNo, renewalsNo, viewsNo, downloadsNo;
+        private  SimpleStringProperty cityName, countryName;
+        private  SimpleIntegerProperty cityID, mapsNo, purchasesNo, subscriptionsNo, renewalsNo, viewsNo, downloadsNo;
 
-        public ActivityReport(String city, int maps, int purchases, int subscriptions, int renewals, int views, int downloads)
+        public ActivityReport(int cityId, String city, String country, int maps, int purchases, int subscriptions, int renewals, int views, int downloads)
         {
+            this.cityID = new SimpleIntegerProperty(cityId);
             this.cityName = new SimpleStringProperty(city);
+            this.countryName = new SimpleStringProperty(country);
             this.mapsNo=new SimpleIntegerProperty(maps);
             this.purchasesNo=new SimpleIntegerProperty(purchases);
             this.subscriptionsNo=new SimpleIntegerProperty(subscriptions);
@@ -58,6 +60,22 @@ public class ActivityReportController {
         }
         public String getCityName() {
             return cityName.get();
+        }
+
+        public String getCountryName() {
+            return countryName.get();
+        }
+
+        public SimpleStringProperty countryNameProperty() {
+            return countryName;
+        }
+
+        public int getCityID() {
+            return cityID.get();
+        }
+
+        public SimpleIntegerProperty cityIDProperty() {
+            return cityID;
         }
 
         public SimpleStringProperty cityNameProperty() {
@@ -121,7 +139,9 @@ public class ActivityReportController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
 
+            cityIdColumn.setCellValueFactory(new PropertyValueFactory<>("cityID"));
             cityColumn.setCellValueFactory(new PropertyValueFactory<>("cityName"));
+            countryColumn.setCellValueFactory(new PropertyValueFactory<>("countryName"));
             mapsColumn.setCellValueFactory(new PropertyValueFactory<>("mapsNo"));
             purchasesColumn.setCellValueFactory(new PropertyValueFactory<>("purchasesNo"));
             subscriptionsColumn.setCellValueFactory(new PropertyValueFactory<>("subscriptionsNo"));
@@ -133,7 +153,8 @@ public class ActivityReportController {
 
             for(int i=0;i<output.activityReportList.size(); i ++) {
 
-                oblist.add(new ActivityReport(output.activityReportList.get(i).getCity(),
+                oblist.add(new ActivityReport(output.activityReportList.get(i).getCityID(),
+                        output.activityReportList.get(i).getCity(), output.activityReportList.get(i).getCountryName(),
                         output.activityReportList.get(i).getMapsNo(), output.activityReportList.get(i).getPurchasesNo(),
                         output.activityReportList.get(i).getSubscriptionsNo(), output.activityReportList.get(i).getRenewalsNo(),
                         output.activityReportList.get(i).getViewsNo(), output.activityReportList.get(i).getDownloadsNo()));
@@ -155,9 +176,12 @@ public class ActivityReportController {
 
                     if (ActivityReport.getCityName().toLowerCase().contains(lowerCaseFilter)) {
                         return true; // Filter matches city.
-                    }/* else if (ActivityReport.get().toLowerCase().contains(lowerCaseFilter)) {
-                        return true; // Filter matches last name.
-                    }*/
+                    } else if (ActivityReport.getCountryName().toLowerCase().contains(lowerCaseFilter)) {
+                        return true; // Filter matches country.
+                    }
+                    else if (Integer.toString(ActivityReport.getCityID()).contains(newValue)) {
+                        return true; // Filter matches cityID.
+                    }
                     return false; // Does not match.
                 });
             });
@@ -182,9 +206,14 @@ void search(){
 }
     @FXML
     private TableView<ActivityReport> table;
-
+    @FXML
+    private TableColumn<ActivityReport, Integer> cityIdColumn;
     @FXML
     private TableColumn<ActivityReport, String> cityColumn;
+
+    @FXML
+    private TableColumn<ActivityReport, String> countryColumn;
+
 
     @FXML
     private TableColumn<ActivityReport, Integer> mapsColumn;

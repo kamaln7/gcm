@@ -15,13 +15,15 @@ import java.util.stream.Collectors;
 
 public class ActivityReportCommand implements Command {
     public static class ActivityReportCo {
-        private String cityName;
-        private int mapsNo, purchasesNo, subscriptionsNo, renewalsNo, viewsNo, downloadsNo;
+        private String cityName, countryName;
+        private int cityID, mapsNo, purchasesNo, subscriptionsNo, renewalsNo, viewsNo, downloadsNo;
 
 
 
-        public  ActivityReportCo(String city, int maps, int purchases, int subscriptions, int renewals, int views, int downloads) {
+        public  ActivityReportCo(String city, String country, int cityID, int maps, int purchases, int subscriptions, int renewals, int views, int downloads) {
             this.cityName = city;
+            this.countryName = country;
+            this.cityID = cityID;
             this.mapsNo = maps;
             this.purchasesNo = purchases;
             this.subscriptionsNo = subscriptions;
@@ -30,8 +32,16 @@ public class ActivityReportCommand implements Command {
             this.downloadsNo = downloads;
         }
 
+        public int getCityID() {
+            return cityID;
+        }
+
         public String getCity() {
             return cityName;
+        }
+
+        public String getCountryName() {
+            return countryName;
         }
 
         public  int getMapsNo() {
@@ -89,7 +99,7 @@ public class ActivityReportCommand implements Command {
         List<City> cities = City.findAll();
         List<ActivityReportCo> activityReportsList = new ArrayList<>();
         for (City city : cities) {
-            activityReportsList.add(new ActivityReportCo(city.getName() + ", " + city.getCountry(),
+            activityReportsList.add(new ActivityReportCo(city.getName(),  city.getCountry(), city.getId(),
                     Map.countAllForCities(city.getId()),
                     Purchase.countByPeriod(city.getId(), input.from , input.to),
                     Subscription.countByPeriod(city.getId(), input.from , input.to),
