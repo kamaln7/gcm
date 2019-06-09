@@ -63,6 +63,8 @@
                         <Button layoutX="14.0" layoutY="151.0" mnemonicParsing="false" onAction="#showUserInfo" prefHeight="31.0" prefWidth="219.0" text="Show Users` Information" />
                         <Label layoutX="14.0" layoutY="28.0" text="Cities Prices" />
                         <Label layoutX="14.0" layoutY="114.0" text="Users` Information:" />
+                        <Button layoutX="14.0" layoutY="260.0" mnemonicParsing="false" onAction="#showActivityReport" prefHeight="31.0" prefWidth="219.0" text="Show Activity Report" />
+                        <Label layoutX="14.0" layoutY="229.0" text="Reports:" />
                             </children>
                         </AnchorPane>
                     </content>

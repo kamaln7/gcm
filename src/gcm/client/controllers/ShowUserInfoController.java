@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-public class ShowUserInfoController implements Initializable {
+public class ShowUserInfoController{//} implements Initializable {
 
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/SHowUserInfo.fxml");
@@ -127,10 +127,36 @@ public class ShowUserInfoController implements Initializable {
         public SimpleObjectProperty<LocalDate> dateProperty() {
             return date;
         }
-    }
+    }/*
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        Input input = new ReviewPendingPriceChangesCommand.Input();
+        try {
+            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+            ReviewPendingPriceChangesCommand.Output output = response.getOutput(ReviewPendingPriceChangesCommand.Output.class);
+
+            id_column.setCellValueFactory(new PropertyValueFactory<>("id"));
+            city_column.setCellValueFactory(new PropertyValueFactory<>("city_country"));
+            purchase_column.setCellValueFactory(new PropertyValueFactory<>("purchase_price"));
+            sub_column.setCellValueFactory(new PropertyValueFactory<>("sub_price"));
+
+            ObservableList<CityPrices> oblist = FXCollections.observableArrayList();
+            for(int i=0;i<output.result.size(); i ++)
+                oblist.add(new CityPrices(output.result.get(i).getId(),
+                        output.result.get(i).getName()+", " + output.result.get(i).getCountry(),
+                        output.result.get(i).getPurchasePrice() + " -> " + output.result.get(i).getNewPurchasePrice() ,
+                        output.result.get(i).getSubscriptionPrice()+ " -> " + output.result.get(i).getNewSubscriptionPrice()));
+
+            tableList.setItems(oblist);
+
+        } catch (City.NotFound e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
+            alert.show();
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
     }
     /*@FXML
     void getPrice(ActionEvent event) {
