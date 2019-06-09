@@ -16,9 +16,9 @@
                 <Font size="24.0" />
             </font>
         </Text>
-      <Button layoutX="297.0" layoutY="561.0" mnemonicParsing="false" onAction="#close" prefHeight="52.0" prefWidth="208.0" text="close" />
+      <Button layoutX="297.0" layoutY="561.0" mnemonicParsing="false" onAction="#close" prefHeight="52.0" prefWidth="208.0" text="Close" />
       <ImageView fx:id="mapImg" fitHeight="279.0" fitWidth="562.0" layoutX="130.0" layoutY="152.0" pickOnBounds="true" preserveRatio="true" />
-      <TextArea fx:id="description_field" layoutX="50.0" layoutY="479.0" prefHeight="72.0" prefWidth="724.0" />
+      <TextArea fx:id="description_field" layoutX="50.0" layoutY="479.0" prefHeight="72.0" prefWidth="465.0" />
       <Text layoutX="60.0" layoutY="463.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Map Description" />
       <Text fx:id="mapTitle" layoutX="369.0" layoutY="102.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tite here" textAlignment="CENTER">
          <font>
@@ -27,5 +27,6 @@
       </Text>
       <Button fx:id="next" layoutX="629.0" layoutY="575.0" mnemonicParsing="false" onAction="#next" text="Next" />
       <Button fx:id="previous" layoutX="121.0" layoutY="575.0" mnemonicParsing="false" onAction="#previous" text="Previous" />
+      <Button layoutX="542.0" layoutY="495.0" mnemonicParsing="false" onAction="#download" prefHeight="40.0" prefWidth="128.0" text="Download" />
     </children>
 </AnchorPane>

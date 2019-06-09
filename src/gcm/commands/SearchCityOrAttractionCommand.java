@@ -23,16 +23,18 @@ public class SearchCityOrAttractionCommand implements Command {
         public List<City> cities;
         public List<Attraction> attractions;
         public java.util.Map<Integer, List<Map>> cityMaps;
+        public java.util.Map<Integer, List<Map>> attractionMaps;
 
         public Output() {
             this.cities = new ArrayList<>();
             this.attractions = new ArrayList<>();
         }
 
-        public Output(List<City> cities, List<Attraction> attractions, java.util.Map<Integer, List<Map>> cityMaps) {
+        public Output(List<City> cities, List<Attraction> attractions, java.util.Map<Integer, List<Map>> cityMaps, java.util.Map<Integer, List<Map>> attractionMaps) {
             this.cities = cities;
             this.attractions = attractions;
             this.cityMaps = cityMaps;
+            this.attractionMaps = attractionMaps;
         }
     }
 
@@ -45,13 +47,17 @@ public class SearchCityOrAttractionCommand implements Command {
             return new Output();
         }
 
+        // search cities
         List<City> cities = City.searchByName(input.searchQuery);
         for (City city : cities) {
             city.lookupCountsOfRelated();
         }
         java.util.Map<Integer, List<Map>> cityMaps = Map.findAllForCities(cities.stream().map(city -> city.getId()).collect(Collectors.toSet()));
-        List<Attraction> attractions = Attraction.searchByNameOrDescription(input.searchQuery);
 
-        return new Output(cities, attractions, cityMaps);
+        // search attractions
+        List<Attraction> attractions = Attraction.searchByNameOrDescription(input.searchQuery);
+        java.util.Map<Integer, List<Map>> attractionMaps = Map.findAllForAttractions(attractions.stream().map(attraction -> attraction.getId()).collect(Collectors.toSet()));
+
+        return new Output(cities, attractions, cityMaps, attractionMaps);
     }
 }

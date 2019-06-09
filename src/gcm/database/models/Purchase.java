@@ -1,8 +1,17 @@
 package gcm.database.models;
 
+
 import java.sql.*;
 import java.time.LocalDate;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
 import java.util.Date;
+import java.util.List;
 
 public class Purchase extends Model {
     private Integer id, userId, cityId;
@@ -46,6 +55,7 @@ public class Purchase extends Model {
         }
     }
 
+
     public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
         Timestamp fromDate = Timestamp.valueOf(from.atTime(0,0,0));
         Timestamp toDate = Timestamp.valueOf(to.atTime(23,59,59));
@@ -61,9 +71,43 @@ public class Purchase extends Model {
 
                 return rs.getInt("total");
 
+
+    public static List<Purchase> findAllByUserId(Integer user_id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from purchases where user_id = ? order by created_at asc")) {
+            preparedStatement.setInt(1, user_id);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Purchase> purchases = new ArrayList<>();
+                while (rs.next()) {
+                    Purchase purchase = new Purchase(rs);
+                    purchases.add(purchase);
+                }
+
+
+                return purchases;
+
             }
         }
     }
+
+
+
+
+   /* public static List<Attraction> findAllByCityId(Integer cityId) throws SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where city_id = ? order by crated_at asc")) {
+            preparedStatement.setInt(1, cityId);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<Attraction> attractions = new ArrayList<>();
+                while (rs.next()) {
+                    Attraction attraction = new Attraction(rs);
+                    attractions.add(attraction);
+                }
+
+                return attractions;
+            }
+        }
+    }*/
+
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
@@ -94,6 +138,25 @@ public class Purchase extends Model {
     public static class NotFound extends Exception {
     }
 
+    public Date getCreatedAt(){
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt){
+        this.createdAt = createdAt;
+    }
+
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+
     public Integer getUserId() {
         return userId;
     }
@@ -117,4 +180,6 @@ public class Purchase extends Model {
     public double getPrice() {
         return price;
     }
+
+
 }

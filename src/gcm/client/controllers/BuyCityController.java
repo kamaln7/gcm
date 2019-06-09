@@ -87,7 +87,7 @@ public class BuyCityController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input1);
             FindSubscriptionCommand.Output output = response.getOutput(FindSubscriptionCommand.Output.class);
-           // new Alert(Alert.AlertType.WARNING, "Subscriptio already exists and ends at + " + output.subscription.getToDate()).show();
+            // new Alert(Alert.AlertType.WARNING, "Subscriptio already exists and ends at + " + output.subscription.getToDate()).show();
             try {
                 RenewSubscriptionController.loadView(ClientGUI.getPrimaryStage(), output.subscription, city.getSubscriptionPrice());
             }
@@ -97,7 +97,7 @@ public class BuyCityController {
             }
         }
         catch (Subscription.NotFound e){ // if not found then insert a new subscription
-            Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), price);
+            Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), price, false);
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
@@ -141,9 +141,9 @@ public class BuyCityController {
 
 
             // show the attractions to the costumer
-            ShowBoughtCityAttractionsController.loadView(new Stage(),this.city);
+            ShowBoughtCityAttractionsController.loadView(new Stage(),this.city.getId());
             //show the maps to the costumer
-            ShowBoughtCityMapsController.loadView(new Stage(),this.city);
+            ShowBoughtCityMapsController.loadView(new Stage(),this.city.getId());
 
         }  catch (Exception e) {
             ClientGUI.showErrorTryAgain();
