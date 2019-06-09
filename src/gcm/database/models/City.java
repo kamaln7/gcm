@@ -53,7 +53,7 @@ public class City extends Model {
         }
     }
 
-    private static List<City> findAll() throws SQLException {
+    public static List<City> findAll() throws SQLException {
         try (Statement statement = getDb().createStatement()) {
             try (ResultSet rs = statement.executeQuery("select * from cities order by country, name asc")) {
                 List<City> cities = new ArrayList<>();

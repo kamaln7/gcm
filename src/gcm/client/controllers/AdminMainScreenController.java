@@ -107,5 +107,15 @@ public class AdminMainScreenController {
         }
     }
 
+    @FXML
+    void showActivityReport(ActionEvent event) {
+        try {
+            ActivityReportController.loadView(new Stage());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+    }
+
 }
 

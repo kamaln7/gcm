@@ -57,7 +57,19 @@ public class Map extends Model {
             }
         }
     }
+public  static  int countAllForCities(int cityID) throws Exception
+{
+    try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) AS total from maps where city_id = ?")) {
+        preparedStatement.setInt(1, cityID);
 
+        try (ResultSet rs = preparedStatement.executeQuery()) {
+            if (!rs.next()) {
+                return 0;
+            }
+            return rs.getInt("total");
+        }
+    }
+}
     public static java.util.Map<Integer, List<Map>> findAllForCities(Set<Integer> cityIds) throws SQLException {
         if (cityIds.isEmpty()) {
             return new java.util.HashMap<>();
