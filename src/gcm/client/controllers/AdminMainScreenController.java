@@ -62,12 +62,12 @@ public class AdminMainScreenController {
 
     @FXML
     void showUserInfo(ActionEvent event) {
-        /*try {
+        try {
             ShowUserInfoController.loadView(new Stage());
         } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
-        }*/
+        }
     }
     @FXML
     void Approve(ActionEvent event) {
