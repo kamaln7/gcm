@@ -2,15 +2,17 @@ package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
 import gcm.commands.FindActiveSubscriptionByUserIDCommand;
-import gcm.commands.FindCityByIDCommand;
 import gcm.commands.Input;
 import gcm.commands.Response;
+import gcm.database.models.Subscription;
 import gcm.database.models.User;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -21,16 +23,26 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ResourceBundle;
 
-public class ActiveSubscriptionsController {
+public class ActiveSubscriptionsController implements Initializable {
     @FXML
-    private TableView<subscriptionInfo> tableList;
-
-    @FXML
-    private TableColumn<subscriptionInfo, String> city_country_column;
+    private TableView<Subscription> tableList;
 
     @FXML
-    private TableColumn<subscriptionInfo, String> expiration_date_column;
+    private TableColumn<Subscription, String> city_country_column;
+
+    @FXML
+    private TableColumn<Subscription, String> expiration_date_column;
+
+    private ObservableList oblist = FXCollections.observableArrayList();
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        tableList.setItems(oblist);
+        city_country_column.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("cityTitle")));
+        expiration_date_column.setCellValueFactory(new PropertyValueFactory<>("toDate"));
+    }
 
     @FXML
     void close(ActionEvent event) {
@@ -43,15 +55,15 @@ public class ActiveSubscriptionsController {
     void showCityMapsAttractionsTours(ActionEvent event) {
         TablePosition pos = tableList.getSelectionModel().getSelectedCells().get(0);
         int row = pos.getRow();
-        subscriptionInfo item = tableList.getItems().get(row);
+        Subscription item = tableList.getItems().get(row);
 
         try {
             // show the attractions to the costumer
-            ShowBoughtCityAttractionsController.loadView(new Stage(), Integer.parseInt(item.getCityID()));
+            ShowBoughtCityAttractionsController.loadView(new Stage(), item.getCityId());
             //show the maps to the costumer
-            ShowBoughtCityMapsController.loadView(new Stage(), Integer.parseInt(item.getCityID()));
+            ShowBoughtCityMapsController.loadView(new Stage(), item.getCityId());
             //show the Tours to the costumer
-            ShowBoughtCityToursController.loadView(new Stage(), Integer.parseInt(item.getCityID()));
+            ShowBoughtCityToursController.loadView(new Stage(), item.getCityId());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,21 +76,7 @@ public class ActiveSubscriptionsController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindActiveSubscriptionByUserIDCommand.Output output = response.getOutput(FindActiveSubscriptionByUserIDCommand.Output.class);
 
-            city_country_column.setCellValueFactory(new PropertyValueFactory<>("city_country"));
-            expiration_date_column.setCellValueFactory(new PropertyValueFactory<>("expiration_date"));
-
-
-            ObservableList<subscriptionInfo> oblist = FXCollections.observableArrayList();
-            for (int i = 0; i < output.subscriptions.size(); i++) {
-
-                Input input2 = new FindCityByIDCommand.Input(output.subscriptions.get(i).getCityId());
-                Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
-                FindCityByIDCommand.Output output2 = response2.getOutput(FindCityByIDCommand.Output.class);
-
-                String city_country = output2.city.getName() + ", " + output2.city.getCountry();
-                oblist.add(new subscriptionInfo(String.valueOf(output.subscriptions.get(i).getCityId()), city_country, String.valueOf(output.subscriptions.get(i).getToDate())));
-            }
-            tableList.setItems(oblist);
+            oblist.setAll(output.subscriptions);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,32 +97,9 @@ public class ActiveSubscriptionsController {
 
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Active Subscriptions - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
-    }
-
-    public class subscriptionInfo {
-
-        private String cityID, city_country, expiration_date;
-
-        public subscriptionInfo(String cityID, String city_country, String expiration_date) {
-            this.cityID = cityID;
-            this.city_country = city_country;
-            this.expiration_date = expiration_date;
-        }
-
-        public String getCityID() {
-            return cityID;
-        }
-
-        public String getCity_country() {
-            return city_country;
-        }
-
-        public String getExpiration_date() {
-            return expiration_date;
-        }
     }
 }
 
