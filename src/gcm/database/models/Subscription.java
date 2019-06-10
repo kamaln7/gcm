@@ -88,7 +88,18 @@ public class Subscription extends Model {
             }
         }
     }
+    public static int countForUser (Integer id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where user_id = ?")){
+            preparedStatement.setInt(1, id);
 
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+                return rs.getInt("total");
+            }
+        }
+    }
 
     public static Subscription findSubscriptionbyIDs(Integer userId, Integer cityId, Date fromDate) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ? AND city_id = ? AND from_date <= ? AND to_date >= ?")) {

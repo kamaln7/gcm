@@ -89,12 +89,12 @@ public class AdminMainScreenController implements Initializable {
 
     @FXML
     void showUserInfo(ActionEvent event) {
-        /*try {
+        try {
             ShowUserInfoController.loadView(new Stage());
         } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
-        }*/
+        }
     }
 
     @FXML
