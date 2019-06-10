@@ -1,13 +1,40 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
+import gcm.database.models.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class AdminMainScreenController {
+public class AdminMainScreenController implements Initializable {
+
+    @FXML
+    private TabPane adminTabPane;
+    @FXML
+    private Tab adminContentManagerTab;
+    @FXML
+    private Tab adminCompanyManagerTab;
+    @FXML
+    private Tab adminContentEmployeeTab;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        User user = ClientGUI.getCurrentUser();
+        if (!user.hasRole("content_manager")) {
+            adminTabPane.getTabs().remove(adminContentManagerTab);
+        }
+        if (!user.hasRole("company_manager")) {
+            adminTabPane.getTabs().remove(adminCompanyManagerTab);
+        }
+    }
+
     @FXML
     void createCity(ActionEvent event) {
         try {
@@ -118,6 +145,5 @@ public class AdminMainScreenController {
             e.printStackTrace();
         }
     }
-
 }
 
