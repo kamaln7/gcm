@@ -1,7 +1,11 @@
 package gcm.database.models;
 
 import java.sql.*;
+
+import java.time.LocalDate;
+
 import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +57,39 @@ public class Subscription extends Model {
             }
         }
     }
+    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ?")) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(from.atStartOfDay()));
+            preparedStatement.setTimestamp(3, Timestamp.valueOf(to.atStartOfDay()));
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+
+                return rs.getInt("total");
+
+            }
+        }
+    }
+    public static int countRenewals(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ? and renew = 1")) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(from.atStartOfDay()));
+            preparedStatement.setTimestamp(3, Timestamp.valueOf(to.atStartOfDay()));
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+
+                return rs.getInt("total");
+
+            }
+        }
+    }
+
 
 
     public static Subscription findSubscriptionbyIDs(Integer userId,Integer cityId,Date fromDate) throws SQLException, NotFound {
