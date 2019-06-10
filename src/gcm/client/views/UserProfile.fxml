@@ -63,7 +63,7 @@
             </children>
         </VBox>
         <HBox layoutX="14.0" layoutY="189.0" prefHeight="138.0" prefWidth="195.0" spacing="15.0"
-              AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+              AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" fx:id="buttonsBox">
             <children>
                 <Button mnemonicParsing="false" onAction="#purchase_history" prefHeight="27.0" prefWidth="159.0"
                         text="Purchase History"/>
