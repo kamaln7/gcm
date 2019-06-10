@@ -6,8 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class User extends Model {
     // fields
@@ -310,5 +312,22 @@ public class User extends Model {
      */
     public Boolean hasRole(String role) {
         return this.hasRole(ROLES.getOrDefault(role, 100000));
+    }
+    /**
+     * @param
+     * @return List of all users with role = user in DataBase
+     */
+    public static List<User> findAllUsers() throws SQLException {
+        try (Statement statement = getDb().createStatement()) {
+            try (ResultSet rs = statement.executeQuery("select * from users where role = 'user' order by last_name, first_name asc")) {
+                List<User> users = new ArrayList<>();
+                while (rs.next()) {
+                    User user = new User(rs);
+                    users.add(user);
+                }
+
+                return users;
+            }
+        }
     }
 }
