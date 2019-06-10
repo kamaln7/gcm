@@ -82,7 +82,7 @@ public class Purchase extends Model {
 
 
     public static List<Purchase> findAllByUserId(Integer user_id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from purchases where user_id = ? order by created_at asc")) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from purchases where user_id = ? order by id asc")) {
             preparedStatement.setInt(1, user_id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -98,25 +98,6 @@ public class Purchase extends Model {
             }
         }
     }
-
-
-
-
-   /* public static List<Attraction> findAllByCityId(Integer cityId) throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where city_id = ? order by crated_at asc")) {
-            preparedStatement.setInt(1, cityId);
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                List<Attraction> attractions = new ArrayList<>();
-                while (rs.next()) {
-                    Attraction attraction = new Attraction(rs);
-                    attractions.add(attraction);
-                }
-
-                return attractions;
-            }
-        }
-    }*/
-
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table

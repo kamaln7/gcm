@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ShowPurchaseHistoryController implements Initializable {
+public class ShowPurchaseHistoryController {
     @FXML
     private TableView<PurchaseHistory> tableView;
 
@@ -36,6 +36,8 @@ public class ShowPurchaseHistoryController implements Initializable {
 
     @FXML
     private TableColumn<PurchaseHistory, String> cityCol;
+
+    public int myUserID;
 
     public class PurchaseHistory{
         private SimpleIntegerProperty id;
@@ -65,16 +67,10 @@ public class ShowPurchaseHistoryController implements Initializable {
     }
 
 
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void show(int currentUserID) {
 
 
-
-
-
-
-        Input input = new FindPurchaseByUserIDCommand.Input(ClientGUI.getCurrentUser().getId());
+        Input input = new FindPurchaseByUserIDCommand.Input(currentUserID);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindPurchaseByUserIDCommand.Output output = response.getOutput(FindPurchaseByUserIDCommand.Output.class);
@@ -88,7 +84,6 @@ public class ShowPurchaseHistoryController implements Initializable {
             for(int i=0;i<output.purchases.size(); i ++) {
                 String cityname;
                 String countryname;
-                String date;
 
                 Input input2 = new FindCityByIDCommand.Input(output.purchases.get(i).getCityId());
                 try{
@@ -103,7 +98,7 @@ public class ShowPurchaseHistoryController implements Initializable {
                             cityname + ", " + countryname,
                             output.purchases.get(i).getPrice(),
                             output.purchases.get(i).getCreatedAt().toString()));
-                    //System.out.println("DATE: " + output.purchases.get(i).getCreatedAt().toString());
+
                 }
                 catch (City.NotFound e) {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
@@ -125,70 +120,25 @@ public class ShowPurchaseHistoryController implements Initializable {
             e.printStackTrace();
         }
 
-
-
-
-        /*Input input = new FindPurchaseByUserIDCommand.Input(ClientGUI.getCurrentUser().getId());
-        try {
-            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            FindPurchaseByUserIDCommand.Output output = response.getOutput(FindPurchaseByUserIDCommand.Output.class);
-
-            idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-            dateCol.setCellValueFactory(new PropertyValueFactory<>("created_at"));
-            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-
-
-            ObservableList<Purchase> oblist = FXCollections.observableArrayList();
-
-
-            for(int i=0;i<output.purchases.size(); i ++) {
-                Purchase temp = new Purchase(output.purchases.get(i).getUserId(),
-                        output.purchases.get(i).getCityId(),
-                        output.purchases.get(i).getPrice());
-
-                temp.setId(output.purchases.get(i).getId());
-                temp.setCreatedAt(output.purchases.get(i).getCreatedAt());
-
-                System.out.println("DATE:" + output.purchases.get(i).getCreatedAt());
-
-
-
-                oblist.add(temp);
-
-            }
-
-            tableView.setItems(oblist);
-
-        } catch (City.NotFound e) {
-
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }*/
-
     }
 
-    public static void loadView(Stage stage) throws IOException {
+    public static void loadView(Stage stage,int currentUserID) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ShowPurchaseHistory.fxml");
         FXMLLoader loader = new FXMLLoader(url);
 
         AnchorPane pane = loader.load();
         Scene scene = new Scene(pane);
+        ShowPurchaseHistoryController controller = loader.getController();
+
+        controller.show(currentUserID);
+
         // setting the stage
         stage.setScene(scene);
 
         stage.setResizable(true);
 
-
-
-
         stage.showAndWait();
 
     }
-
-
-
-
-
 
 }
