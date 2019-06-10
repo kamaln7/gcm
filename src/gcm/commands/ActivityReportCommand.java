@@ -104,7 +104,8 @@ public class ActivityReportCommand implements Command {
                     Purchase.countByPeriod(city.getId(), input.from , input.to),
                     Subscription.countByPeriod(city.getId(), input.from , input.to),
                     Subscription.countRenewals(city.getId(), input.from , input.to),
-                    0, 0 ));
+                    View.countByPeriod(city.getId(), input.from , input.to),
+                    Download.countByPeriod(city.getId(), input.from , input.to) ));
         }
 
         return new Output(activityReportsList);

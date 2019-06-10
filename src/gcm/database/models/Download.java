@@ -3,6 +3,8 @@ package gcm.database.models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Download extends Model {
@@ -61,6 +63,24 @@ public class Download extends Model {
             preparedStatement.executeUpdate();
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new AlreadyExists();
+        }
+    }
+
+    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
+        Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
+        Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from maps, downloads where maps.city_id = ? and maps.id = downloads.model_id and downloads.model = 'map' and downloads.created_at >= ? and downloads.created_at <= ?")) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setTimestamp(2, fromDate);
+            preparedStatement.setTimestamp(3, toDate);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+
+                return rs.getInt("total");
+            }
         }
     }
 
