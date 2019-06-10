@@ -18,7 +18,6 @@
                 <Label text="No subscriptions found"/>
             </placeholder>
             <columns>
-                <TableColumn fx:id="cityID_column" minWidth="0.0" prefWidth="62.0" text="City ID"/>
                 <TableColumn fx:id="city_country_column" minWidth="0.0" prefWidth="179.0" text="City, Country"/>
                 <TableColumn fx:id="expiration_date_column" minWidth="0.0" prefWidth="240.0" text="Expiration Date"/>
             </columns>
