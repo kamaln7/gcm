@@ -168,6 +168,8 @@ public class ActivityReportController {
                 filteredData.setPredicate(ActivityReport -> {
                     // If filter text is empty, display all data.
                     if (newValue == null || newValue.isEmpty()) {
+
+
                         return true;
                     }
 

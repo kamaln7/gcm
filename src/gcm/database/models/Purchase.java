@@ -61,7 +61,18 @@ public class Purchase extends Model {
         }
     }
 
+    public static int countForUser (Integer id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from purchases where user_id = ?")){
+            preparedStatement.setInt(1, id);
 
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+                return rs.getInt("total");
+            }
+        }
+    }
     public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
         Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
         Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
