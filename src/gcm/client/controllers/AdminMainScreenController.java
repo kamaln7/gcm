@@ -69,6 +69,7 @@ public class AdminMainScreenController {
             e.printStackTrace();
         }*/
     }
+
     @FXML
     void Approve(ActionEvent event) {
         try {
@@ -87,6 +88,7 @@ public class AdminMainScreenController {
             e.printStackTrace();
         }
     }
+
     @FXML
     void addExistingAttraction(ActionEvent event) {
         try {
@@ -103,14 +105,6 @@ public class AdminMainScreenController {
             AddTourController.loadView(new Stage());
         } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }
-    }
-    @FXML
-    void showProfile(ActionEvent event) {
-        try {
-            UserProfileController.loadView(new Stage(), ClientGUI.getCurrentUser());
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
