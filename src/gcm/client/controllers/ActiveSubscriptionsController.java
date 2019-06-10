@@ -14,12 +14,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,6 +37,8 @@ public class ActiveSubscriptionsController implements Initializable {
 
     @FXML
     private TableColumn<Subscription, String> expiration_date_column;
+    @FXML
+    private TableColumn<Subscription, Void> buttonCol;
 
     private ObservableList oblist = FXCollections.observableArrayList();
 
@@ -42,34 +47,67 @@ public class ActiveSubscriptionsController implements Initializable {
         tableList.setItems(oblist);
         city_country_column.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("cityTitle")));
         expiration_date_column.setCellValueFactory(new PropertyValueFactory<>("toDate"));
+        buttonCol.setCellFactory(new Callback<TableColumn<Subscription, Void>, TableCell<Subscription, Void>>() {
+            @Override
+            public TableCell<Subscription, Void> call(TableColumn<Subscription, Void> param) {
+                final TableCell<Subscription, Void> cell = new TableCell<Subscription, Void>() {
+                    private final HBox btns = new HBox();
+
+                    private final Button attractionsBtn = new Button("Attractions");
+                    private final Button mapsBtn = new Button("Maps");
+                    private final Button toursBtn = new Button("Tours");
+
+                    {
+                        attractionsBtn.setOnAction((ActionEvent event) -> {
+                            try {
+                                ShowBoughtCityAttractionsController.loadView(new Stage(), getSubscription().getCityId());
+                            } catch (IOException e) {
+                                ClientGUI.showErrorTryAgain();
+                                e.printStackTrace();
+                            }
+                        });
+                        mapsBtn.setOnAction((ActionEvent event) -> {
+                            try {
+                                ShowBoughtCityMapsController.loadView(new Stage(), getSubscription().getCityId());
+                            } catch (IOException e) {
+                                ClientGUI.showErrorTryAgain();
+                                e.printStackTrace();
+                            }
+                        });
+                        toursBtn.setOnAction((ActionEvent event) -> {
+                            try {
+                                ShowBoughtCityToursController.loadView(new Stage(), getSubscription().getCityId());
+                            } catch (IOException e) {
+                                ClientGUI.showErrorTryAgain();
+                                e.printStackTrace();
+                            }
+                        });
+
+                        btns.setSpacing(5);
+                        btns.getChildren().addAll(attractionsBtn, mapsBtn, toursBtn);
+                    }
+
+                    public Subscription getSubscription() {
+                        return getTableView().getItems().get(getIndex());
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btns);
+                        }
+                    }
+                };
+
+                return cell;
+            }
+        });
     }
 
-    @FXML
-    void close(ActionEvent event) {
-        Stage stage = (Stage) tableList.getScene().getWindow();
-        // do what you have to do
-        stage.close();
-    }
-
-    @FXML
-    void showCityMapsAttractionsTours(ActionEvent event) {
-        TablePosition pos = tableList.getSelectionModel().getSelectedCells().get(0);
-        int row = pos.getRow();
-        Subscription item = tableList.getItems().get(row);
-
-        try {
-            // show the attractions to the costumer
-            ShowBoughtCityAttractionsController.loadView(new Stage(), item.getCityId());
-            //show the maps to the costumer
-            ShowBoughtCityMapsController.loadView(new Stage(), item.getCityId());
-            //show the Tours to the costumer
-            ShowBoughtCityToursController.loadView(new Stage(), item.getCityId());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setCities(User user) {
+    private void setUser(User user) {
         //command
         Input input = new FindActiveSubscriptionByUserIDCommand.Input(user.getId());
         try {
@@ -77,12 +115,9 @@ public class ActiveSubscriptionsController implements Initializable {
             FindActiveSubscriptionByUserIDCommand.Output output = response.getOutput(FindActiveSubscriptionByUserIDCommand.Output.class);
 
             oblist.setAll(output.subscriptions);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -93,12 +128,11 @@ public class ActiveSubscriptionsController implements Initializable {
         Scene scene = new Scene(pane);
 
         ActiveSubscriptionsController controller = loader.getController();
-        controller.setCities(user);
+        controller.setUser(user);
 
         // setting the stage
         primaryStage.setScene(scene);
         primaryStage.setTitle("Active Subscriptions - GCM 2019");
-        primaryStage.setResizable(false);
         primaryStage.show();
     }
 }
