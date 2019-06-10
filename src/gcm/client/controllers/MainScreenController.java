@@ -1,6 +1,7 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
+import gcm.database.models.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,14 +26,15 @@ public class MainScreenController implements Initializable {
 
     //This method is called upon fxml load
     public void initialize(URL location, ResourceBundle resources) {
+        User user = ClientGUI.getCurrentUser();
         // set welcome text
         userDetailsText.setText(String.format(
                 "Welcome, %s!",
-                ClientGUI.getCurrentUser().getUsername()
+                user.getUsername()
         ));
 
         // show admin tab if has access
-        if (ClientGUI.getCurrentUser().hasRole("employee")) {
+        if (user.hasRole("employee")) {
             try {
                 Tab tab = new Tab();
                 tab.setText("Admin");
@@ -43,7 +45,7 @@ public class MainScreenController implements Initializable {
             }
         }
         // show subscriptions tab only if user is a user role
-        if (ClientGUI.getCurrentUser().hasExactRole("user")) {
+        if (user.hasExactRole("user")) {
             try {
                 Tab tab = new Tab();
                 tab.setText("Subscriptions");
@@ -55,7 +57,7 @@ public class MainScreenController implements Initializable {
         }
 
         // show order history tab only if user is a user role
-        if (ClientGUI.getCurrentUser().hasExactRole("user")) {
+        if (user.hasExactRole("user")) {
             try {
                 Tab tab = new Tab();
                 tab.setText("Order History");
