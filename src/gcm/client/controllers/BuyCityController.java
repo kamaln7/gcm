@@ -31,8 +31,8 @@ public class BuyCityController {
 
     public void setPrice(City city){
 
-        purchaseprice.setText("subscription price is: " + city.getSubscriptionPrice());
-        subscriptionprice.setText("purchase price is: " + city.getPurchasePrice());
+        subscriptionprice.setText("subscription price is: " + city.getSubscriptionPrice());
+        purchaseprice.setText("purchase price is: " + city.getPurchasePrice());
 
     }
 
@@ -40,10 +40,6 @@ public class BuyCityController {
 
         this.city = city;
     }
-
-
-
-
 
 
     public static void loadView(Stage primaryStage, City city) throws IOException {
@@ -73,8 +69,6 @@ public class BuyCityController {
         int user_id = ClientGUI.getCurrentUser().getId();
         double price = city.getSubscriptionPrice();
 
-        Date temp;
-
 
         Date from_date = new Date();
         Calendar to_date = Calendar.getInstance();
@@ -87,9 +81,8 @@ public class BuyCityController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input1);
             FindSubscriptionCommand.Output output = response.getOutput(FindSubscriptionCommand.Output.class);
-            // new Alert(Alert.AlertType.WARNING, "Subscriptio already exists and ends at + " + output.subscription.getToDate()).show();
             try {
-                RenewSubscriptionController.loadView(ClientGUI.getPrimaryStage(), output.subscription, city.getSubscriptionPrice());
+                RenewSubscriptionController.loadView(new Stage(), output.subscription, city.getSubscriptionPrice());
             }
             catch (Exception e) {
                 ClientGUI.showErrorTryAgain();
@@ -102,9 +95,7 @@ public class BuyCityController {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
                 new Alert(Alert.AlertType.INFORMATION, " your subscription end at: " + to_date.getTime()).show();
-                try {
-                    MainScreenController.loadView(ClientGUI.getPrimaryStage());
-                }catch (Exception e1){}
+
             }
             catch (Exception e1) {
                 ClientGUI.showErrorTryAgain();
@@ -116,11 +107,6 @@ public class BuyCityController {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
-
-
-
-
-
 
 
     }
