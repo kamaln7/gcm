@@ -1,8 +1,10 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
-import gcm.database.models.City;
+import gcm.commands.FindActiveSubscriptionByUserIDCommand;
+import gcm.commands.FindCityByIDCommand;
+import gcm.commands.Input;
+import gcm.commands.Response;
 import gcm.database.models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,7 +17,6 @@ import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,9 +25,6 @@ import java.net.URL;
 public class ActiveSubscriptionsController {
     @FXML
     private TableView<subscriptionInfo> tableList;
-
-    @FXML
-    private TableColumn<subscriptionInfo, String> cityID_column;
 
     @FXML
     private TableColumn<subscriptionInfo, String> city_country_column;
@@ -47,43 +45,42 @@ public class ActiveSubscriptionsController {
         int row = pos.getRow();
         subscriptionInfo item = tableList.getItems().get(row);
 
-
         try {
             // show the attractions to the costumer
-            ShowBoughtCityAttractionsController.loadView(new Stage(),Integer.parseInt(item.getCityID()));
+            ShowBoughtCityAttractionsController.loadView(new Stage(), Integer.parseInt(item.getCityID()));
             //show the maps to the costumer
-            ShowBoughtCityMapsController.loadView(new Stage(),Integer.parseInt(item.getCityID()));
+            ShowBoughtCityMapsController.loadView(new Stage(), Integer.parseInt(item.getCityID()));
             //show the Tours to the costumer
             ShowBoughtCityToursController.loadView(new Stage(), Integer.parseInt(item.getCityID()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private void setCities(User user){
+
+    private void setCities(User user) {
         //command
         Input input = new FindActiveSubscriptionByUserIDCommand.Input(user.getId());
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindActiveSubscriptionByUserIDCommand.Output output = response.getOutput(FindActiveSubscriptionByUserIDCommand.Output.class);
 
-            cityID_column.setCellValueFactory(new PropertyValueFactory<>("cityID"));
             city_country_column.setCellValueFactory(new PropertyValueFactory<>("city_country"));
             expiration_date_column.setCellValueFactory(new PropertyValueFactory<>("expiration_date"));
 
 
             ObservableList<subscriptionInfo> oblist = FXCollections.observableArrayList();
-            for(int i=0;i<output.subscriptions.size(); i ++) {
+            for (int i = 0; i < output.subscriptions.size(); i++) {
 
                 Input input2 = new FindCityByIDCommand.Input(output.subscriptions.get(i).getCityId());
                 Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
                 FindCityByIDCommand.Output output2 = response2.getOutput(FindCityByIDCommand.Output.class);
 
-                String city_country= output2.city.getName()+", "+output2.city.getCountry();
-                oblist.add(new subscriptionInfo(String.valueOf(output.subscriptions.get(i).getCityId()),city_country ,String.valueOf(output.subscriptions.get(i).getToDate())));
+                String city_country = output2.city.getName() + ", " + output2.city.getCountry();
+                oblist.add(new subscriptionInfo(String.valueOf(output.subscriptions.get(i).getCityId()), city_country, String.valueOf(output.subscriptions.get(i).getToDate())));
             }
             tableList.setItems(oblist);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -106,7 +103,8 @@ public class ActiveSubscriptionsController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-    public class subscriptionInfo{
+
+    public class subscriptionInfo {
 
         private String cityID, city_country, expiration_date;
 
