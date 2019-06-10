@@ -1,79 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
-
-<AnchorPane prefHeight="574.0" prefWidth="574.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.UserProfileController">
-   <children>
-      <Text layoutX="213.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Profile" textAlignment="CENTER" wrappingWidth="147.69140625">
-         <font>
-            <Font size="27.0" />
-         </font>
-      </Text>
-      <Text layoutX="31.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name:">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="first_name_field" layoutX="113.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text layoutX="31.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name:">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="last_name_field" layoutX="113.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text layoutX="31.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="username_field" layoutX="113.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text layoutX="31.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email:">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="email_field" layoutX="113.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text layoutX="31.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone:">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="phone_field" layoutX="113.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text layoutX="31.0" layoutY="276.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Id:">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="user_id_field" layoutX="113.0" layoutY="276.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Button layoutX="44.0" layoutY="317.0" mnemonicParsing="false" onAction="#purchase_history" text="Purchase History" />
-      <Button layoutX="171.0" layoutY="317.0" mnemonicParsing="false" onAction="#subscription_history" text="Subscription History" />
-      <Button layoutX="44.0" layoutY="365.0" mnemonicParsing="false" onAction="#active_subscriptions" text="Active Subscriptions" />
-   </children>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="327.0" prefWidth="548.0" stylesheets="@../stylesheets/main.css"
+            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="gcm.client.controllers.UserProfileController">
+    <children>
+        <Text layoutX="14.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;"
+              text="User Profile" wrappingWidth="269.0"/>
+        <VBox layoutX="14.0" layoutY="59.0" prefWidth="100.0" spacing="5.0">
+            <children>
+                <HBox prefWidth="200.0" spacing="5.0">
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="First Name:" style="-fx-font-weight: bold">
+                        </Text>
+                        <Text fx:id="first_name_field" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                              wrappingWidth="140.826171875">
+                        </Text>
+                    </children>
+                </HBox>
+                <HBox prefWidth="200.0" spacing="5.0">
+                    <children>
+                        <Text layoutX="31.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name:"
+                              style="-fx-font-weight: bold">
+                        </Text>
+                        <Text fx:id="last_name_field" layoutX="113.0" layoutY="143.0" strokeType="OUTSIDE"
+                              strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
+                        </Text>
+                    </children>
+                </HBox>
+                <HBox spacing="5.0">
+                    <children>
+                        <Text layoutX="31.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:"
+                              style="-fx-font-weight: bold">
+                        </Text>
+                        <Text fx:id="username_field" layoutX="113.0" layoutY="176.0" strokeType="OUTSIDE"
+                              strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
+                        </Text>
+                    </children>
+                </HBox>
+                <HBox prefWidth="200.0" spacing="5.0">
+                    <children>
+                        <Text layoutX="31.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email:"
+                              style="-fx-font-weight: bold">
+                        </Text>
+                        <Text fx:id="email_field" layoutX="113.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              text="Text" wrappingWidth="140.826171875">
+                        </Text>
+                    </children>
+                </HBox>
+                <HBox prefWidth="200.0" spacing="5.0">
+                    <children>
+                        <Text layoutX="31.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone:"
+                              style="-fx-font-weight: bold">
+                        </Text>
+                        <Text fx:id="phone_field" layoutX="113.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              text="Text" wrappingWidth="140.826171875">
+                        </Text>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+        <HBox layoutX="14.0" layoutY="189.0" prefHeight="138.0" prefWidth="195.0" spacing="15.0"
+              AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#purchase_history" prefHeight="27.0" prefWidth="159.0"
+                        text="Purchase History"/>
+                <Button mnemonicParsing="false" onAction="#subscription_history" prefHeight="27.0" prefWidth="159.0"
+                        text="Subscription History"/>
+                <Button mnemonicParsing="false" onAction="#active_subscriptions" prefWidth="159.0"
+                        text="Active Subscriptions"/>
+            </children>
+        </HBox>
+    </children>
 </AnchorPane>

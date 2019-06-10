@@ -54,7 +54,6 @@ public class MainScreenController implements Initializable {
             }
         }
 
-
         // show order history tab only if user is a user role
         if (ClientGUI.getCurrentUser().hasExactRole("user")) {
             try {
@@ -65,6 +64,22 @@ public class MainScreenController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        try {
+            Tab tab = new Tab();
+            tab.setText("Profile");
+
+            URL url = MainScreenController.class.getResource("/gcm/client/views/UserProfile.fxml");
+            FXMLLoader loader = new FXMLLoader(url);
+            tab.setContent(loader.load());
+
+            UserProfileController controller = loader.getController();
+            controller.setFields(ClientGUI.getCurrentUser());
+
+            mainTabPane.getTabs().add(tab);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
