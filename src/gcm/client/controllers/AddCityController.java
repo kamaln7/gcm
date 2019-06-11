@@ -56,6 +56,10 @@ public class AddCityController {
         return controller.getCity();
     }
 
+    /**
+     * add the city to the database
+     * @param event
+     */
     @FXML
     void addCityToDB(ActionEvent event) {
         String name = namefield.getText();
@@ -84,6 +88,11 @@ public class AddCityController {
         }
     }
 
+    /**
+     * validate the price
+     * @param text
+     * @return
+     */
     private boolean validate(String text) {
         return text.matches("^[0-9]+(\\.[0-9]+)?$");
     }
