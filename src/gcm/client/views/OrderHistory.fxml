@@ -2,12 +2,20 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Text?>
-
-<AnchorPane prefHeight="203.0" prefWidth="423.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.OrderHistoryController">
-   <children>
-      <Text layoutX="7.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Order History" textAlignment="CENTER" wrappingWidth="210.58642578125" />
-      <Button layoutX="25.0" layoutY="72.0" mnemonicParsing="false" onAction="#showpurchasehistory" prefHeight="29.0" prefWidth="193.0" text="Show Purchase History" />
-      <Button layoutX="25.0" layoutY="113.0" mnemonicParsing="false" onAction="#showsubscriptionhistory" text="Show Subscription History" />
-   </children>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane prefHeight="125.0" prefWidth="192.0" stylesheets="@../stylesheets/main.css"
+            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="gcm.client.controllers.OrderHistoryController">
+    <children>
+        <VBox spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#active_subscriptions" prefWidth="159.0"
+                        text="Active Subscriptions"/>
+                <Button mnemonicParsing="false" onAction="#subscription_history" prefHeight="27.0" prefWidth="159.0"
+                        text="Subscription History"/>
+                <Button mnemonicParsing="false" onAction="#purchase_history" prefHeight="27.0" prefWidth="159.0"
+                        text="Purchase History"/>
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>

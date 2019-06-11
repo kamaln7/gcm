@@ -4,10 +4,8 @@ import gcm.client.bin.ClientGUI;
 import gcm.commands.ActivityReportCommand;
 import gcm.commands.Input;
 import gcm.commands.Response;
-import gcm.commands.ReviewPendingPriceChangesCommand;
 import gcm.database.models.City;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +14,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -25,10 +22,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.ResourceBundle;
 
 public class ActivityReportController {
 
@@ -38,7 +35,7 @@ public class ActivityReportController {
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Activity Report - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
     }
@@ -101,6 +98,7 @@ public class ActivityReportController {
         public SimpleIntegerProperty purchasesNoProperty() {
             return purchasesNo;
         }
+
         public int getSubscriptionsNo() {
             return subscriptionsNo.get();
         }
@@ -133,13 +131,13 @@ public class ActivityReportController {
             return downloadsNo;
         }
 
+
     }
 
     /**
      * Fill ObservableList
      */
     void ObservableList() {
-
         cityIdColumn.setCellValueFactory(new PropertyValueFactory<>("cityID"));
         cityColumn.setCellValueFactory(new PropertyValueFactory<>("cityName"));
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("countryName"));
@@ -158,13 +156,13 @@ public class ActivityReportController {
      */
     @FXML
     void showResults(ActionEvent event) {
-        LocalDate from = selectFromDate(event);
-        LocalDate to = selectToDate(event);
-        if (from == null || to == null) {
+        if (fromDate.getValue() == null || toDate.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
             alert.show();
             return;
         }
+        Date from = selectFromDate(event);
+        Date to = selectToDate(event);
         Input input = new ActivityReportCommand.Input(from, to, -1);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -173,7 +171,6 @@ public class ActivityReportController {
             ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
 
             for (int i = 0; i < output.cities.size(); i++) {
-
                 oblist.add(new ActivityReport(output.cities.get(i).getId(),
                         output.cities.get(i).getName(), output.cities.get(i).getCountry(),
                         output.maps.get(i), output.purchases.get(i),
@@ -229,20 +226,21 @@ public class ActivityReportController {
 
     /**
      * Cohoose one city by CityPicker
+     *
      * @param event
      */
     @FXML
     void chooseCity(ActionEvent event) {
-        LocalDate from = selectFromDate(event);
-        LocalDate to = selectToDate(event);
-        if (from == null || to == null) {
+        if (fromDate.getValue() == null || toDate.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
             alert.show();
             return;
         }
+        Date from = selectFromDate(event);
+        Date to = selectToDate(event);
         try {
             City city = AdminTablePickerCityController.loadViewAndWait(new Stage());
-            if(city == null) return;
+            if (city == null) return;
             Input input = new ActivityReportCommand.Input(from, to, city.getId());
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -265,44 +263,65 @@ public class ActivityReportController {
             e.printStackTrace();
             ClientGUI.showErrorTryAgain();
         }
-        //Input input = new ActivityReportCommand.Input(from, to, cityId);
-
-
-
     }
+
     @FXML
     private TableView<ActivityReport> table;
     @FXML
     private TableColumn<ActivityReport, Integer> cityIdColumn;
     @FXML
     private TableColumn<ActivityReport, String> cityColumn;
+
     @FXML
     private TableColumn<ActivityReport, String> countryColumn;
+
+
     @FXML
     private TableColumn<ActivityReport, Integer> mapsColumn;
+
     @FXML
     private TableColumn<ActivityReport, Integer> purchasesColumn;
+
     @FXML
     private TableColumn<ActivityReport, Integer> subscriptionsColumn;
+
     @FXML
     private TableColumn<ActivityReport, Integer> renewalsColumn;
+
     @FXML
     private TableColumn<ActivityReport, Integer> viewsColumn;
+
     @FXML
     private TableColumn<ActivityReport, Integer> downloadsColumn;
     @FXML
     private TextField searchField;
+
     @FXML
     private DatePicker fromDate;
+
     @FXML
     private DatePicker toDate;
+
     @FXML
-    LocalDate selectFromDate(ActionEvent event) {
-        return fromDate.getValue();
+    Date selectFromDate(ActionEvent event) {
+        return LocalDateToDate(fromDate.getValue());
     }
+
     @FXML
-    LocalDate selectToDate(ActionEvent event) {
-        return toDate.getValue();
+    Date selectToDate(ActionEvent event) {
+        return LocalDateToDate(toDate.getValue());
     }
+
+    private static Date LocalDateToDate(LocalDate localDate) {
+        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+        return Date.from(instant);
+    }
+
+    @FXML
+    void search(ActionEvent event) {
+
+    }
+
+
 }
 

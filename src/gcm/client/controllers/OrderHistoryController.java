@@ -14,10 +14,6 @@ import java.net.URL;
 
 public class OrderHistoryController {
 
-
-
-
-
     public static void loadView(Stage primaryStage, City city) throws IOException {
         URL url = OrderHistoryController.class.getResource("/gcm/client/views/OrderHistory.fxml");
         FXMLLoader loader = new FXMLLoader(url);
@@ -33,40 +29,32 @@ public class OrderHistoryController {
     }
 
     @FXML
-    void showpurchasehistory(ActionEvent event) {
-
+    void active_subscriptions(ActionEvent event) {
         try {
-            ShowPurchaseHistoryController.loadView(new Stage(),ClientGUI.getCurrentUser().getId());
-        }
-        catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
+            ActiveSubscriptionsController.loadView(new Stage(), ClientGUI.getCurrentUser().getId());
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 
     @FXML
-    void showsubscriptionhistory(ActionEvent event) {
-
+    void purchase_history(ActionEvent event) {
         try {
-            ShowSubscriptionHistoryController.loadView(new Stage(),ClientGUI.getCurrentUser().getId());
-        }
-        catch (Exception e) {
+            ShowPurchaseHistoryController.loadView(new Stage(), ClientGUI.getCurrentUser().getId());
+        } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
-
     }
 
-
-
-
-
-
-
-
-
-
+    @FXML
+    void subscription_history(ActionEvent event) {
+        try {
+            ShowSubscriptionHistoryController.loadView(new Stage(), ClientGUI.getCurrentUser().getId());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+    }
 }
 
