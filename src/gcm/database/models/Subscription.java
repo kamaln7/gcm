@@ -1,7 +1,6 @@
 package gcm.database.models;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,11 +58,11 @@ public class Subscription extends Model {
         }
     }
 
-    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
+    public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ?")) {
             preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, Timestamp.valueOf(from.atStartOfDay()));
-            preparedStatement.setTimestamp(3, Timestamp.valueOf(to.atStartOfDay()));
+            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
@@ -76,11 +75,11 @@ public class Subscription extends Model {
         }
     }
 
-    public static int countRenewals(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
+    public static int countRenewals(Integer id, Date from, Date to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ? and renew = 1")) {
             preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, Timestamp.valueOf(from.atStartOfDay()));
-            preparedStatement.setTimestamp(3, Timestamp.valueOf(to.atStartOfDay()));
+            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {

@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.Date;
 
 public class Download extends Model {
@@ -28,6 +27,7 @@ public class Download extends Model {
 
     /**
      * fill an instance from result set
+     *
      * @param rs result set
      * @throws SQLException
      */
@@ -42,6 +42,7 @@ public class Download extends Model {
 
     /**
      * insert a download to the database
+     *
      * @throws SQLException
      */
     public void insert() throws SQLException {
@@ -55,13 +56,11 @@ public class Download extends Model {
         }
     }
 
-    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException {
-        Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
-        Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
+    public static int countByPeriod(Integer id, Date from, Date to) throws SQLException {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from maps, downloads where maps.city_id = ? and maps.id = downloads.model_id and downloads.model = 'map' and downloads.created_at >= ? and downloads.created_at <= ?")) {
             preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, fromDate);
-            preparedStatement.setTimestamp(3, toDate);
+            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
