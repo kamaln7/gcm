@@ -59,6 +59,16 @@ public class Attraction extends Model {
             }
         }
     }
+    public static void updateAttraction(int attraction_id,String attraction_type, String attraction_location, String description, boolean accessibility) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE attractions SET description=? ,type=? ,location=?, accessible_special=? WHERE id = ?")) {
+            preparedStatement.setString(1,description );
+            preparedStatement.setString(2, attraction_type);
+            preparedStatement.setString(3, attraction_location);
+            preparedStatement.setInt(4, accessibility?1:0);
+            preparedStatement.setInt(5, attraction_id);
+            preparedStatement.executeUpdate();
+        }
+    }
 
     public static List<Attraction> findAllByCityId(Integer cityId) throws SQLException {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where city_id = ? order by name asc")) {
