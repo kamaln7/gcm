@@ -13,8 +13,8 @@ import java.util.List;
 
 public class User extends Model {
     // fields
-    private Integer id;
-    private String username, password, email, phone, role, first_name, last_name;
+    private Integer id, ccMonth, ccYear;
+    private String username, password, email, phone, role, first_name, last_name, ccNumber, ccCVV;
     private Date createdAt, updatedAt;
 
     public static HashMap<String, Integer> ROLES = new HashMap<>();
@@ -35,17 +35,27 @@ public class User extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public User(String username, String password, String email, String phone, String first_name, String last_name) {
+    /**
+     * Create a new user for registration
+     *
+     * @param username   Username
+     * @param password   Password
+     * @param email      Email address
+     * @param phone      Phone number
+     * @param first_name First Name
+     * @param last_name  Last Name
+     * @param ccNumber   Credit Card Number
+     * @param ccCVV      Credit Card CVV
+     * @param ccMonth    Credit Card Expiry Month
+     * @param ccYear     Credit Card Expiry Year
+     */
+    public User(String username, String password, String email, String phone, String first_name, String last_name, String ccNumber, String ccCVV, Integer ccMonth, Integer ccYear) {
         this(username, password, email, phone, "user", first_name, last_name);
+        this.ccNumber = ccNumber;
+        this.ccCVV = ccCVV;
+        this.ccMonth = ccMonth;
+        this.ccYear = ccYear;
     }
-
-//    public User(String username, String password, String email, String phone, String role) {
-//        this.username = username;
-//        this.setPassword(password);
-//        this.email = email;
-//        this.phone = phone;
-//        this.role = role;
-//    }
 
     public User(String username, String password, String email, String phone, String role, String first_name, String last_name) {
         this.username = username;
@@ -58,7 +68,7 @@ public class User extends Model {
     }
 
     public static User fakeGuestUser() {
-        User user = new User("guest", "", "", "", "guest","guest","guest");
+        User user = new User("guest", "", "", "", "guest", "guest", "guest");
         user.id = -1;
         user.setCreatedAt(new Date());
         user.setUpdatedAt(new Date());
@@ -79,9 +89,17 @@ public class User extends Model {
         this.updatedAt = rs.getTimestamp("updated_at");
     }
 
+    /**
+     * Register a user and insert their info to the database
+     *
+     * @return
+     * @throws SQLException
+     * @throws NotFound
+     * @throws AlreadyExists
+     */
     public User register() throws SQLException, NotFound, AlreadyExists {
         // insert user to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into users (username, password, email, phone, role, first_name, last_name) values (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into users (username, password, email, phone, role, first_name, last_name, credit_card_number, credit_card_cvv, credit_card_month, credit_card_year) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getUsername());
             preparedStatement.setString(2, this.getPassword());
             preparedStatement.setString(3, this.getEmail());
@@ -89,6 +107,10 @@ public class User extends Model {
             preparedStatement.setString(5, this.getRole());
             preparedStatement.setString(6, this.getFirst_name());
             preparedStatement.setString(7, this.getLast_name());
+            preparedStatement.setString(8, getCcNumber());
+            preparedStatement.setString(9, getCcCVV());
+            preparedStatement.setInt(10, getCcMonth());
+            preparedStatement.setInt(11, getCcYear());
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
@@ -100,17 +122,7 @@ public class User extends Model {
             // find the new user details
             Integer id = rs.getInt(1);
 
-            try (PreparedStatement preparedStatement1 = getDb().prepareStatement("select * from users where id = ?")) {
-                preparedStatement1.setInt(1, id);
-
-                try (ResultSet rs1 = preparedStatement1.executeQuery()) {
-                    if (!rs1.next()) {
-                        throw new NotFound();
-                    }
-
-                    this.fillFieldsFromResultSet(rs1);
-                }
-            }
+            this.updateWithNewDetailsById(id, "users");
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new AlreadyExists();
         }
@@ -296,6 +308,38 @@ public class User extends Model {
         return userRole == ROLES.getOrDefault(role, -2);
     }
 
+    public Integer getCcMonth() {
+        return ccMonth;
+    }
+
+    public void setCcMonth(Integer ccMonth) {
+        this.ccMonth = ccMonth;
+    }
+
+    public Integer getCcYear() {
+        return ccYear;
+    }
+
+    public void setCcYear(Integer ccYear) {
+        this.ccYear = ccYear;
+    }
+
+    public String getCcNumber() {
+        return ccNumber;
+    }
+
+    public void setCcNumber(String ccNumber) {
+        this.ccNumber = ccNumber;
+    }
+
+    public String getCcCVV() {
+        return ccCVV;
+    }
+
+    public void setCcCVV(String ccCVV) {
+        this.ccCVV = ccCVV;
+    }
+
     /**
      * @param role Role to check if user has access to
      * @return Boolean if user has given role or higher
@@ -313,6 +357,7 @@ public class User extends Model {
     public Boolean hasRole(String role) {
         return this.hasRole(ROLES.getOrDefault(role, 100000));
     }
+
     /**
      * @param
      * @return List of all users with role = user in DataBase

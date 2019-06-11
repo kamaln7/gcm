@@ -5,13 +5,12 @@ import gcm.database.models.Subscription;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public class AddSubscriptionToDataBaseCommand implements Command {
     public static class Input extends gcm.commands.Input {
-        public int user_id,city_id;
-        public Date from,to;
+        public int user_id, city_id;
+        public Date from, to;
         public double price;
         public boolean renew;
 
@@ -23,7 +22,6 @@ public class AddSubscriptionToDataBaseCommand implements Command {
             this.to = to;
             this.price = price;
             this.renew = renew;
-
 
 
         }
@@ -39,11 +37,15 @@ public class AddSubscriptionToDataBaseCommand implements Command {
     }
 
     @Override
-    public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception{
+    public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
 
-        Subscription subscription = new Subscription(input.user_id, input.city_id, input.from, input.to, input.price, input.renew);
+        City city = City.findById(input.city_id);
+        Double price = input.renew ? city.getSubscriptionPrice() * 0.9 : city.getSubscriptionPrice();
+
+        Subscription subscription = new Subscription(input.user_id, input.city_id, input.from, input.to, price, input.renew);
         subscription.insert();
+        subscription._extraInfo.put("cityTitle", city.getTitle());
 
         return new Output(subscription);
     }
