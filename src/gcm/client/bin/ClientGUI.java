@@ -56,8 +56,10 @@ public class ClientGUI extends Application {
 
         primaryStage.setOnCloseRequest(t -> {
             try {
-                client.logout();
-                client.stop();
+                if (client.isConnected()) {
+                    client.logout();
+                    client.stop();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
