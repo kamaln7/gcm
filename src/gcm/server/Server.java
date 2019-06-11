@@ -8,21 +8,26 @@ import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
 import gcm.database.models.Model;
+import gcm.database.models.ServerJob;
 import gcm.database.models.User;
 import gcm.exceptions.AlreadyLoggedIn;
+import gcm.server.jobs.Job;
+import gcm.server.jobs.SubscriptionExpiryNotification;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class Server extends AbstractServer {
     private Gson gson = GsonSingleton.GsonSingleton().gson;
@@ -32,6 +37,12 @@ public class Server extends AbstractServer {
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
     private ArrayList<Integer> loggedInUserIds = new ArrayList<>();
     private Connection db;
+
+    private static final List<Class<? extends Job>> registeredJobs = new ArrayList<Class<? extends Job>>() {
+        {
+            add(SubscriptionExpiryNotification.class);
+        }
+    };
 
     public Server(Settings settings, ChatIF chatIF) throws Exception {
         super(settings.port);
@@ -51,6 +62,50 @@ public class Server extends AbstractServer {
         // MySQL connection
         this.db = DriverManager.getConnection(this.settings.connectionString);
         Model.setDb(this.db);
+
+        // scheduled jobs
+        scheduleJobs();
+    }
+
+    private void scheduleJobs() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        for (Class<? extends Job> jobC : registeredJobs) {
+            Job job = jobC.getDeclaredConstructor(Server.class).newInstance(this);
+            workJob(executor, job);
+        }
+    }
+
+    private void workJob(ExecutorService executor, Job job) {
+        (new Thread(() -> {
+            // find the last time the job was run and find out how much we need to wait until the next execution
+            try {
+                long nextSleep;
+                try {
+                    ServerJob sj = ServerJob.findLatestByName(job.getName());
+                    Date now = new Date(),
+                            lastRunDate = sj.getCreatedAt();
+                    // how long ago the last time this job was run
+                    long diff = TimeUnit.SECONDS.convert(now.getTime() - lastRunDate.getTime(), TimeUnit.MILLISECONDS);
+
+                    // convert delay from seconds to milliseconds
+                    nextSleep = (diff < job.getInterval()) ? (job.getInterval() - diff) * 1000 : 0;
+                } catch (ServerJob.NotFound notFound) {
+                    nextSleep = 0;
+                }
+
+                while (true) {
+                    if (nextSleep > 0) {
+                        Thread.sleep(nextSleep);
+                    }
+                    Future<Void> future = executor.submit(job);
+                    future.get();
+                    nextSleep = job.getInterval() * 1000;
+                }
+            } catch (Exception e) {
+                System.err.printf("Exception while working job %s", job.getName());
+                e.printStackTrace();
+            }
+        })).start();
     }
 
     public ChatIF getChatIF() {
