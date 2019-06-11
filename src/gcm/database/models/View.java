@@ -56,6 +56,16 @@ public class View extends Model {
         }
     }
 
+    /**
+     * count number of views of a city between 2 dates
+     *
+     * @param id
+     * @param from
+     * @param to
+     * @return number of matching views
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from maps, views where maps.city_id = ? and maps.id = views.model_id and views.model = 'map' and views.created_at >= ? and views.created_at <= ?")) {
             preparedStatement.setInt(1, id);
