@@ -42,7 +42,10 @@ public class ShowBoughtCityMapsController {
     @FXML
     private Button previous;
 
-
+    /**
+     * show the next map
+     * @param event
+     */
     @FXML
     void next(ActionEvent event) {
         current++;
@@ -54,6 +57,10 @@ public class ShowBoughtCityMapsController {
         previous.setVisible(true);
     }
 
+    /**
+     * show the previous map
+     * @param event
+     */
     @FXML
     void previous(ActionEvent event) {
         current--;
@@ -69,6 +76,11 @@ public class ShowBoughtCityMapsController {
     private List<Map> maps;
     private int current=0;
     private int size;
+
+    /**
+     * close the viewer
+     * @param event
+     */
     @FXML
     void close(ActionEvent event) {
         Stage stage = (Stage) mapImg.getScene().getWindow();
@@ -80,6 +92,9 @@ public class ShowBoughtCityMapsController {
         this.myCityID=cityID;
     }
 
+    /**
+     * set the maps list connected to the city id
+     */
     private void setMaps(){
         Input input = new FindMapsByCityIdCommand.Input(myCityID);
 
@@ -96,6 +111,11 @@ public class ShowBoughtCityMapsController {
             e.printStackTrace();
         }
     }
+
+    /**
+     * download the map and add download object to the database
+     * @param event
+     */
     @FXML
     void download(ActionEvent event) {
         Input input = new AddDownloadCommand.Input(ClientGUI.getCurrentUser().getId(),maps.get(current).getId(),"map");
@@ -108,7 +128,9 @@ public class ShowBoughtCityMapsController {
             e.printStackTrace();
         }
     }
-
+    /**
+     * shows the map in the viewer
+     */
     private void showMap(Map map){
         //add view to the map
         Input viewInput = new AddViewCommand.Input(ClientGUI.getCurrentUser().getId(),map.getId(),"map");
@@ -137,6 +159,12 @@ public class ShowBoughtCityMapsController {
         }
     }
 
+    /**
+     * loads the view
+     * @param primaryStage
+     * @param cityID
+     * @throws IOException
+     */
     public static void loadView(Stage primaryStage, int cityID) throws IOException {
         URL url = ShowBoughtCityMapsController.class.getResource("/gcm/client/views/ShowBoughtCityMaps.fxml");
         FXMLLoader loader = new FXMLLoader(url);

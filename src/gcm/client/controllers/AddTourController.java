@@ -68,8 +68,17 @@ public class AddTourController {
         getAttractions(event);
     }
 
+    /**
+     * add the tour to the database
+     * @param event
+     */
     @FXML
     void addToTour(ActionEvent event) {
+        if (this.city==null || time_field.getText().equals("")){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Please choose a city or fill time field");
+            alert.show();
+            return;
+        }
         //Get ID of selected attraction from the table
         TablePosition pos = tableList.getSelectionModel().getSelectedCells().get(0);
         int row = pos.getRow();
@@ -89,8 +98,17 @@ public class AddTourController {
         tableList.getItems().remove(item);
     }
 
+    /**
+     * create a new tour
+     * @param event
+     */
     @FXML
     void createTour(ActionEvent event) {
+        if (tour_description_field.getText().equals("")){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill the description");
+            alert.show();
+            return;
+        }
         int tour_id = -1;
         //add the tour to the Tour model and get the ID back
         Input input = new AddTourCommand.Input(city.getId(), tour_description_field.getText());
@@ -113,7 +131,7 @@ public class AddTourController {
         //add tour-attraction relation to the TourAttraction model
         ObservableList<attractionInfo> oblist = tableList2.getItems();
         for (int i = 0; i < oblist.size(); i++) {
-            System.out.println("atrraction id:" + oblist.get(i).getId());
+            System.out.println("attraction id:" + oblist.get(i).getId());
             Input input2 = new AddTourAttractionCommand.Input(tour_id, oblist.get(i).getId(), oblist.get(i).getMyIndex(), oblist.get(i).getTime());
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
@@ -127,7 +145,10 @@ public class AddTourController {
         }
     }
 
-
+    /**
+     * returns the attractions inside a city
+     * @param event
+     */
     void getAttractions(ActionEvent event) {
         Input input = new GetCityAttractionsCommand.Input(city.getId());
         try {
@@ -153,6 +174,9 @@ public class AddTourController {
         }
     }
 
+    /**
+     * class to help with tha table list
+     */
     public class attractionInfo {
         private Integer id, myIndex;
         private String attraction_name;
@@ -187,7 +211,9 @@ public class AddTourController {
             return myIndex;
         }
     }
-
+/**
+ * loads the viewer
+ */
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/AddTour.fxml");
         AnchorPane pane = FXMLLoader.load(url);

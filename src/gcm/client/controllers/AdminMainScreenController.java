@@ -65,15 +65,6 @@ public class AdminMainScreenController implements Initializable {
         }
     }
 
-    @FXML
-    void getMap(ActionEvent event) {
-        try {
-            GetMapController.loadView(new Stage());
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }
-    }
 
 
     @FXML

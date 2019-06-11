@@ -5,6 +5,9 @@ import gcm.database.models.TourAttraction;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
+/**
+ * used to add tour-attraction relation to the database
+ */
 public class AddTourAttractionCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public int tour_id, attraction_id, index;
