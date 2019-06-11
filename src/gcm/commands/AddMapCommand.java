@@ -38,7 +38,7 @@ public class AddMapCommand implements Command {
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
 
-        String imageName = UUID.randomUUID().toString();
+        String imageName = UUID.randomUUID().toString() + ".jpg";
         Files.write(Paths.get(server.getFilesPath(), imageName), input.img);
 
         Map map = new Map(input.title, input.description, input.version, imageName, input.cityId);

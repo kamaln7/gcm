@@ -82,7 +82,7 @@ public class ShowSubscriptionHistoryController implements Initializable {
                             try {
                                 Subscription newSubscription = RenewSubscriptionController.loadView(new Stage(), subscription, subscription.getPrice(), true);
                                 if (newSubscription != null) {
-                                    oblist.add(newSubscription);
+                                    oblist.add(0, newSubscription);
                                 }
                             } catch (Exception e) {
                                 ClientGUI.showErrorTryAgain();

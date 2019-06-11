@@ -2,7 +2,6 @@ package gcm.database.models;
 
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +41,7 @@ public class Purchase extends Model {
 
     /**
      * find purchase of a given purchase ID
+     *
      * @param id
      * @return matching purchase
      * @throws SQLException
@@ -63,14 +63,15 @@ public class Purchase extends Model {
     }
 
     /**
-     *  count number of purchases of a user
-     * @param  id
+     * count number of purchases of a user
+     *
+     * @param id
      * @return number of matching purchases
      * @throws SQLException
      * @throws NotFound
      */
-    public static int countForUser (Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from purchases where user_id = ?")){
+    public static int countForUser(Integer id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from purchases where user_id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -84,6 +85,7 @@ public class Purchase extends Model {
 
     /**
      * count number of purchases of a given city between 2 dates
+     *
      * @param id
      * @param from
      * @param to
@@ -91,13 +93,11 @@ public class Purchase extends Model {
      * @throws SQLException
      * @throws NotFound
      */
-    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
-        Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
-        Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
+    public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from purchases where city_id = ? and created_at >= ? and created_at <= ?")) {
             preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, fromDate);
-            preparedStatement.setTimestamp(3, toDate);
+            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
@@ -111,6 +111,7 @@ public class Purchase extends Model {
 
     /**
      * find purchases of a given user
+     *
      * @param user_id
      * @return List of matching purchases
      * @throws SQLException
@@ -143,6 +144,7 @@ public class Purchase extends Model {
 
     /**
      * add purchase (with all related details) to the data base
+     *
      * @throws SQLException
      * @throws NotFound
      * @throws AlreadyExists
@@ -169,7 +171,6 @@ public class Purchase extends Model {
             throw new AlreadyExists();
         }
     }
-
 
 
     public static class AlreadyExists extends Exception {

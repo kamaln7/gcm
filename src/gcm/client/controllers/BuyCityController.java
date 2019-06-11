@@ -13,7 +13,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
@@ -26,18 +25,20 @@ public class BuyCityController {
 
     @FXML
     private Text purchaseprice;
+    @FXML
+    private Text titleT;
 
     private City city;
 
-    public void setPrice(City city){
+    public void setPrice(City city) {
 
-        subscriptionprice.setText("subscription price is: " + city.getSubscriptionPrice());
-        purchaseprice.setText("purchase price is: " + city.getPurchasePrice());
+        subscriptionprice.setText("Subscription price is: $" + city.getSubscriptionPrice());
+        purchaseprice.setText("Purchase price is: $" + city.getPurchasePrice());
 
     }
 
-    public void setCity(City city){
-
+    public void setCity(City city) {
+        titleT.setText(city.toString());
         this.city = city;
     }
 
@@ -57,7 +58,7 @@ public class BuyCityController {
 
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Buy City - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
     }
@@ -76,34 +77,28 @@ public class BuyCityController {
         to_date.add(Calendar.MONTH, 6);
 
 
-
-        Input input1 = new FindSubscriptionCommand.Input(user_id, city_id,from_date);
+        Input input1 = new FindSubscriptionCommand.Input(user_id, city_id, from_date);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input1);
             FindSubscriptionCommand.Output output = response.getOutput(FindSubscriptionCommand.Output.class);
             try {
                 RenewSubscriptionController.loadView(new Stage(), output.subscription, city.getSubscriptionPrice());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 ClientGUI.showErrorTryAgain();
                 e.printStackTrace();
             }
-        }
-        catch (Subscription.NotFound e){ // if not found then insert a new subscription
+        } catch (Subscription.NotFound e) { // if not found then insert a new subscription
             Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), price, false);
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
                 new Alert(Alert.AlertType.INFORMATION, " your subscription end at: " + to_date.getTime()).show();
 
-            }
-            catch (Exception e1) {
+            } catch (Exception e1) {
                 ClientGUI.showErrorTryAgain();
                 e.printStackTrace();
             }
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
@@ -119,7 +114,7 @@ public class BuyCityController {
         int user_id = ClientGUI.getCurrentUser().getId();
         double price = city.getPurchasePrice();
 
-        Input input = new AddPurchaseToDataBaseCommand.Input(user_id,city_id,price);
+        Input input = new AddPurchaseToDataBaseCommand.Input(user_id, city_id, price);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -127,15 +122,14 @@ public class BuyCityController {
 
 
             // show the attractions to the costumer
-            ShowBoughtCityAttractionsController.loadView(new Stage(),this.city.getId());
+            ShowBoughtCityAttractionsController.loadView(new Stage(), this.city.getId());
             //show the maps to the costumer
-            ShowBoughtCityMapsController.loadView(new Stage(),this.city.getId());
+            ShowBoughtCityMapsController.loadView(new Stage(), this.city.getId());
 
-        }  catch (Exception e) {
+        } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
-
 
 
     }
@@ -147,7 +141,6 @@ public class BuyCityController {
         // do what you have to do
         stage.close();
     }
-
 
 
 }

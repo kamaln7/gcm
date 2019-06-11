@@ -2,24 +2,19 @@ package gcm.commands;
 
 import gcm.database.models.*;
 import gcm.server.Server;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import ocsf.server.ConnectionToClient;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ActivityReportCommand implements Command {
 
     public static class Input extends gcm.commands.Input {
-        public LocalDate from, to;
+        public Date from, to;
         public int cityId;
 
-        public Input(LocalDate fromDate, LocalDate toDate, int cityId)  {
+        public Input(Date fromDate, Date toDate, int cityId) {
             this.from = fromDate;
             this.to = toDate;
             this.cityId = cityId;
@@ -37,8 +32,7 @@ public class ActivityReportCommand implements Command {
         public List<Integer> downloads;
 
         public Output(List<City> cities, List<Integer> maps, List<Integer> purchases, List<Integer> subscriptions,
-                      List<Integer> renewals, List<Integer> views, List<Integer> downloads)
-        {
+                      List<Integer> renewals, List<Integer> views, List<Integer> downloads) {
             this.cities = cities;
             this.maps = maps;
             this.purchases = purchases;
@@ -53,7 +47,7 @@ public class ActivityReportCommand implements Command {
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
         List<City> cities = new ArrayList<>();
-        if(input.cityId == -1)
+        if (input.cityId == -1)
             cities = City.findAll();
         else {
             cities.add(City.findById(input.cityId));
@@ -68,12 +62,12 @@ public class ActivityReportCommand implements Command {
 
         for (City city : cities) {
             maps.add(Map.countAllForCities(city.getId()));
-            purchases.add(Purchase.countByPeriod(city.getId(), input.from , input.to));
-            subscriptions.add(Subscription.countByPeriod(city.getId(), input.from , input.to));
-            renewals.add(Subscription.countRenewals(city.getId(), input.from , input.to));
-            views.add(View.countByPeriod(city.getId(), input.from , input.to));
-            downloads.add(Download.countByPeriod(city.getId(), input.from , input.to));
+            purchases.add(Purchase.countByPeriod(city.getId(), input.from, input.to));
+            subscriptions.add(Subscription.countByPeriod(city.getId(), input.from, input.to));
+            renewals.add(Subscription.countRenewals(city.getId(), input.from, input.to));
+            views.add(View.countByPeriod(city.getId(), input.from, input.to));
+            downloads.add(Download.countByPeriod(city.getId(), input.from, input.to));
         }
-        return new Output(cities,maps,purchases,subscriptions,renewals,views,downloads);
+        return new Output(cities, maps, purchases, subscriptions, renewals, views, downloads);
     }
 }
