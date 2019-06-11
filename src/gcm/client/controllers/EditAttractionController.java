@@ -43,15 +43,17 @@ public class EditAttractionController {
     @FXML
     private TextField city_field;
 
-    private  City city;
+    private City city;
     private Attraction attraction;
-    private void setAttractionValues(){
+
+    private void setAttractionValues() {
         Attraction_Name.setText(attraction.getName());
         Attraction_Location.setText(attraction.getLocation());
         description.setText(attraction.getDescription());
-        accessible_choiceBox.setValue(attraction.getAccessibleSpecial()?"YES":"NO");
+        accessible_choiceBox.setValue(attraction.getAccessibleSpecial() ? "YES" : "NO");
         attraction_choiceBox.setValue(attraction.getType());
     }
+
     /**
      * initialize the viewer
      */
@@ -71,9 +73,10 @@ public class EditAttractionController {
         accessible_choiceBox.getItems().add("NO");
         accessible_choiceBox.setValue("NO");
     }
-/**
- * load the viewer
- */
+
+    /**
+     * load the viewer
+     */
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/EditAttraction.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -84,6 +87,7 @@ public class EditAttractionController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
     /**
      * load the viewer
      */
@@ -103,6 +107,7 @@ public class EditAttractionController {
 
     /**
      * choose a city
+     *
      * @param actionEvent
      */
     public void openCityPicker(ActionEvent actionEvent) {
@@ -115,6 +120,7 @@ public class EditAttractionController {
             ClientGUI.showErrorTryAgain();
         }
     }
+
     /**
      * choose the attraction
      *
@@ -143,12 +149,13 @@ public class EditAttractionController {
 
     /**
      * close the viewer
+     *
      * @param event
      */
     @FXML
     private void finishJop(ActionEvent event) {
-        if (this.city==null ||this.attraction==null||this.Attraction_Name.getText().equals("") || this.Attraction_Location.getText().equals("") || this.description.getText().equals("")){
-            (new Alert(Alert.AlertType.INFORMATION, "please fill all the fields and then click on the map")).show();
+        if (this.city == null || this.attraction == null || this.Attraction_Name.getText().equals("") || this.Attraction_Location.getText().equals("") || this.description.getText().equals("")) {
+            (new Alert(Alert.AlertType.INFORMATION, "Select an attraction first and fill in all the fields.")).show();
             return;
         }
         try {
@@ -167,7 +174,8 @@ public class EditAttractionController {
             e.printStackTrace();
         }
     }
-    private void close(){
+
+    private void close() {
         Stage stage = (Stage) attraction_choiceBox.getScene().getWindow();
         // do what you have to do
         stage.close();
