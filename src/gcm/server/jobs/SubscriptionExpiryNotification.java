@@ -36,6 +36,7 @@ public class SubscriptionExpiryNotification extends Job {
         List<Subscription> subscriptionsExpiringSoon = Subscription.findExpiringInNDays(ExpiryDays);
         if (subscriptionsExpiringSoon.isEmpty()) {
             server.getChatIF().display("No subscriptions expiring soon");
+            logRun();
             return null;
         }
 

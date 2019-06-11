@@ -8,6 +8,8 @@ import gcm.server.Settings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ServerConsole implements ChatIF {
     private Server server;
@@ -66,6 +68,6 @@ public class ServerConsole implements ChatIF {
 
     @Override
     public void display(String message) {
-        System.out.println("# " + message);
+        System.out.printf("#%s> %s\n", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), message);
     }
 }
