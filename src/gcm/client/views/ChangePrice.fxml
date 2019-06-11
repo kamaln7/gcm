@@ -23,7 +23,7 @@
         <Text layoutX="19.0" layoutY="201.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subscribtion price is:" />
         <TextField fx:id="SubPriceField" disable="true" layoutX="17.0" layoutY="206.0" prefHeight="35.0" prefWidth="154.0" />
         <Button layoutX="312.0" layoutY="372.0" mnemonicParsing="false" onAction="#UpdatePrice" prefHeight="26.0" prefWidth="110.0" text="Update Price" />
-      <TextField fx:id="cityField" layoutX="19.0" layoutY="74.0" prefHeight="26.0" prefWidth="248.0" />
+      <TextField fx:id="cityField" disable="true" layoutX="19.0" layoutY="74.0" prefHeight="26.0" prefWidth="248.0" />
       <Button layoutX="265.0" layoutY="74.0" mnemonicParsing="false" onAction="#openCityPicker" text="Choose" />
     </children>
 </AnchorPane>

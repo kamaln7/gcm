@@ -33,6 +33,10 @@ public class ChangePriceController {
         primaryStage.show();
     }
 
+    /**
+     * Choose city, update new prices: purchase price and subscription price
+     * @param event
+     */
     @FXML
     void UpdatePrice(ActionEvent event) {
         double new_purchase_price = Double.parseDouble(NewPurchasePriceField.getText());
