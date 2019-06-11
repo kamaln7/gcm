@@ -243,7 +243,7 @@ public class ShowUserInfoController implements Initializable {
     void ShowSubscribtionsHistory(ActionEvent event) {
         int UserId = getPosition();
         try {
-            ShowSubscriptionHistoryController.loadView(new Stage(), UserId);
+            ShowSubscriptionHistoryController.loadView(new Stage(), UserId, false);
         } catch (IOException e) {
             e.printStackTrace();
             ClientGUI.showErrorTryAgain();
