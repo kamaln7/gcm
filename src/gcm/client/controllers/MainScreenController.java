@@ -44,17 +44,6 @@ public class MainScreenController implements Initializable {
                 e.printStackTrace();
             }
         }
-        // show subscriptions tab only if user is a user role
-        if (user.hasExactRole("user")) {
-            try {
-                Tab tab = new Tab();
-                tab.setText("Subscriptions");
-                tab.setContent(FXMLLoader.load(this.getClass().getResource("/gcm/client/views/UserSubscriptions.fxml")));
-                mainTabPane.getTabs().add(tab);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
         // show order history tab only if user is a user role
         if (user.hasExactRole("user")) {
