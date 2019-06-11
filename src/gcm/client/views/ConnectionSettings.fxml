@@ -8,6 +8,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="362.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.ConnectionSettingsController">
     <children>
+        <Button fx:id="connectBtn" layoutX="277.0" layoutY="147.0" mnemonicParsing="false" onAction="#connectAction" text="Connect" />
         <Text layoutX="8.0" layoutY="29.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 24;" text="GCM 2019" />
       <Text layoutX="18.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Please enter the server connection details below to start." />
         <VBox layoutX="18.0" layoutY="73.0" prefHeight="104.0" prefWidth="238.0" spacing="10.0">
@@ -26,6 +27,5 @@
                 </VBox>
             </children>
         </VBox>
-        <Button fx:id="connectBtn" layoutX="277.0" layoutY="147.0" mnemonicParsing="false" onAction="#connectAction" text="Connect" />
     </children>
 </AnchorPane>
