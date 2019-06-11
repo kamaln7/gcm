@@ -1,17 +1,9 @@
 package gcm.database.models;
 
 
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-
 import java.sql.*;
 import java.time.LocalDate;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-
 import java.util.Date;
 import java.util.List;
 
@@ -93,13 +85,20 @@ public class Purchase extends Model {
 
 
     public static List<Purchase> findAllByUserId(Integer user_id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from purchases where user_id = ? order by id asc")) {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(
+                "select purchases.*, concat(cities.name, \", \", cities.country) as city_title" +
+                        " from purchases" +
+                        " left join cities" +
+                        " on purchases.city_id = cities.id" +
+                        " where user_id = ?" +
+                        " order by created_at desc")) {
             preparedStatement.setInt(1, user_id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 List<Purchase> purchases = new ArrayList<>();
                 while (rs.next()) {
                     Purchase purchase = new Purchase(rs);
+                    purchase._extraInfo.put("cityTitle", rs.getString("city_title"));
                     purchases.add(purchase);
                 }
 
@@ -115,7 +114,7 @@ public class Purchase extends Model {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into purchases (user_id, city_id, price) values (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, getUserId());
             preparedStatement.setInt(2, getCityId());
-            preparedStatement.setDouble(3,getPrice());
+            preparedStatement.setDouble(3, getPrice());
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id
@@ -139,14 +138,13 @@ public class Purchase extends Model {
     public static class NotFound extends Exception {
     }
 
-    public Date getCreatedAt(){
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt){
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-
 
 
     public Integer getId() {

@@ -41,7 +41,6 @@ public class AddMapCommand implements Command {
         Map map = new Map(input.title, input.description, input.version, imageName, input.cityId);
         map.insert();
 
-
         return new Output(map);
     }
 }

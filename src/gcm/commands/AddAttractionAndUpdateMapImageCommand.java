@@ -30,7 +30,10 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
     }
 
     public static class Output extends gcm.commands.Output {
-        public Output() {
+        public Attraction attraction;
+
+        public Output(Attraction attraction) {
+            this.attraction = attraction;
         }
     }
 
@@ -54,6 +57,6 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
         MapAttraction mapAttraction = new MapAttraction(mapToUpdate.getId(), attraction.getId());
         mapAttraction.insert();
 
-        return new Output();
+        return new Output(attraction);
     }
 }

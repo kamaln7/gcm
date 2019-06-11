@@ -113,6 +113,7 @@ public class Server extends AbstractServer {
                 // return command output to client as a Response
                 Response response = new Response(request, output, exception);
                 client.sendToClient(response);
+                this.chatIF.displayf("Sent msg to [%s]: %s", client, response);
             } catch (Exception e) {
                 e.printStackTrace();
             }

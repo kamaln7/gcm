@@ -7,15 +7,14 @@ import gcm.commands.Response;
 import gcm.database.models.City;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -36,7 +35,12 @@ public class AdminTablePickerCityController implements Initializable {
     private TableColumn<City, String> countryCol;
     @FXML
     private TableColumn<City, Void> buttonCol;
+
+    @FXML
+    private TextField filterTF;
     private ObservableList<City> cities = FXCollections.observableArrayList();
+    private FilteredList<City> filteredCities = new FilteredList<>(cities);
+    private SortedList<City> sortedFilteredCities = new SortedList<>(filteredCities);
 
     private City city;
 
@@ -74,7 +78,18 @@ public class AdminTablePickerCityController implements Initializable {
             }
         });
 
-        tableView.setItems(cities);
+        filterTF.textProperty().addListener((observable, oldValue, newValue) -> filteredCities.setPredicate(city -> {
+            if (newValue == null || newValue.isEmpty()) {
+                return true;
+            }
+
+            String lowerCaseFilter = newValue.toLowerCase();
+            return (city.getName().toLowerCase().contains(lowerCaseFilter)
+                    || city.getCountry().toLowerCase().contains(lowerCaseFilter));
+        }));
+
+        sortedFilteredCities.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedFilteredCities);
         // load cities
         loadCitiesFromServer();
     }
@@ -113,5 +128,19 @@ public class AdminTablePickerCityController implements Initializable {
     public void setCity(City city) {
         this.city = city;
         ((Stage) tableView.getScene().getWindow()).close();
+    }
+
+    @FXML
+    private void openNewCityWindow(ActionEvent event) {
+        try {
+            City city = AddCityController.loadViewAndWait(new Stage());
+
+            if (city != null) {
+                this.cities.add(city);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
     }
 }

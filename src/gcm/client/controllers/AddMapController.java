@@ -10,7 +10,6 @@ import gcm.database.models.Map;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
@@ -25,9 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ResourceBundle;
 
-public class AddMapController implements Initializable {
+public class AddMapController {
 
 
     @FXML
@@ -41,12 +39,11 @@ public class AddMapController implements Initializable {
     private City city;
 
     @FXML
-    private TextField version_field;
-
-    @FXML
     private TextField imgPath;
 
     private byte[] imageBytes;
+
+    private Map map;
 
 
     public static void loadView(Stage primaryStage) throws IOException {
@@ -55,30 +52,40 @@ public class AddMapController implements Initializable {
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Add Map - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
+    }
+
+    public static Map loadViewAndWait(Stage primaryStage) throws IOException {
+        URL url = MainScreenController.class.getResource("/gcm/client/views/AddMap.fxml");
+        FXMLLoader loader = new FXMLLoader(url);
+        AnchorPane pane = loader.load();
+        AddMapController controller = loader.getController();
+        Scene scene = new Scene(pane);
+        // setting the stage
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Add Map - GCM 2019");
+        primaryStage.setResizable(false);
+        primaryStage.showAndWait();
+        return controller.getMap();
     }
 
     @FXML
     void addMapToDB(ActionEvent event) {
         String description = description_field.getText();
         String title = title_field.getText();
-        String version = version_field.getText();
         Integer cityId = city.getId();
 
-
-        Input input = new AddMapCommand.Input(title, description, version, imageBytes, cityId);
-
+        Input input = new AddMapCommand.Input(title, description, "v1", imageBytes, cityId);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             AddMapCommand.Output output = response.getOutput(AddMapCommand.Output.class);
+            (new Alert(Alert.AlertType.INFORMATION, "Map successfully added!")).show();
 
-            Stage stage2 = (Stage) description_field.getScene().getWindow();
-            // do what you have to do
-            stage2.close();
-
-
+            Map map = output.map;
+            map._extraInfo.put("cityTitle", String.format("%s, %s", city.getName(), city.getCountry()));
+            setMap(map);
         } catch (Map.AlreadyExists e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Can not add city already exist");
             alert.show();
@@ -91,45 +98,24 @@ public class AddMapController implements Initializable {
         }
     }
 
-    private boolean validate(String text) {
-        return text.matches("[0-9]*");
-    }
-
     @FXML
     void fileChooser(ActionEvent event) {
         FileChooser fc = new FileChooser();
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image files", "*.jpg", "*.png"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image files", "*.jpg", "*.png", "*.jpeg"));
         File f = fc.showOpenDialog(null);
 
-
         if (f != null) {
-            imgPath.setText(f.getAbsolutePath());
-            BufferedImage bImage = null;
             try {
-                bImage = ImageIO.read(new File(f.getAbsolutePath()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            try {
+                BufferedImage bImage = ImageIO.read(f);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 ImageIO.write(bImage, "jpg", bos);
+                imageBytes = bos.toByteArray();
+                imgPath.setText(f.getAbsolutePath());
             } catch (IOException e) {
+                ClientGUI.showErrorTryAgain();
                 e.printStackTrace();
             }
-            imageBytes = bos.toByteArray();
         }
-
-
-//        if (f != null){
-//            imgPath.setText(f.getAbsolutePath());
-//            try {
-//                imageBytes = Files.readAllBytes(f.toPath());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                Alert alert = new Alert(Alert.AlertType.ERROR, "Could not read image");
-//                alert.show();
-//            }
-//        }
     }
 
     public void openCityPicker(ActionEvent actionEvent) {
@@ -143,9 +129,12 @@ public class AddMapController implements Initializable {
         }
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-//        openCityPicker(null);
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+        ((Stage) description_field.getScene().getWindow()).close();
     }
 }
-
