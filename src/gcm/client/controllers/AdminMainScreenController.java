@@ -136,5 +136,13 @@ public class AdminMainScreenController implements Initializable {
             e.printStackTrace();
         }
     }
+    @FXML
+    void Edit_Attraction(ActionEvent event) {try {
+        EditAttractionController.loadView(new Stage());
+    } catch (Exception e) {
+        ClientGUI.showErrorTryAgain();
+        e.printStackTrace();
+    }
+    }
 }
 
