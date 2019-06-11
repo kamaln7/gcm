@@ -38,7 +38,11 @@ public class ClientGUI extends Application {
     }
 
     public static void showErrorTryAgain() {
-        Alert alert = new Alert(Alert.AlertType.WARNING, "There was an error. Please try again.");
+        showErrorTryAgain("There was an error. Please try again.");
+    }
+
+    public static void showErrorTryAgain(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING, message);
         alert.show();
     }
 
