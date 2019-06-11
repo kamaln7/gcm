@@ -10,7 +10,7 @@ public class Subscription extends Model {
     private Integer id, userId, cityId;
     private Date fromDate, toDate, createdAt, updatedAt;
     private double price;
-    private boolean renew;
+    private boolean renew, sentExpiryNotification;
 
     @Override
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -23,6 +23,7 @@ public class Subscription extends Model {
         this.updatedAt = rs.getTimestamp("updated_at");
         this.price = rs.getDouble("price");
         this.renew = rs.getBoolean("renew");
+        this.sentExpiryNotification = rs.getBoolean("sent_expiry_notification");
     }
 
     public Subscription(ResultSet rs) throws SQLException {
@@ -88,8 +89,9 @@ public class Subscription extends Model {
             }
         }
     }
-    public static int countForUser (Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where user_id = ?")){
+
+    public static int countForUser(Integer id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where user_id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -179,6 +181,18 @@ public class Subscription extends Model {
         }
     }
 
+    public void updateSentExpiryNotification() throws SQLException {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(
+                "update subscriptions" +
+                        " set sent_expiry_notification = ?" +
+                        " where id = ?"
+        )) {
+            preparedStatement.setBoolean(1, isSentExpiryNotification());
+            preparedStatement.setInt(2, getId());
+            preparedStatement.executeUpdate();
+        }
+    }
+
 
     public static class AlreadyExists extends Exception {
     }
@@ -256,5 +270,17 @@ public class Subscription extends Model {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isRenew() {
+        return renew;
+    }
+
+    public boolean isSentExpiryNotification() {
+        return sentExpiryNotification;
+    }
+
+    public void setSentExpiryNotification(boolean sentExpiryNotification) {
+        this.sentExpiryNotification = sentExpiryNotification;
     }
 }

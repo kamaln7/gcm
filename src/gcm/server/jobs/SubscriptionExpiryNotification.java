@@ -1,6 +1,5 @@
 package gcm.server.jobs;
 
-import gcm.database.models.ServerJob;
 import gcm.server.Server;
 
 public class SubscriptionExpiryNotification extends Job {
@@ -26,8 +25,8 @@ public class SubscriptionExpiryNotification extends Job {
      */
     @Override
     public Void call() throws Exception {
-        System.out.println("Sub job run");
-        (new ServerJob(getName())).insert();
+
+
         return null;
     }
 }
