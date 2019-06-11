@@ -1,7 +1,7 @@
 package gcm.client.bin;
 
 import gcm.client.Client;
-import gcm.client.controllers.LoginController;
+import gcm.client.controllers.ConnectionSettingsController;
 import gcm.database.models.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -47,7 +47,7 @@ public class ClientGUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         setPrimaryStage(primaryStage);
 
-        LoginController.loadView(primaryStage);
+        ConnectionSettingsController.loadView(primaryStage);
         client.chatIF.display("Started GUI");
 
         primaryStage.setOnCloseRequest(t -> {

@@ -26,23 +26,22 @@ public class ClientConsole implements ChatIF {
         // connects to server on start
         ClientConsole clientConsole = new ClientConsole(args);
 
+        clientConsole.display("Starting GUI");
+        ClientGUI.setClient(clientConsole.client);
+        Application.launch(ClientGUI.class);
+    }
+
+    private void start() {
         try {
-            clientConsole.start();
-            clientConsole.display("Starting GUI");
-            ClientGUI.setClient(clientConsole.client);
-            Application.launch(ClientGUI.class);
+            // start server
+            this.client.start();
+            // accept console commands
+            this.accept();
         } catch (IOException e) {
-            clientConsole.display("ERR: couldn't start server");
+            display("ERR: couldn't start server");
             e.printStackTrace();
             System.exit(1);
         }
-    }
-
-    private void start() throws IOException {
-        // start server
-        this.client.start();
-        // accept console commands
-        this.accept();
     }
 
     private void accept() {
