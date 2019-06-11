@@ -8,6 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+/**
+ * used to add map to the database
+ */
 public class AddMapCommand implements Command {
     public static class Input extends gcm.commands.Input {
         private String title, description, version;

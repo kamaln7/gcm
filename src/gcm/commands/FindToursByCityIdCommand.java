@@ -1,12 +1,13 @@
 package gcm.commands;
 
-import gcm.database.models.Map;
 import gcm.database.models.Tour;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
 import java.util.List;
-
+/**
+ * used to find tours in  a city
+ */
 public class FindToursByCityIdCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public Integer cityId;

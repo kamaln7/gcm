@@ -71,8 +71,17 @@ public class AddMapController {
         return controller.getMap();
     }
 
+    /**
+     * add thw new map
+     * @param event
+     */
     @FXML
     void addMapToDB(ActionEvent event) {
+        if (city==null || description_field.getText().equals("") ||title_field.getText().equals(null) || imageBytes==null){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "please fill all the fields");
+            alert.show();
+            return;
+        }
         String description = description_field.getText();
         String title = title_field.getText();
         Integer cityId = city.getId();
@@ -98,6 +107,10 @@ public class AddMapController {
         }
     }
 
+    /**
+     * choose the image
+     * @param event
+     */
     @FXML
     void fileChooser(ActionEvent event) {
         FileChooser fc = new FileChooser();
@@ -118,6 +131,10 @@ public class AddMapController {
         }
     }
 
+    /**
+     * choose a city
+     * @param actionEvent
+     */
     public void openCityPicker(ActionEvent actionEvent) {
         try {
             City city = AdminTablePickerCityController.loadViewAndWait(new Stage());

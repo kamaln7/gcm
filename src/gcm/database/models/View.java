@@ -15,7 +15,7 @@ public class View extends Model {
     private Date createdAt;
     private String model;
 
-    // create User object with info from ResultSet
+    // create View object with info from ResultSet
     public View(ResultSet rs) throws SQLException {
         super();
 
@@ -37,23 +37,13 @@ public class View extends Model {
 
     }
 
-    public static View findByIds(Integer tourId, Integer attractionId) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours_attractions where tour_id = ? and attraction_id = ?")) {
-            preparedStatement.setInt(1, tourId);
-            preparedStatement.setInt(2, attractionId);
 
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    throw new NotFound();
-                }
-
-                View tour = new View(rs);
-                return tour;
-            }
-        }
-    }
-
-
+    /**
+     * insert a new view to the database
+     * @throws SQLException
+     * @throws NotFound
+     * @throws AlreadyExists
+     */
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table

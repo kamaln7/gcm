@@ -26,6 +26,11 @@ public class Download extends Model {
         this.model = model;
     }
 
+    /**
+     * fill an instance from result set
+     * @param rs result set
+     * @throws SQLException
+     */
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
         this.user_id = rs.getInt("user_id");
@@ -35,25 +40,11 @@ public class Download extends Model {
 
     }
 
-    public static Download findByIds(Integer tourId, Integer attractionId) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours_attractions where tour_id = ? and attraction_id = ?")) {
-            preparedStatement.setInt(1, tourId);
-            preparedStatement.setInt(2, attractionId);
-
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    throw new NotFound();
-                }
-
-                Download tour = new Download(rs);
-                return tour;
-            }
-        }
-    }
-
-
-
-    public void insert() throws SQLException, NotFound, AlreadyExists {
+    /**
+     * insert a download to the database
+     * @throws SQLException
+     */
+    public void insert() throws SQLException {
         // insert city to table
         try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into downloads (user_id, model_id, model) values (?, ?, ?)")) {
             preparedStatement.setInt(1, this.getUser_id());
@@ -61,12 +52,10 @@ public class Download extends Model {
             preparedStatement.setString(3, this.getModel());
             // run the insert command
             preparedStatement.executeUpdate();
-        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
-            throw new AlreadyExists();
         }
     }
 
-    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
+    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException {
         Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
         Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from maps, downloads where maps.city_id = ? and maps.id = downloads.model_id and downloads.model = 'map' and downloads.created_at >= ? and downloads.created_at <= ?")) {

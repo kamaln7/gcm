@@ -40,6 +40,9 @@ public class MapEditOptionsController {
     @FXML
     private ImageView mapImg;
 
+    /**
+     * initialize the controller
+     */
     public void initialize() {
         try {
             BufferedImage bufferedImage = ImageIO.read(this.getClass().getResourceAsStream("/gcm/client/staticFiles/thumb-1920-44975.jpg"));
@@ -50,6 +53,11 @@ public class MapEditOptionsController {
         }
     }
 
+    /**
+     * load the viewer
+     * @param primaryStage
+     * @throws IOException
+     */
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/MapEditOptions.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -61,6 +69,10 @@ public class MapEditOptionsController {
         primaryStage.show();
     }
 
+    /**
+     * open window to choose a new map
+     * @param actionEvent
+     */
     @FXML
     public void openMapPicker(ActionEvent actionEvent) {
         try {
@@ -74,6 +86,10 @@ public class MapEditOptionsController {
         }
     }
 
+    /**
+     * set the map info in the viewer
+     * @param map
+     */
     public void setMap(Map map) {
         this.map = map;
         title_field.setText(map.getTitle());
@@ -92,8 +108,15 @@ public class MapEditOptionsController {
         }
     }
 
+    /**
+     * save the changes
+     * @param event
+     */
     @FXML
     void saveChanges(ActionEvent event) {
+        if (this.map==null){
+            (new Alert(Alert.AlertType.WARNING, "Please Choose A Map!")).show();
+        }
         this.map.setTitle(title_field.getText());
         this.map.setDescription(description_field.getText());
 
