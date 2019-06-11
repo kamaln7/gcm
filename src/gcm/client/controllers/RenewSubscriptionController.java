@@ -20,14 +20,17 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
+
 public class RenewSubscriptionController {
 
     @FXML
     private Text renewtext;
 
+
     private Subscription subscription, newSubscription;
 
     private double price;
+
 
     public void setText(Subscription subscription) {
 
@@ -45,7 +48,6 @@ public class RenewSubscriptionController {
     public void setPrice(double price) {
         this.price = price;
     }
-
 
     public static Subscription loadView(Stage primaryStage, Subscription subscription, double price) throws IOException {
         return loadView(primaryStage, subscription, price, false);
@@ -103,7 +105,6 @@ public class RenewSubscriptionController {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
                 newSubscription = output.subscription;
-                newSubscription._extraInfo.put("cityTitle", subscription._extraInfo.get("cityTitle"));
                 new Alert(Alert.AlertType.INFORMATION, "Your new subscription ends at: " + to_date.getTime()).show();
             } catch (Exception e1) {
                 ClientGUI.showErrorTryAgain();

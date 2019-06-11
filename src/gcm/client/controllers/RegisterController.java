@@ -10,33 +10,37 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class RegisterController implements Initializable {
     @FXML
+    private TextField ccNumberTF;
+    @FXML
+    private TextField ccCVVTF;
+    @FXML
+    private ChoiceBox<Integer> ccMonthCB;
+    @FXML
+    private ChoiceBox<Integer> ccYearCB;
+    @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
     @FXML
     private TextField emailField;
-
     @FXML
     private TextField phoneField;
-
     @FXML
     private TextField first_name_field;
-
     @FXML
     private TextField last_name_field;
 
@@ -59,9 +63,14 @@ public class RegisterController implements Initializable {
                 email = emailField.getText(),
                 phone = phoneField.getText(),
                 first_name = first_name_field.getText(),
-                last_name = last_name_field.getText();
+                last_name = last_name_field.getText(),
+                ccNumber = ccNumberTF.getText(),
+                ccCVV = ccCVVTF.getText();
 
-        Input input = new RegisterUserCommand.Input(username, password, email, phone, first_name, last_name);
+        Integer ccMonth = ccMonthCB.getSelectionModel().getSelectedItem(),
+                ccYear = ccYearCB.getSelectionModel().getSelectedItem();
+
+        Input input = new RegisterUserCommand.Input(username, password, email, phone, first_name, last_name, ccNumber, ccCVV, ccMonth, ccYear);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -83,6 +92,8 @@ public class RegisterController implements Initializable {
         try {
             LoginController.loadView(ClientGUI.getPrimaryStage());
         } catch (Exception e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
         }
     }
 
@@ -101,6 +112,10 @@ public class RegisterController implements Initializable {
             // otherwise go on
             return change;
         }));
+
+        Integer currentYear = Integer.parseInt(new SimpleDateFormat("yy").format(new Date()));
+        ccMonthCB.getItems().setAll(IntStream.range(1, 13).parallel().mapToObj(Integer::valueOf).collect(Collectors.toList()));
+        ccYearCB.getItems().setAll(IntStream.range(currentYear, currentYear + 6).parallel().mapToObj(Integer::valueOf).collect(Collectors.toList()));
     }
 }
 

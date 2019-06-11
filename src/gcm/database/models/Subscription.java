@@ -5,12 +5,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Subscription extends Model {
     private Integer id, userId, cityId;
     private Date fromDate, toDate, createdAt, updatedAt;
     private double price;
-    private boolean renew;
+    private boolean renew, sentExpiryNotification;
 
     @Override
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
@@ -23,6 +26,7 @@ public class Subscription extends Model {
         this.updatedAt = rs.getTimestamp("updated_at");
         this.price = rs.getDouble("price");
         this.renew = rs.getBoolean("renew");
+        this.sentExpiryNotification = rs.getBoolean("sent_expiry_notification");
     }
 
     public Subscription(ResultSet rs) throws SQLException {
@@ -88,8 +92,9 @@ public class Subscription extends Model {
             }
         }
     }
-    public static int countForUser (Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where user_id = ?")){
+
+    public static int countForUser(Integer id) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where user_id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -179,6 +184,69 @@ public class Subscription extends Model {
         }
     }
 
+    public static void updateSentExpiryNotification(Set<Integer> ids, Boolean isSent) throws SQLException {
+        if (ids.isEmpty()) {
+            return;
+        }
+        List<Integer> idsList = new ArrayList<>(ids);
+
+        // prepare query to update list of ids
+        String query = String.format(
+                "update subscriptions" +
+                        " set sent_expiry_notification = ?" +
+                        " where id in (%s)",
+                IntStream
+                        .range(0, idsList.size())
+                        .mapToObj(s -> "?")
+                        .collect(Collectors.joining(", "))
+        );
+
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+            // bind status
+            preparedStatement.setBoolean(1, isSent);
+
+            // bind ids
+            int bound = idsList.size();
+            for (int i = 0; i < bound; i++) {
+                preparedStatement.setInt(i + 2, idsList.get(i));
+            }
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    /**
+     * @param days Number of days to check
+     * @return A list of subscriptions that expire in N days or less and haven't been sent a notification yet
+     * @throws SQLException
+     */
+    public static List<Subscription> findExpiringInNDays(Integer days) throws SQLException {
+        List<Subscription> subscriptions = new ArrayList<>();
+
+        try (PreparedStatement preparedStatement = getDb().prepareStatement(
+                "select t.*\n" +
+                        "from subscriptions t\n" +
+                        "inner join (\n" +
+                        "    select user_id, max(to_date) as MaxDate\n" +
+                        "    from subscriptions\n" +
+                        "    group by user_id, city_id\n" +
+                        ") tm on t.user_id = tm.user_id and t.to_date = tm.MaxDate\n" +
+                        "where t.sent_expiry_notification = 0\n" +
+                        "and now() >= (to_date - interval ? day)\n" +
+                        "order by user_id, city_id"
+        )) {
+            preparedStatement.setInt(1, days);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    subscriptions.add(new Subscription(rs));
+                }
+            }
+        }
+
+        return subscriptions;
+    }
+
 
     public static class AlreadyExists extends Exception {
     }
@@ -256,5 +324,17 @@ public class Subscription extends Model {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isRenew() {
+        return renew;
+    }
+
+    public boolean isSentExpiryNotification() {
+        return sentExpiryNotification;
+    }
+
+    public void setSentExpiryNotification(boolean sentExpiryNotification) {
+        this.sentExpiryNotification = sentExpiryNotification;
     }
 }
