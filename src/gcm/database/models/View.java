@@ -4,10 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class View extends Model {
     // fields
@@ -22,7 +19,7 @@ public class View extends Model {
         this.fillFieldsFromResultSet(rs);
     }
 
-    public View( Integer user_id, Integer model_id, String model) {
+    public View(Integer user_id, Integer model_id, String model) {
         this.user_id = user_id;
         this.model_id = model_id;
         this.model = model;
@@ -40,6 +37,7 @@ public class View extends Model {
 
     /**
      * insert a new view to the database
+     *
      * @throws SQLException
      * @throws NotFound
      * @throws AlreadyExists
@@ -58,13 +56,11 @@ public class View extends Model {
         }
     }
 
-    public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
-        Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
-        Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
+    public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from maps, views where maps.city_id = ? and maps.id = views.model_id and views.model = 'map' and views.created_at >= ? and views.created_at <= ?")) {
             preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, fromDate);
-            preparedStatement.setTimestamp(3, toDate);
+            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (!rs.next()) {
