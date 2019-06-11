@@ -126,4 +126,18 @@ public class AdminTablePickerAttractionForCityController implements Initializabl
         this.attraction = attraction;
         ((Stage) tableView.getScene().getWindow()).close();
     }
+
+    @FXML
+    private void openNewAttractionWindow(ActionEvent event) {
+        try {
+            Attraction attraction = AddAttractionController.loadViewAndWait(new Stage());
+
+            if (attraction != null) {
+                this.attractions.add(attraction);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
+    }
 }

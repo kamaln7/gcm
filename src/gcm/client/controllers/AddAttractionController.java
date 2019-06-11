@@ -22,15 +22,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-
-
-import java.awt.Font;
-import java.awt.Graphics2D;
-
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -70,8 +65,12 @@ public class AddAttractionController {
     @FXML
     private TextField mapTF;
 
-    private int X;
-    private int Y;
+    private double X, Y;
+
+    private byte[] originalImageBytes, newImageBytes;
+    private Image originalImage;
+
+    private Attraction attraction;
 
     public void initialize() {
         attraction_choiceBox.getItems().add("Museum");
@@ -88,13 +87,12 @@ public class AddAttractionController {
         accessible_choiceBox.getItems().add("NO");
         accessible_choiceBox.setValue("NO");
         try {
-            BufferedImage bufferedImage = ImageIO.read(new File("thumb-1920-44975.jpg"));
+            BufferedImage bufferedImage = ImageIO.read(this.getClass().getResourceAsStream("/gcm/client/staticFiles/thumb-1920-44975.jpg"));
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
             mapImg.setImage(image);
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        chooseMap(null);
     }
 
     public static void loadView(Stage primaryStage) throws IOException {
@@ -103,16 +101,23 @@ public class AddAttractionController {
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Add Attraction - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
-    @FXML
-    void finishJop(ActionEvent event) {
-        Stage stage = (Stage) pane.getScene().getWindow();
-        // do what you have to do
-        stage.close();
+    public static Attraction loadViewAndWait(Stage primaryStage) throws IOException {
+        URL url = MainScreenController.class.getResource("/gcm/client/views/AddAttraction.fxml");
+        FXMLLoader loader = new FXMLLoader(url);
+        AnchorPane pane = loader.load();
+        AddAttractionController controller = loader.getController();
+        Scene scene = new Scene(pane);
+        // setting the stage
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Add Attraction - GCM 2019");
+        primaryStage.setResizable(false);
+        primaryStage.showAndWait();
+        return controller.getAttraction();
     }
 
     @FXML
@@ -127,38 +132,25 @@ public class AddAttractionController {
 
             BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(output.imgBytes));
             Image image = SwingFXUtils.toFXImage(bImage, null);
+            originalImage = image;
             mapImg.setImage(image);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please fill the fields down below, \nbefore you click on the map image!");
-            alert.show();
             mapImg.setOnMouseClicked(e -> {
-
                 Xcord.setText(String.valueOf(e.getX()));
                 Ycord.setText(String.valueOf(e.getY()));
-                X = (int) Math.round(e.getX());
-                Y = (int) Math.round(e.getY());
-                mapImg.setOnMouseClicked(null);
+                X = e.getX();
+                Y = e.getY();
 
                 try {
                     ByteArrayOutputStream s = new ByteArrayOutputStream();
                     ImageIO.write(createImageWithText(), "jpg", s);
-                    byte[] res = s.toByteArray();
+                    newImageBytes = s.toByteArray();
 
-                    BufferedImage bImage2 = ImageIO.read(new ByteArrayInputStream(res));
+                    BufferedImage bImage2 = ImageIO.read(new ByteArrayInputStream(newImageBytes));
                     Image image2 = SwingFXUtils.toFXImage(bImage2, null);
                     mapImg.setImage(image2);
                     s.close();
-
-                    boolean accessibility = getAccessibility();
-
-                    Input input2 = new AddAttractionAndUpdateMapImageCommand.Input(this.map.getId(), attraction_choiceBox.getValue(), attraction_name_field.getText(), attraction_location_field.getText(), res, accessibility, description_field.getText() );
-
-                    Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
-                    response2.getOutput(AddAttractionAndUpdateMapImageCommand.Output.class);
-                    
-                } catch (Attraction.AlreadyExists x) {
-                    Alert alert2 = new Alert(Alert.AlertType.ERROR, "attraction already exist");
-                    alert2.show();
                 } catch (Exception e1) {
+                    ClientGUI.showErrorTryAgain();
                     e1.printStackTrace();
                 }
             });
@@ -170,27 +162,55 @@ public class AddAttractionController {
 
     }
 
-    private BufferedImage createImageWithText() throws IOException {
+    @FXML
+    private void finishJop(ActionEvent event) {
+        try {
+            boolean accessibility = getAccessibility();
 
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(mapImg.getImage(), null);
+            Input input2 = new AddAttractionAndUpdateMapImageCommand.Input(this.map.getId(), attraction_choiceBox.getValue(), attraction_name_field.getText(), attraction_location_field.getText(), newImageBytes, accessibility, description_field.getText());
+
+            Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
+            AddAttractionAndUpdateMapImageCommand.Output output2 = response2.getOutput(AddAttractionAndUpdateMapImageCommand.Output.class);
+            (new Alert(Alert.AlertType.INFORMATION, "Attraction successfully added!")).show();
+            setAttraction(output2.attraction);
+        } catch (Attraction.AlreadyExists x) {
+            (new Alert(Alert.AlertType.ERROR, "Attraction already exists.")).show();
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+    }
+
+    private BufferedImage createImageWithText() throws IOException {
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(originalImage, null);
         Graphics2D g2d = bufferedImage.createGraphics();
         g2d.setColor(BLACK);
 
+        double aspectRatio = bufferedImage.getWidth() / bufferedImage.getHeight();
+        double realWidth = Math.min(mapImg.getFitWidth(), mapImg.getFitHeight() * aspectRatio);
+        double realHeight = Math.min(mapImg.getFitHeight(), mapImg.getFitWidth() / aspectRatio);
 
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 60));
-        g2d.drawString("•" + attraction_name_field.getText(), bufferedImage.getWidth() * X / 672, bufferedImage.getHeight() * Y / 376);
-
-        //ImageIO.write(bufferedImage, "png", new File("afterAdding.png") );
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
+        g2d.drawString("•" + attraction_name_field.getText(), Math.round(bufferedImage.getWidth() * X / realWidth), Math.round(bufferedImage.getHeight() * Y / realHeight));
         g2d.dispose();
 
         return bufferedImage;
     }
-    private boolean getAccessibility(){
-        if (accessible_choiceBox.getValue().equals("YES")){
+
+    private boolean getAccessibility() {
+        if (accessible_choiceBox.getValue().equals("YES")) {
             return true;
         }
         return false;
     }
 
+    public Attraction getAttraction() {
+        return attraction;
+    }
+
+    public void setAttraction(Attraction attraction) {
+        this.attraction = attraction;
+        ((Stage) description_field.getScene().getWindow()).close();
+    }
 }
 

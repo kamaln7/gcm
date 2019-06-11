@@ -1,14 +1,15 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
-import gcm.database.models.City;
+import gcm.commands.Input;
+import gcm.commands.ReadMapImageById;
+import gcm.commands.Response;
+import gcm.commands.UpdateMapTitleAndDescriptionCommand;
 import gcm.database.models.Map;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
@@ -21,7 +22,6 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -41,9 +41,8 @@ public class MapEditOptionsController {
     private ImageView mapImg;
 
     public void initialize() {
-
         try {
-            BufferedImage bufferedImage = ImageIO.read(new File("thumb-1920-44975.jpg"));
+            BufferedImage bufferedImage = ImageIO.read(this.getClass().getResourceAsStream("/gcm/client/staticFiles/thumb-1920-44975.jpg"));
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
             mapImg.setImage(image);
         } catch (IOException e) {
@@ -63,35 +62,6 @@ public class MapEditOptionsController {
     }
 
     @FXML
-    void addMap(ActionEvent event) {
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddMap.fxml"));
-        Parent root1 = null;
-        try {
-            root1 = fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        stage.show();
-    }
-
-    @FXML
-    void addAttractionToMap(ActionEvent event) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gcm/client/views/AddAttraction.fxml"));
-        Parent root1 = null;
-        try {
-            root1 = fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        stage.show();
-
-    }
-    @FXML
     public void openMapPicker(ActionEvent actionEvent) {
         try {
             Map map = AdminTablePickerMapController.loadViewAndWait(new Stage());
@@ -108,7 +78,7 @@ public class MapEditOptionsController {
         this.map = map;
         title_field.setText(map.getTitle());
         description_field.setText(map.getDescription());
-        this.mapTF.setText(String.format("%s - %s", this.map.getTitle(), this.map._extraInfo.get("cityTitle")));
+        this.mapTF.setText(String.format("%s (%s)", this.map.getTitle(), this.map._extraInfo.get("cityTitle")));
         Input input = new ReadMapImageById.Input(this.map.getId());
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -116,8 +86,12 @@ public class MapEditOptionsController {
             BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(output.imgBytes));
             Image image = SwingFXUtils.toFXImage(bImage, null);
             mapImg.setImage(image);
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
     }
+
     @FXML
     void saveChanges(ActionEvent event) {
         this.map.setTitle(title_field.getText());
@@ -127,8 +101,10 @@ public class MapEditOptionsController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             response.getOutput(UpdateMapTitleAndDescriptionCommand.Output.class);
+
+            (new Alert(Alert.AlertType.INFORMATION, "Map successfully updated!")).show();
             ((Stage) mapTF.getScene().getWindow()).close();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             ClientGUI.showErrorTryAgain();
         }
