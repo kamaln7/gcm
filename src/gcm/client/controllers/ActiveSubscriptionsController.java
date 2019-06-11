@@ -5,7 +5,6 @@ import gcm.commands.FindActiveSubscriptionByUserIDCommand;
 import gcm.commands.Input;
 import gcm.commands.Response;
 import gcm.database.models.Subscription;
-import gcm.database.models.User;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -107,9 +106,9 @@ public class ActiveSubscriptionsController implements Initializable {
         });
     }
 
-    private void setUser(User user) {
+    private void setUser(Integer userId) {
         //command
-        Input input = new FindActiveSubscriptionByUserIDCommand.Input(user.getId());
+        Input input = new FindActiveSubscriptionByUserIDCommand.Input(userId);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindActiveSubscriptionByUserIDCommand.Output output = response.getOutput(FindActiveSubscriptionByUserIDCommand.Output.class);
@@ -121,14 +120,14 @@ public class ActiveSubscriptionsController implements Initializable {
     }
 
 
-    public static void loadView(Stage primaryStage, User user) throws IOException {
+    public static void loadView(Stage primaryStage, Integer userId) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ActiveSubscriptions.fxml");
         FXMLLoader loader = new FXMLLoader(url);
         AnchorPane pane = loader.load();
         Scene scene = new Scene(pane);
 
         ActiveSubscriptionsController controller = loader.getController();
-        controller.setUser(user);
+        controller.setUser(userId);
 
         // setting the stage
         primaryStage.setScene(scene);

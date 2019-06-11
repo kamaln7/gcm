@@ -40,7 +40,7 @@ public class UserProfileController implements Initializable {
     @FXML
     void active_subscriptions(ActionEvent event) {
         try {
-            ActiveSubscriptionsController.loadView(new Stage(), myUser);
+            ActiveSubscriptionsController.loadView(new Stage(), myUser.getId());
         } catch (IOException e) {
             e.printStackTrace();
         }
