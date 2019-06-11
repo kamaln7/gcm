@@ -8,15 +8,14 @@ import gcm.database.models.Attraction;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -43,7 +42,12 @@ public class AdminTablePickerAttractionForCityController implements Initializabl
     private TableColumn<Attraction, String> accessibleCol;
     @FXML
     private TableColumn<Attraction, Void> buttonCol;
+
+    @FXML
+    private TextField filterTF;
     private ObservableList<Attraction> attractions = FXCollections.observableArrayList();
+    private FilteredList<Attraction> filteredAttractions = new FilteredList<>(attractions);
+    private SortedList<Attraction> sortedFilteredAttractions = new SortedList<>(filteredAttractions);
 
     private Attraction attraction;
 
@@ -83,8 +87,20 @@ public class AdminTablePickerAttractionForCityController implements Initializabl
                 return cell;
             }
         });
+        filterTF.textProperty().addListener((observable, oldValue, newValue) -> filteredAttractions.setPredicate(attraction -> {
+            if (newValue == null || newValue.isEmpty()) {
+                return true;
+            }
 
-        tableView.setItems(attractions);
+            String lowerCaseFilter = newValue.toLowerCase();
+            return (attraction.getName().toLowerCase().contains(lowerCaseFilter)
+                    || attraction.getDescription().toLowerCase().contains(lowerCaseFilter)
+                    || attraction.getLocation().toLowerCase().contains(lowerCaseFilter)
+                    || attraction.getType().toLowerCase().contains(lowerCaseFilter));
+        }));
+
+        sortedFilteredAttractions.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedFilteredAttractions);
     }
 
     public static Attraction loadViewAndWait(Stage stage, Integer cityId) throws IOException {
