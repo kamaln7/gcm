@@ -14,73 +14,19 @@ import java.util.List;
 
 public class ShowUserInfoCommand implements Command {
 
-            public class UsersInfoCo{
-            private int id, purchases, subscriptions;
-            private String firstName, lastName, userName, email, phone;
-            private Date date;
-
-            public UsersInfoCo(User user, int purchases, int subscriptions)
-            {
-                this.id = user.getId();
-                this.firstName = user.getFirst_name();
-                this.lastName = user.getLast_name();
-                this.userName = user.getUsername();
-                this.email = user.getEmail();
-                this.phone = user.getEmail();
-                this.date = user.getCreatedAt();
-                this.purchases = purchases;
-                this.subscriptions = subscriptions;
-            }
-
-            public int getId() {
-                return id;
-            }
-
-            public int getPurchases() {
-                return purchases;
-            }
-
-            public int getSubscriptions() {
-                return subscriptions;
-            }
-
-            public String getFirstName() {
-                return firstName;
-            }
-
-            public String getLastName() {
-                return lastName;
-            }
-
-            public String getUserName() {
-                return userName;
-            }
-
-            public String getEmail() {
-                return email;
-            }
-
-            public String getPhone() {
-                return phone;
-            }
-
-            public Date getDate() {
-                return date;
-            }
-        }
     public static class Input extends gcm.commands.Input {
     }
 
     public class Output extends gcm.commands.Output {
 
-        public List<UsersInfoCo> userInfoList;
+        public List<User> usersList;
+        public List<Integer> purchasesList;
+        public List<Integer> subscriptionsList;
 
-        public Output() {
-            this.userInfoList = new ArrayList<>();
-        }
-
-        public Output(List<UsersInfoCo> userInfo) {
-            this.userInfoList = userInfo;
+        public Output(List<User> users, List<Integer> purchases, List<Integer> subscriptions  ) {
+            this.usersList = users;
+            this.purchasesList = purchases;
+            this.subscriptionsList = subscriptions;
         }
     }
 
@@ -89,11 +35,13 @@ public class ShowUserInfoCommand implements Command {
         Input input = request.getInput(Input.class);
 
         List<User> users = User.findAllUsers();
-        List<UsersInfoCo> userInfoList = new ArrayList<>();
+        List<Integer> purchases = new ArrayList<>();
+        List<Integer> subscriptions = new ArrayList<>();
         for (User user : users) {
-            userInfoList.add(new UsersInfoCo(user, Purchase.countForUser(user.getId()), Subscription.countForUser(user.getId())));
+            purchases.add(Purchase.countForUser(user.getId()));
+            subscriptions.add(Subscription.countForUser(user.getId()));
         }
 
-        return new Output(userInfoList);
+        return new Output(users,purchases,subscriptions);
     }
 }
