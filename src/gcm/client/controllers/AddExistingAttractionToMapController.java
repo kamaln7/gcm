@@ -1,7 +1,10 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
+import gcm.commands.AddOneToAttractionAndUpdateMapImageCommand;
+import gcm.commands.Input;
+import gcm.commands.ReadMapImageById;
+import gcm.commands.Response;
 import gcm.database.models.Attraction;
 import gcm.database.models.Map;
 import javafx.embed.swing.SwingFXUtils;
@@ -10,8 +13,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,7 +25,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -75,7 +75,7 @@ public class AddExistingAttractionToMapController {
     public void initialize() {
 
         try {
-            BufferedImage bufferedImage = ImageIO.read(new File("thumb-1920-44975.jpg"));
+            BufferedImage bufferedImage = ImageIO.read(this.getClass().getResourceAsStream("/gcm/client/staticFiles/thumb-1920-44975.jpg"));
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
             mapImg.setImage(image);
         } catch (IOException e) {
@@ -135,12 +135,11 @@ public class AddExistingAttractionToMapController {
                     s.close();
 
 
-                    Input input2 = new AddOneToAttractionAndUpdateMapImageCommand.Input(this.map.getId(),this.attraction,res);
+                    Input input2 = new AddOneToAttractionAndUpdateMapImageCommand.Input(this.map.getId(), this.attraction, res);
                     Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
                     response2.getOutput(AddOneToAttractionAndUpdateMapImageCommand.Output.class);
 
-                }
-                catch (Exception e1) {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             });
@@ -162,14 +161,16 @@ public class AddExistingAttractionToMapController {
             e.printStackTrace();
         }
     }
-    private void setAttractionValues(){
+
+    private void setAttractionValues() {
         this.Attraction_Name.setText(attraction.getName());
         this.Attraction_Type.setText(attraction.getType());
         this.Attraction_Location.setText(attraction.getLocation());
-        this.accessible.setText(attraction.getAccessibleSpecial()?"YES":"NO");
+        this.accessible.setText(attraction.getAccessibleSpecial() ? "YES" : "NO");
         this.Description.setText(attraction.getDescription());
 
     }
+
     private BufferedImage createImageWithText() throws IOException {
 
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(mapImg.getImage(), null);
@@ -185,7 +186,6 @@ public class AddExistingAttractionToMapController {
 
         return bufferedImage;
     }
-
 
 
 }

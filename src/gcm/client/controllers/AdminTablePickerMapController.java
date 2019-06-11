@@ -19,9 +19,8 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class AdminTablePickerMapController implements Initializable {
     @FXML
@@ -40,6 +39,9 @@ public class AdminTablePickerMapController implements Initializable {
     private TreeTableColumn<Object, Void> buttonCol;
 
     private Map map;
+
+    private java.util.Map<String, TreeItem<Object>> cityRoots;
+    TreeItem<Object> root = new TreeItem<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -100,7 +102,7 @@ public class AdminTablePickerMapController implements Initializable {
         Scene scene = new Scene(pane);
         // setting the stage
         stage.setScene(scene);
-        stage.setTitle("Choose a Map");
+        stage.setTitle("Choose a Map - GCM 2019");
         stage.setResizable(true);
         stage.showAndWait();
 
@@ -114,30 +116,28 @@ public class AdminTablePickerMapController implements Initializable {
             GetAllMapsWithCityTitleCommand.Output output = response.getOutput(GetAllMapsWithCityTitleCommand.Output.class);
 
             // list of cities
-            java.util.Map<String, TreeItem<Object>> cityRoots = output.maps
-                    .stream()
-                    .map(map -> map._extraInfo.get("cityTitle"))
-                    .distinct()
-                    .collect(Collectors.toMap(
-                            Function.identity(),
-                            cityTitle -> {
-                                TreeItem<Object> item = new TreeItem<>(new WorkaroundCityThing(cityTitle));
-                                item.setExpanded(true);
-                                return item;
-                            }
-                    ));
+            cityRoots = new HashMap<>();
             // insert maps into city roots
-            for (Map map : output.maps) {
-                TreeItem<Object> root = cityRoots.get(map._extraInfo.get("cityTitle"));
-                root.getChildren().add(new TreeItem<>(map));
-            }
-            TreeItem<Object> root = new TreeItem<>();
-            root.getChildren().setAll(cityRoots.values());
+            root.getChildren().clear();
+            output.maps.forEach(this::addToTreeTableView);
             treeTableView.setRoot(root);
         } catch (Exception e) {
             e.printStackTrace();
             ClientGUI.showErrorTryAgain();
         }
+    }
+
+    private void addToTreeTableView(Map map) {
+        String cityTitle = map._extraInfo.get("cityTitle");
+        TreeItem<Object> root = cityRoots.computeIfAbsent(cityTitle, this::createTreeItemForCity);
+        root.getChildren().add(new TreeItem<>(map));
+    }
+
+    private TreeItem<Object> createTreeItemForCity(String cityTitle) {
+        TreeItem<Object> item = new TreeItem<>(new WorkaroundCityThing(cityTitle));
+        item.setExpanded(true);
+        root.getChildren().add(item);
+        return item;
     }
 
     public Map getMap() {
@@ -154,6 +154,20 @@ public class AdminTablePickerMapController implements Initializable {
 
         public WorkaroundCityThing(String id) {
             this.id = id;
+        }
+    }
+
+    @FXML
+    private void openNewMapWindow(ActionEvent event) {
+        try {
+            Map map = AddMapController.loadViewAndWait(new Stage());
+
+            if (map != null) {
+                addToTreeTableView(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
         }
     }
 }

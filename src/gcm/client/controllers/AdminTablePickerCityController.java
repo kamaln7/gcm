@@ -114,4 +114,18 @@ public class AdminTablePickerCityController implements Initializable {
         this.city = city;
         ((Stage) tableView.getScene().getWindow()).close();
     }
+
+    @FXML
+    private void openNewCityWindow(ActionEvent event) {
+        try {
+            City city = AddCityController.loadViewAndWait(new Stage());
+
+            if (city != null) {
+                this.cities.add(city);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
+    }
 }

@@ -6,39 +6,57 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="947.0" prefWidth="929.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.AddAttractionController">
+<AnchorPane prefHeight="724.0" prefWidth="680.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.AddAttractionController">
     <children>
         <Text layoutX="14.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add Attraction">
             <font>
                 <Font size="24.0" />
             </font>
         </Text>
-        <TextField fx:id="mapTF" layoutX="17.0" layoutY="83.0" prefHeight="26.0" prefWidth="261.0" />
-        <Button layoutX="270.0" layoutY="83.0" mnemonicParsing="false" onAction="#chooseMap" prefHeight="26.0" prefWidth="100.0" text="Choose Map" />
-        <AnchorPane fx:id="pane" layoutX="116.0" layoutY="169.0" prefHeight="450.0" prefWidth="604.0">
+        <TextField fx:id="mapTF" layoutX="17.0" layoutY="68.0" prefHeight="26.0" prefWidth="261.0" />
+        <Button layoutX="270.0" layoutY="68.0" mnemonicParsing="false" onAction="#chooseMap" prefHeight="26.0" prefWidth="100.0" text="Choose Map" />
+        <AnchorPane fx:id="pane" layoutX="19.0" layoutY="111.0" prefHeight="336.0" prefWidth="529.0">
             <children>
-                <ImageView fx:id="mapImg" fitHeight="471.0" fitWidth="673.0" pickOnBounds="true" preserveRatio="true" />
+                <ImageView fx:id="mapImg" fitHeight="337.0" fitWidth="531.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             </children>
         </AnchorPane>
-        <TextField fx:id="Xcord" layoutX="364.0" layoutY="674.0" prefHeight="25.0" prefWidth="73.0" />
-        <Text layoutX="349.0" layoutY="691.0" strokeType="OUTSIDE" strokeWidth="0.0" text="X:" />
-        <TextField fx:id="Ycord" layoutX="482.0" layoutY="674.0" prefHeight="25.0" prefWidth="73.0" />
-        <Text layoutX="467.0" layoutY="691.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y:" />
-        <Text layoutX="421.0" layoutY="661.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Coordinates" />
-        <ChoiceBox fx:id="attraction_choiceBox" layoutX="73.0" layoutY="762.0" prefWidth="150.0" />
-        <TextField fx:id="attraction_name_field" layoutX="254.0" layoutY="763.0" />
-        <Text layoutX="254.0" layoutY="751.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Name" />
-        <TextField fx:id="attraction_location_field" layoutX="444.0" layoutY="764.0" />
-        <Text layoutX="444.0" layoutY="751.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Location" />
-        <Button layoutX="621.0" layoutY="850.0" mnemonicParsing="false" onAction="#finishJop" prefHeight="45.0" prefWidth="192.0" text="Add Attraction" />
-      <Text layoutX="17.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Map" />
-      <Text layoutX="73.0" layoutY="748.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Type" />
-      <ChoiceBox fx:id="accessible_choiceBox" layoutX="648.0" layoutY="764.0" prefWidth="150.0" />
-      <Text layoutX="608.0" layoutY="751.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Accessible For Passengers With Disabilities?" />
-      <TextArea fx:id="description_field" layoutX="201.0" layoutY="809.0" prefHeight="103.0" prefWidth="278.0" />
-      <Text layoutX="118.0" layoutY="865.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+        <ChoiceBox fx:id="attraction_choiceBox" layoutX="21.0" layoutY="500.0" prefWidth="150.0" />
+        <TextField fx:id="attraction_name_field" layoutX="388.0" layoutY="69.0" />
+        <Text layoutX="388.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Name" />
+        <TextField fx:id="attraction_location_field" layoutX="195.0" layoutY="500.0" />
+        <Text layoutX="195.0" layoutY="487.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Location" />
+        <Button layoutX="497.0" layoutY="622.0" mnemonicParsing="false" onAction="#finishJop" prefHeight="45.0" prefWidth="165.0" text="Add Attraction" />
+      <Text layoutX="17.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Map" />
+      <Text layoutX="21.0" layoutY="486.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Type" />
+      <ChoiceBox fx:id="accessible_choiceBox" layoutX="19.0" layoutY="567.0" prefHeight="27.0" prefWidth="239.0" />
+      <Text layoutX="19.0" layoutY="555.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Accessible for People with Disabilities?" />
+      <TextArea fx:id="description_field" layoutX="17.0" layoutY="622.0" prefHeight="87.0" prefWidth="472.0" />
+      <Text layoutX="19.0" layoutY="619.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+      <VBox layoutX="571.0" layoutY="111.0" prefHeight="141.0" prefWidth="100.0" spacing="15.0">
+         <children>
+              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Coordinates" />
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="2.0">
+                     <children>
+                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="X:" />
+                          <TextField fx:id="Xcord" prefHeight="25.0" prefWidth="73.0" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="2.0">
+                     <children>
+                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Y:" />
+                          <TextField fx:id="Ycord" prefHeight="25.0" prefWidth="73.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
     </children>
 </AnchorPane>
