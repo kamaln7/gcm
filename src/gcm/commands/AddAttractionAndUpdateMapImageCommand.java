@@ -44,7 +44,7 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
         //store the img in the server
-        String imageName = UUID.randomUUID().toString();
+        String imageName = UUID.randomUUID().toString() + ".jpg";
         Files.write(Paths.get(server.getFilesPath(), imageName), input.new_map_image);
 
         Map mapToUpdate = Map.findById(input.mapId);
