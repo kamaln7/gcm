@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,8 +77,14 @@ public class Server extends AbstractServer {
     }
 
     private void workJob(ExecutorService executor, Job job) {
+        if (job.getInterval() <= 0) {
+            chatIF.displayf("Not scheduling job %s because its interval is %d", job.getName(), job.getInterval());
+            return;
+        }
+
         (new Thread(() -> {
             // find the last time the job was run and find out how much we need to wait until the next execution
+            chatIF.displayf("Scheduling job %s, interval=%d", job.getName(), job.getInterval());
             try {
                 long nextSleep;
                 try {
@@ -86,24 +93,35 @@ public class Server extends AbstractServer {
                             lastRunDate = sj.getCreatedAt();
                     // how long ago the last time this job was run
                     long diff = TimeUnit.SECONDS.convert(now.getTime() - lastRunDate.getTime(), TimeUnit.MILLISECONDS);
+                    chatIF.displayf("Job %s was last run %d seconds ago", job.getName(), diff);
 
                     // convert delay from seconds to milliseconds
                     nextSleep = (diff < job.getInterval()) ? (job.getInterval() - diff) * 1000 : 0;
+                    chatIF.displayf("Running job %s after %d seconds", job.getName(), nextSleep / 1000);
                 } catch (ServerJob.NotFound notFound) {
+                    chatIF.displayf("Job %s was never run before, running now", job.getName());
                     nextSleep = 0;
                 }
 
                 while (true) {
-                    if (nextSleep > 0) {
-                        Thread.sleep(nextSleep);
+                    try {
+                        if (nextSleep > 0) {
+                            Thread.sleep(nextSleep);
+                        }
+                        chatIF.displayf("Running job %s...", job.getName());
+                        Future<Void> future = executor.submit(job);
+                        future.get();
+                        nextSleep = job.getInterval() * 1000;
+                        chatIF.displayf("Success. Sleeping job %s for %d seconds", job.getName(), nextSleep / 1000);
+                    } catch (Exception e) {
+                        chatIF.displayf("Exception while working job %s", job.getName());
+                        e.printStackTrace();
                     }
-                    Future<Void> future = executor.submit(job);
-                    future.get();
-                    nextSleep = job.getInterval() * 1000;
                 }
-            } catch (Exception e) {
-                System.err.printf("Exception while working job %s", job.getName());
+            } catch (SQLException e) {
+                System.err.printf("Exception while preparing job %s!\n", job.getName());
                 e.printStackTrace();
+                throw new RuntimeException(e);
             }
         })).start();
     }
