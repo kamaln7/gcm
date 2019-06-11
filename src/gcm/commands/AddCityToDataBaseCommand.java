@@ -5,6 +5,9 @@ import gcm.database.models.User;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
+/**
+ * used to add city to the database
+ */
 public class AddCityToDataBaseCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public String name, country;

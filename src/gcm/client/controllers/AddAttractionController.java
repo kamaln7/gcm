@@ -72,7 +72,11 @@ public class AddAttractionController {
 
     private Attraction attraction;
 
+    /**
+     * initialize the viewer
+     */
     public void initialize() {
+        attraction_name_field.setText("Name");
         attraction_choiceBox.getItems().add("Museum");
         attraction_choiceBox.getItems().add("Historical Place");
         attraction_choiceBox.getItems().add("Hotel");
@@ -94,7 +98,9 @@ public class AddAttractionController {
             e.printStackTrace();
         }
     }
-
+/**
+ * load the viewer
+ */
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/AddAttraction.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -105,7 +111,9 @@ public class AddAttractionController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-
+    /**
+     * load the viewer
+     */
     public static Attraction loadViewAndWait(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/AddAttraction.fxml");
         FXMLLoader loader = new FXMLLoader(url);
@@ -120,6 +128,10 @@ public class AddAttractionController {
         return controller.getAttraction();
     }
 
+    /**
+     * choose map and add attraction to the map image
+     * @param event
+     */
     @FXML
     void chooseMap(ActionEvent event) {
         try {
@@ -134,6 +146,7 @@ public class AddAttractionController {
             Image image = SwingFXUtils.toFXImage(bImage, null);
             originalImage = image;
             mapImg.setImage(image);
+            (new Alert(Alert.AlertType.INFORMATION, "please fill all the fields before you click on the map")).show();
             mapImg.setOnMouseClicked(e -> {
                 Xcord.setText(String.valueOf(e.getX()));
                 Ycord.setText(String.valueOf(e.getY()));
@@ -149,7 +162,8 @@ public class AddAttractionController {
                     Image image2 = SwingFXUtils.toFXImage(bImage2, null);
                     mapImg.setImage(image2);
                     s.close();
-                } catch (Exception e1) {
+                }
+                catch (Exception e1) {
                     ClientGUI.showErrorTryAgain();
                     e1.printStackTrace();
                 }
@@ -162,8 +176,16 @@ public class AddAttractionController {
 
     }
 
+    /**
+     * close the viewer
+     * @param event
+     */
     @FXML
     private void finishJop(ActionEvent event) {
+        if (this.map==null ||this.attraction_name_field.getText().equals("") || this.attraction_location_field.getText().equals("") || this.description_field.getText().equals("") || this.Xcord.getText().equals("")){
+            (new Alert(Alert.AlertType.INFORMATION, "please fill all the fields and then click on the map")).show();
+            return;
+        }
         try {
             boolean accessibility = getAccessibility();
 
@@ -181,6 +203,11 @@ public class AddAttractionController {
         }
     }
 
+    /**
+     * draw the new attraction on th image
+     * @return
+     * @throws IOException
+     */
     private BufferedImage createImageWithText() throws IOException {
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(originalImage, null);
         Graphics2D g2d = bufferedImage.createGraphics();

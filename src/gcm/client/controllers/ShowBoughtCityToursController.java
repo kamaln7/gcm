@@ -1,12 +1,13 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
-import gcm.database.models.Map;
+import gcm.commands.FindAttractionsByTourIdCommand;
+import gcm.commands.FindToursByCityIdCommand;
+import gcm.commands.Input;
+import gcm.commands.Response;
 import gcm.database.models.Tour;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,23 +17,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
 public class ShowBoughtCityToursController {
-
-
-
 
     @FXML
     private TextArea description_field;
@@ -56,7 +48,10 @@ public class ShowBoughtCityToursController {
     private TableColumn<attractionInfo, String> time_column;
 
 
-
+    /**
+     * show the next tour
+     * @param event
+     */
     @FXML
     void next(ActionEvent event) {
         current++;
@@ -68,6 +63,10 @@ public class ShowBoughtCityToursController {
         previous.setVisible(true);
     }
 
+    /**
+     * show the previous tour
+     * @param event
+     */
     @FXML
     void previous(ActionEvent event) {
         current--;
@@ -83,6 +82,11 @@ public class ShowBoughtCityToursController {
     private List<Tour> tours;
     private int current=0;
     private int size;
+
+    /**
+     * close the viewer
+     * @param event
+     */
     @FXML
     void close(ActionEvent event) {
         Stage stage = (Stage) description_field.getScene().getWindow();
@@ -94,6 +98,9 @@ public class ShowBoughtCityToursController {
         this.myCityID=cityID;
     }
 
+    /**
+     * get the tours of the city
+     */
     private void setTours(){
         Input input = new FindToursByCityIdCommand.Input(myCityID);
 
@@ -106,12 +113,18 @@ public class ShowBoughtCityToursController {
             //show the first map
             showTour(this.tours.get(current));
             previous.setVisible(false);
-
+            if (tours.size()==1){
+                next.setVisible(false);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * shows the tour in the viewer
+     * @param tour
+     */
     private void showTour(Tour tour){
         description_field.setText(tour.getDescription());
 
@@ -136,6 +149,12 @@ public class ShowBoughtCityToursController {
         }
     }
 
+    /**
+     * load the viewer
+     * @param primaryStage
+     * @param cityID
+     * @throws IOException
+     */
     public static void loadView(Stage primaryStage, int cityID) throws IOException {
         URL url = ShowBoughtCityToursController.class.getResource("/gcm/client/views/ShowBoughtCityTours.fxml");
         FXMLLoader loader = new FXMLLoader(url);
@@ -153,6 +172,9 @@ public class ShowBoughtCityToursController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+    /**
+     * a class used to help fill the table
+     */
     public class attractionInfo{
 
         private String index, name, time;

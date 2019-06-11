@@ -14,7 +14,11 @@ public class Tour extends Model {
     private String description;
     private Date createdAt, updatedAt;
 
-    // create User object with info from ResultSet
+    /**
+     *  create object with info from ResultSet
+     * @param rs
+     * @throws SQLException
+     */
     public Tour(ResultSet rs) throws SQLException {
         super();
 
@@ -26,6 +30,11 @@ public class Tour extends Model {
         this.description = description;
     }
 
+    /**
+     *  fill object with info from ResultSet
+     * @param rs
+     * @throws SQLException
+     */
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
         this.cityId = rs.getInt("city_id");
@@ -35,12 +44,11 @@ public class Tour extends Model {
     }
 
     /**
-     * Find a user by its id
-     *
-     * @param id The user id to find
-     * @return User The requested user
+     * Find a tour by its id
+     * @param id
+     * @return tour
      * @throws SQLException
-     * @throws NotFound     if no such user
+     * @throws NotFound
      */
     public static Tour findById(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours where id = ?")) {
@@ -56,6 +64,14 @@ public class Tour extends Model {
             }
         }
     }
+
+    /**
+     * find all tours inside city
+     * @param city_id
+     * @return List<Tour> tours
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static List<Tour> findAllByCityId(Integer city_id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours where city_id = ?")) {
             preparedStatement.setInt(1, city_id);
@@ -71,6 +87,12 @@ public class Tour extends Model {
         }
     }
 
+    /**
+     * insert a new object to the database
+     * @throws SQLException
+     * @throws NotFound
+     * @throws AlreadyExists
+     */
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
         try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into tours (city_id, description) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {

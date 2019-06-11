@@ -72,6 +72,9 @@ public class AddExistingAttractionToMapController {
     private int X;
     private int Y;
 
+    /**
+     * initialize the viewer
+     */
     public void initialize() {
 
         try {
@@ -83,6 +86,11 @@ public class AddExistingAttractionToMapController {
         }
     }
 
+    /**
+     * load the viewer
+     * @param primaryStage
+     * @throws IOException
+     */
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/AddExitingAttractionToMap.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -94,13 +102,28 @@ public class AddExistingAttractionToMapController {
         primaryStage.show();
     }
 
+    /**
+     * exit the window once you finish
+     * @param event
+     */
     @FXML
     void finishJop(ActionEvent event) {
+        if (this.map==null || this.attraction==null){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "please choose map or attraction first");
+            alert.show();
+            return;
+        }
         Stage stage = (Stage) pane.getScene().getWindow();
         // do what you have to do
         stage.close();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "attraction added successfully");
+        alert.show();
     }
 
+    /**
+     * choose map
+     * @param event
+     */
     @FXML
     void chooseMap(ActionEvent event) {
         try {
@@ -151,8 +174,17 @@ public class AddExistingAttractionToMapController {
 
     }
 
+    /**
+     * choose the attraction
+     * @param event
+     */
     @FXML
     void chooseAttraction(ActionEvent event) {
+        if (this.map==null){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Choose Map First");
+            alert.show();
+            return;
+        }
         try {
             this.attraction = AdminTablePickerAttractionForCityController.loadViewAndWait(new Stage(), this.map.getCityId());
             this.attractionTF.setText(attraction.getName());
@@ -162,6 +194,9 @@ public class AddExistingAttractionToMapController {
         }
     }
 
+    /**
+     * set the attraction values
+     */
     private void setAttractionValues() {
         this.Attraction_Name.setText(attraction.getName());
         this.Attraction_Type.setText(attraction.getType());
@@ -171,6 +206,11 @@ public class AddExistingAttractionToMapController {
 
     }
 
+    /**
+     * add the attraction to the map image
+     * @return
+     * @throws IOException
+     */
     private BufferedImage createImageWithText() throws IOException {
 
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(mapImg.getImage(), null);

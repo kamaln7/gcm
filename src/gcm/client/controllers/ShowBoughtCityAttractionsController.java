@@ -4,10 +4,8 @@ import gcm.client.bin.ClientGUI;
 import gcm.commands.GetCityAttractionsCommand;
 import gcm.commands.Input;
 import gcm.commands.Response;
-import gcm.database.models.City;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,12 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
@@ -45,6 +40,11 @@ public class ShowBoughtCityAttractionsController {
     private TableColumn<attractionInfo, String> accessibility_column;
 
     private  int myCityID;
+
+    /**
+     * close the viewer
+     * @param event
+     */
     @FXML
     void close(ActionEvent event) {
         Stage stage = (Stage) tableList.getScene().getWindow();
@@ -55,6 +55,10 @@ public class ShowBoughtCityAttractionsController {
     private void setCity(int cityID){
         this.myCityID=cityID;
     }
+
+    /**
+     * set the city attractions in the table
+     */
     private void setAttractions(){
         Input input = new GetCityAttractionsCommand.Input(myCityID);
 
@@ -80,6 +84,12 @@ public class ShowBoughtCityAttractionsController {
         }
     }
 
+    /**
+     * loads the viewer
+     * @param primaryStage
+     * @param cityID
+     * @throws IOException
+     */
     public static void loadView(Stage primaryStage, int cityID) throws IOException {
         URL url = ShowBoughtCityAttractionsController.class.getResource("/gcm/client/views/ShowBoughtCityAttractions.fxml");
         FXMLLoader loader = new FXMLLoader(url);
@@ -97,8 +107,11 @@ public class ShowBoughtCityAttractionsController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-    public class attractionInfo{
 
+    /**
+     * a class used to help filling the table
+     */
+    public class attractionInfo{
         private String name, description, location, type, accessibility;
 
         public attractionInfo(String name, String description, String location, String type, boolean accessibility) {

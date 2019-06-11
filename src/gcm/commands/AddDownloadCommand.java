@@ -5,6 +5,9 @@ import gcm.database.models.View;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
+/**
+ * used to add download to the database
+ */
 public class AddDownloadCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public int user_id, model_id;

@@ -6,6 +6,9 @@ import ocsf.server.ConnectionToClient;
 
 import java.util.List;
 
+/**
+ * used to get the attractions in a city
+ */
 public class GetCityAttractionsCommand implements Command {
     public static class Input extends gcm.commands.Input {
         int city_id;
@@ -24,6 +27,14 @@ public class GetCityAttractionsCommand implements Command {
         }
     }
 
+    /**
+     * runs the command on the server
+     * @param request
+     * @param server
+     * @param client
+     * @return
+     * @throws Exception
+     */
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         GetCityAttractionsCommand.Input input = request.getInput(GetCityAttractionsCommand.Input.class);

@@ -4,10 +4,9 @@ import gcm.database.models.Map;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.UUID;
-
+/**
+ * used when user edit map
+ */
 public class UpdateMapTitleAndDescriptionCommand implements Command {
     public static class Input extends gcm.commands.Input {
         private Map map;
@@ -22,6 +21,14 @@ public class UpdateMapTitleAndDescriptionCommand implements Command {
         }
     }
 
+    /**
+     * runs the command on the server
+     * @param request
+     * @param server
+     * @param client
+     * @return
+     * @throws Exception
+     */
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);

@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+/**
+ * used to create new attraction and add it to the map
+ */
 public class AddAttractionAndUpdateMapImageCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public Integer mapId;
