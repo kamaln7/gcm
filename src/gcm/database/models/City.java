@@ -211,6 +211,10 @@ public class City extends Model {
         }
     }
 
+    public String getTitle() {
+        return String.format("%s, %s", this.getName(), this.getCountry());
+    }
+
     // exceptions
     public static class NotFound extends Exception {
     }
@@ -293,6 +297,6 @@ public class City extends Model {
 
     @Override
     public String toString() {
-        return String.format("%s, %s", this.getName(), this.getCountry());
+        return getTitle();
     }
 }
