@@ -1,11 +1,8 @@
 package gcm.database.models;
 
 import java.sql.*;
-
 import java.time.LocalDate;
-
 import java.util.ArrayList;
-
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +54,7 @@ public class Subscription extends Model {
             }
         }
     }
+
     public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ?")) {
             preparedStatement.setInt(1, id);
@@ -73,6 +71,7 @@ public class Subscription extends Model {
             }
         }
     }
+
     public static int countRenewals(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ? and renew = 1")) {
             preparedStatement.setInt(1, id);
@@ -102,13 +101,12 @@ public class Subscription extends Model {
         }
     }
 
-
-    public static Subscription findSubscriptionbyIDs(Integer userId,Integer cityId,Date fromDate) throws SQLException, NotFound {
+    public static Subscription findSubscriptionbyIDs(Integer userId, Integer cityId, Date fromDate) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ? AND city_id = ? AND from_date <= ? AND to_date >= ?")) {
             preparedStatement.setInt(1, userId);
-            preparedStatement.setInt(2,cityId);
-            preparedStatement.setTimestamp(3 , new Timestamp(fromDate.getTime()));
-            preparedStatement.setTimestamp(4 , new Timestamp(fromDate.getTime()));
+            preparedStatement.setInt(2, cityId);
+            preparedStatement.setTimestamp(3, new Timestamp(fromDate.getTime()));
+            preparedStatement.setTimestamp(4, new Timestamp(fromDate.getTime()));
 
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -129,7 +127,14 @@ public class Subscription extends Model {
 
     public static List<Subscription> findAllByUserId(Integer userId, Boolean activeOnly) throws SQLException {
         try (PreparedStatement preparedStatement = getDb().prepareStatement(
-                String.format("select * from subscriptions where user_id = ? %s order by id asc",
+                String.format(
+                        "select subscriptions.*, concat(cities.name, \", \", cities.country) as city_title" +
+                                " from subscriptions" +
+                                " left join cities" +
+                                " on subscriptions.city_id = cities.id" +
+                                " where user_id = ?" +
+                                " %s" +
+                                " order by created_at desc",
                         activeOnly ? "and from_date <= now() and to_date >= now()" : "")
         )) {
             preparedStatement.setInt(1, userId);
@@ -138,6 +143,7 @@ public class Subscription extends Model {
                 List<Subscription> subscriptions = new ArrayList<>();
                 while (rs.next()) {
                     Subscription subscription = new Subscription(rs);
+                    subscription._extraInfo.put("cityTitle", rs.getString("city_title"));
                     subscriptions.add(subscription);
                 }
 
@@ -154,8 +160,8 @@ public class Subscription extends Model {
             preparedStatement.setInt(2, getCityId());
             preparedStatement.setTimestamp(3, new Timestamp(getFromDate().getTime()));
             preparedStatement.setTimestamp(4, new Timestamp(getToDate().getTime()));
-            preparedStatement.setDouble(5,getPrice());
-            preparedStatement.setBoolean(6,getRenew());
+            preparedStatement.setDouble(5, getPrice());
+            preparedStatement.setBoolean(6, getRenew());
             // run the insert command
             preparedStatement.executeUpdate();
             // get the auto generated id

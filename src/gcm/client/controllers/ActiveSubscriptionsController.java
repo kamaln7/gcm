@@ -1,132 +1,138 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
-import gcm.database.models.City;
-import gcm.database.models.User;
+import gcm.commands.FindActiveSubscriptionByUserIDCommand;
+import gcm.commands.Input;
+import gcm.commands.Response;
+import gcm.database.models.Subscription;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ResourceBundle;
 
-public class ActiveSubscriptionsController {
+public class ActiveSubscriptionsController implements Initializable {
     @FXML
-    private TableView<subscriptionInfo> tableList;
-
-    @FXML
-    private TableColumn<subscriptionInfo, String> cityID_column;
+    private TableView<Subscription> tableList;
 
     @FXML
-    private TableColumn<subscriptionInfo, String> city_country_column;
+    private TableColumn<Subscription, String> city_country_column;
 
     @FXML
-    private TableColumn<subscriptionInfo, String> expiration_date_column;
-
+    private TableColumn<Subscription, String> expiration_date_column;
     @FXML
-    void close(ActionEvent event) {
-        Stage stage = (Stage) tableList.getScene().getWindow();
-        // do what you have to do
-        stage.close();
+    private TableColumn<Subscription, Void> buttonCol;
+
+    private ObservableList oblist = FXCollections.observableArrayList();
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        tableList.setItems(oblist);
+        city_country_column.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("cityTitle")));
+        expiration_date_column.setCellValueFactory(new PropertyValueFactory<>("toDate"));
+        buttonCol.setCellFactory(new Callback<TableColumn<Subscription, Void>, TableCell<Subscription, Void>>() {
+            @Override
+            public TableCell<Subscription, Void> call(TableColumn<Subscription, Void> param) {
+                final TableCell<Subscription, Void> cell = new TableCell<Subscription, Void>() {
+                    private final HBox btns = new HBox();
+
+                    private final Button attractionsBtn = new Button("Attractions");
+                    private final Button mapsBtn = new Button("Maps");
+                    private final Button toursBtn = new Button("Tours");
+
+                    {
+                        attractionsBtn.setOnAction((ActionEvent event) -> {
+                            try {
+                                ShowBoughtCityAttractionsController.loadView(new Stage(), getSubscription().getCityId());
+                            } catch (IOException e) {
+                                ClientGUI.showErrorTryAgain();
+                                e.printStackTrace();
+                            }
+                        });
+                        mapsBtn.setOnAction((ActionEvent event) -> {
+                            try {
+                                ShowBoughtCityMapsController.loadView(new Stage(), getSubscription().getCityId());
+                            } catch (IOException e) {
+                                ClientGUI.showErrorTryAgain();
+                                e.printStackTrace();
+                            }
+                        });
+                        toursBtn.setOnAction((ActionEvent event) -> {
+                            try {
+                                ShowBoughtCityToursController.loadView(new Stage(), getSubscription().getCityId());
+                            } catch (IOException e) {
+                                ClientGUI.showErrorTryAgain();
+                                e.printStackTrace();
+                            }
+                        });
+
+                        btns.setSpacing(5);
+                        btns.getChildren().addAll(attractionsBtn, mapsBtn, toursBtn);
+                    }
+
+                    public Subscription getSubscription() {
+                        return getTableView().getItems().get(getIndex());
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btns);
+                        }
+                    }
+                };
+
+                return cell;
+            }
+        });
     }
 
-    @FXML
-    void showCityMapsAttractionsTours(ActionEvent event) {
-        TablePosition pos = tableList.getSelectionModel().getSelectedCells().get(0);
-        int row = pos.getRow();
-        subscriptionInfo item = tableList.getItems().get(row);
-
-
-        try {
-            // show the attractions to the costumer
-            ShowBoughtCityAttractionsController.loadView(new Stage(),Integer.parseInt(item.getCityID()));
-            //show the maps to the costumer
-            ShowBoughtCityMapsController.loadView(new Stage(),Integer.parseInt(item.getCityID()));
-            //show the Tours to the costumer
-            ShowBoughtCityToursController.loadView(new Stage(), Integer.parseInt(item.getCityID()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private void setCities(User user){
+    private void setUser(Integer userId) {
         //command
-        Input input = new FindActiveSubscriptionByUserIDCommand.Input(user.getId());
+        Input input = new FindActiveSubscriptionByUserIDCommand.Input(userId);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             FindActiveSubscriptionByUserIDCommand.Output output = response.getOutput(FindActiveSubscriptionByUserIDCommand.Output.class);
 
-            cityID_column.setCellValueFactory(new PropertyValueFactory<>("cityID"));
-            city_country_column.setCellValueFactory(new PropertyValueFactory<>("city_country"));
-            expiration_date_column.setCellValueFactory(new PropertyValueFactory<>("expiration_date"));
-
-
-            ObservableList<subscriptionInfo> oblist = FXCollections.observableArrayList();
-            for(int i=0;i<output.subscriptions.size(); i ++) {
-
-                Input input2 = new FindCityByIDCommand.Input(output.subscriptions.get(i).getCityId());
-                Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
-                FindCityByIDCommand.Output output2 = response2.getOutput(FindCityByIDCommand.Output.class);
-
-                String city_country= output2.city.getName()+", "+output2.city.getCountry();
-                oblist.add(new subscriptionInfo(String.valueOf(output.subscriptions.get(i).getCityId()),city_country ,String.valueOf(output.subscriptions.get(i).getToDate())));
-            }
-            tableList.setItems(oblist);
-
-        }catch (Exception e){
+            oblist.setAll(output.subscriptions);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 
-    public static void loadView(Stage primaryStage, User user) throws IOException {
+    public static void loadView(Stage primaryStage, Integer userId) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ActiveSubscriptions.fxml");
         FXMLLoader loader = new FXMLLoader(url);
         AnchorPane pane = loader.load();
         Scene scene = new Scene(pane);
 
         ActiveSubscriptionsController controller = loader.getController();
-        controller.setCities(user);
+        controller.setUser(userId);
 
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
-        primaryStage.setResizable(false);
+        primaryStage.setTitle("Active Subscriptions - GCM 2019");
         primaryStage.show();
-    }
-    public class subscriptionInfo{
-
-        private String cityID, city_country, expiration_date;
-
-        public subscriptionInfo(String cityID, String city_country, String expiration_date) {
-            this.cityID = cityID;
-            this.city_country = city_country;
-            this.expiration_date = expiration_date;
-        }
-
-        public String getCityID() {
-            return cityID;
-        }
-
-        public String getCity_country() {
-            return city_country;
-        }
-
-        public String getExpiration_date() {
-            return expiration_date;
-        }
     }
 }
 

@@ -110,6 +110,7 @@ public class City extends Model {
             }
         }
     }
+
     public static City approvePrice(int id) /*, double new_purchase_price, double new_subscription_price)*/ throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET purchase_price = new_purchase_price , subscription_price = new_sub_price, new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
             preparedStatement.setInt(1, id);
@@ -194,14 +195,17 @@ public class City extends Model {
         try (PreparedStatement preparedStatement = getDb().prepareStatement(
                 "select\n" +
                         "(select count(*) from maps where maps.city_id = ?) as map_count,\n" +
-                        "(select count(*) from attractions where attractions.city_id = ?) as attraction_count"
+                        "(select count(*) from attractions where attractions.city_id = ?) as attraction_count, \n" +
+                        "(select count(*) from tours where tours.city_id = ?) as tour_count"
         )) {
             preparedStatement.setInt(1, this.getId());
             preparedStatement.setInt(2, this.getId());
+            preparedStatement.setInt(3, this.getId());
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 if (rs.next()) {
                     this._extraInfo.put("mapCount", String.valueOf(rs.getInt("map_count")));
                     this._extraInfo.put("attractionCount", String.valueOf(rs.getInt("attraction_count")));
+                    this._extraInfo.put("tourCount", String.valueOf(rs.getInt("tour_count")));
                 }
             }
         }

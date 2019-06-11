@@ -1,9 +1,9 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
+import gcm.commands.Input;
+import gcm.commands.Response;
 import gcm.commands.ShowUserInfoCommand;
-import gcm.database.models.City;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,7 +16,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -24,11 +27,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-public class ShowUserInfoController implements Initializable{
+public class ShowUserInfoController implements Initializable {
 
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ShowUserInfo.fxml");
@@ -40,43 +42,96 @@ public class ShowUserInfoController implements Initializable{
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-    public class UsersInfo{
-        private  SimpleIntegerProperty id, purchases, subscriptions;
-        private  SimpleStringProperty firstName, lastName, userName, email, phone;
+
+    public class UsersInfo {
+        private SimpleIntegerProperty id, purchases, subscriptions;
+        private SimpleStringProperty firstName, lastName, userName, email, phone;
         private SimpleObjectProperty<LocalDate> date;
 
 
-        public UsersInfo(int id, String firstName, String lastName, String userName, String email, String phone, Date date, int purchases, int subscriptions)
-        {
-            this.id=new SimpleIntegerProperty(id);
+        public UsersInfo(int id, String firstName, String lastName, String userName, String email, String phone, Date date, int purchases, int subscriptions) {
+            this.id = new SimpleIntegerProperty(id);
             this.firstName = new SimpleStringProperty(firstName);
             this.lastName = new SimpleStringProperty(lastName);
             this.userName = new SimpleStringProperty(userName);
             this.email = new SimpleStringProperty(email);
             this.phone = new SimpleStringProperty(phone);
             this.date = new SimpleObjectProperty(date);
-            this.purchases=new SimpleIntegerProperty(purchases);
-            this.subscriptions=new SimpleIntegerProperty(subscriptions);
+            this.purchases = new SimpleIntegerProperty(purchases);
+            this.subscriptions = new SimpleIntegerProperty(subscriptions);
         }
 
-        public int getId() { return id.get();}
-        public SimpleIntegerProperty idProperty() {return id; }
-        public int getPurchases() {return purchases.get();}
-        public SimpleIntegerProperty purchasesProperty() {return purchases;}
-        public int getSubscriptions() {return subscriptions.get();}
-        public SimpleIntegerProperty subscriptionsProperty() {return subscriptions;}
-        public String getFirstName() {return firstName.get();}
-        public SimpleStringProperty firstNameProperty() {return firstName;}
-        public String getLastName() {return lastName.get();}
-        public SimpleStringProperty lastNameProperty() {return lastName;}
-        public String getUserName() {return userName.get();}
-        public SimpleStringProperty userNameProperty() {return userName;}
-        public String getEmail() {return email.get();}
-        public SimpleStringProperty emailProperty() {return email;}
-        public String getPhone() {return phone.get(); }
-        public SimpleStringProperty phoneProperty() {return phone;}
-        public LocalDate getDate() {return date.get();}
-        public SimpleObjectProperty<LocalDate> dateProperty() {return date; }
+        public int getId() {
+            return id.get();
+        }
+
+        public SimpleIntegerProperty idProperty() {
+            return id;
+        }
+
+        public int getPurchases() {
+            return purchases.get();
+        }
+
+        public SimpleIntegerProperty purchasesProperty() {
+            return purchases;
+        }
+
+        public int getSubscriptions() {
+            return subscriptions.get();
+        }
+
+        public SimpleIntegerProperty subscriptionsProperty() {
+            return subscriptions;
+        }
+
+        public String getFirstName() {
+            return firstName.get();
+        }
+
+        public SimpleStringProperty firstNameProperty() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName.get();
+        }
+
+        public SimpleStringProperty lastNameProperty() {
+            return lastName;
+        }
+
+        public String getUserName() {
+            return userName.get();
+        }
+
+        public SimpleStringProperty userNameProperty() {
+            return userName;
+        }
+
+        public String getEmail() {
+            return email.get();
+        }
+
+        public SimpleStringProperty emailProperty() {
+            return email;
+        }
+
+        public String getPhone() {
+            return phone.get();
+        }
+
+        public SimpleStringProperty phoneProperty() {
+            return phone;
+        }
+
+        public LocalDate getDate() {
+            return date.get();
+        }
+
+        public SimpleObjectProperty<LocalDate> dateProperty() {
+            return date;
+        }
     }
 
     @Override
@@ -98,7 +153,7 @@ public class ShowUserInfoController implements Initializable{
 
             ObservableList<UsersInfo> oblist = FXCollections.observableArrayList();
 
-            for(int i=0;i<output.userInfoList.size(); i ++) {
+            for (int i = 0; i < output.userInfoList.size(); i++) {
 
                 oblist.add(new UsersInfo(output.userInfoList.get(i).getId(),
                         output.userInfoList.get(i).getFirstName(), output.userInfoList.get(i).getLastName(),
@@ -127,14 +182,12 @@ public class ShowUserInfoController implements Initializable{
                     } else if (UserInfo.getLastName().toLowerCase().contains(lowerCaseFilter)) {
                         return true; // Filter matches last name.
                     } else if (UserInfo.getUserName().toLowerCase().contains(lowerCaseFilter)) {
-                    return true; // Filter matches user name.
-                }
-                    else if (Integer.toString(UserInfo.getId()).contains(newValue)) {
+                        return true; // Filter matches user name.
+                    } else if (Integer.toString(UserInfo.getId()).contains(newValue)) {
                         return true; // Filter matches ID.
-                    }
-                    else if (UserInfo.getPhone().contains(newValue)) {
+                    } else if (UserInfo.getPhone().contains(newValue)) {
                         return true; // Filter matches Phone.
-                    }else if (UserInfo.getEmail().contains(newValue)) {
+                    } else if (UserInfo.getEmail().contains(newValue)) {
                         return true; // Filter matches E-mail.
                     }
                     return false; // Does not match.
@@ -149,15 +202,14 @@ public class ShowUserInfoController implements Initializable{
 
             // 5. Add sorted (and filtered) data to the table.
             table.setItems(sortedData);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
 
     }
-    int getPosition()
-    {
+
+    int getPosition() {
         TablePosition pos = table.getSelectionModel().getSelectedCells().get(0);
         int row = pos.getRow();
         UsersInfo item = table.getItems().get(row);
@@ -167,26 +219,35 @@ public class ShowUserInfoController implements Initializable{
     @FXML
     void ShowActiveSubscriptions(ActionEvent event) {
         int UserId = getPosition();
-        System.out.println("UserID: " + UserId);
-
-        // Kamal - continue
+        try {
+            ActiveSubscriptionsController.loadView(new Stage(), UserId);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
     }
 
 
     @FXML
     void ShowPurchases(ActionEvent event) {
         int UserId = getPosition();
-        System.out.println("UserID: " + UserId);
-
-        // Kamal - continue
+        try {
+            ShowPurchaseHistoryController.loadView(new Stage(), UserId);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
     }
 
     @FXML
     void ShowSubscribtionsHistory(ActionEvent event) {
         int UserId = getPosition();
-        System.out.println("UserID: " + UserId);
-
-        // Kamal - continue
+        try {
+            ShowSubscriptionHistoryController.loadView(new Stage(), UserId, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
     }
 
 
@@ -222,8 +283,6 @@ public class ShowUserInfoController implements Initializable{
 
     @FXML
     private TextField searchField;
-
-
 
 
 }

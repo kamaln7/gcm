@@ -3,7 +3,6 @@ package gcm.client.controllers;
 import gcm.client.bin.ClientGUI;
 import gcm.commands.*;
 import gcm.database.models.City;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -55,7 +54,7 @@ public class AddTourController {
 
     private City city;
 
-    private Integer index=1;
+    private Integer index = 1;
 
     @FXML
     void ChooseCity(ActionEvent event) {
@@ -92,7 +91,7 @@ public class AddTourController {
 
     @FXML
     void createTour(ActionEvent event) {
-        int tour_id=-1;
+        int tour_id = -1;
         //add the tour to the Tour model and get the ID back
         Input input = new AddTourCommand.Input(city.getId(), tour_description_field.getText());
 
@@ -112,20 +111,15 @@ public class AddTourController {
 
 
         //add tour-attraction relation to the TourAttraction model
-        ObservableList<attractionInfo> oblist = FXCollections.observableArrayList();
-        oblist = tableList2.getItems();
-        for (int i = 0; i <oblist.size() ; i++) {
-            System.out.println("atrraction id:"+ oblist.get(i).getId());
-            Input input2 = new AddTourAttractionCommand.Input(tour_id,oblist.get(i).getId(),oblist.get(i).getMyIndex(),oblist.get(i).getTime());
+        ObservableList<attractionInfo> oblist = tableList2.getItems();
+        for (int i = 0; i < oblist.size(); i++) {
+            System.out.println("atrraction id:" + oblist.get(i).getId());
+            Input input2 = new AddTourAttractionCommand.Input(tour_id, oblist.get(i).getId(), oblist.get(i).getMyIndex(), oblist.get(i).getTime());
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
-                AddTourAttractionCommand.Output output = response.getOutput(AddTourAttractionCommand.Output.class);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                response.getOutput(AddTourAttractionCommand.Output.class);
+                (new Alert(Alert.AlertType.INFORMATION, "Tour was added!")).showAndWait();
+                ((Stage) tableList.getScene().getWindow()).close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -145,8 +139,8 @@ public class AddTourController {
 
 
             ObservableList<attractionInfo> oblist = FXCollections.observableArrayList();
-            for(int i=0;i<output.result.size(); i ++)
-                oblist.add(new attractionInfo(output.result.get(i).getId(),output.result.get(i).getName()));
+            for (int i = 0; i < output.result.size(); i++)
+                oblist.add(new attractionInfo(output.result.get(i).getId(), output.result.get(i).getName()));
 
             tableList.setItems(oblist);
 
@@ -159,10 +153,10 @@ public class AddTourController {
         }
     }
 
-    public class attractionInfo{
+    public class attractionInfo {
         private Integer id, myIndex;
         private String attraction_name;
-        private  String time;
+        private String time;
 
         public attractionInfo(Integer id, String attraction_name) {
             this.id = id;
@@ -204,12 +198,6 @@ public class AddTourController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-
-
-
-
-
-
 
 
 }

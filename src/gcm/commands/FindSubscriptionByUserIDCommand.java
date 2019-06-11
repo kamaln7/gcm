@@ -1,22 +1,17 @@
 package gcm.commands;
 
-import gcm.database.models.Purchase;
 import gcm.database.models.Subscription;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-import java.util.Date;
 import java.util.List;
 
 public class FindSubscriptionByUserIDCommand implements Command {
     public static class Input extends gcm.commands.Input {
-        private Integer  userId, cityId;
-        private Date to_date,from_date;
+        private Integer userId;
 
         public Input(Integer userId) {
             this.userId = userId;
-
-
         }
     }
 
