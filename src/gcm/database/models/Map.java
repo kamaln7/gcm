@@ -27,6 +27,7 @@ public class Map extends Model {
     public Map() {
     }
 
+
     public Map(String title, String description, String version, String img, int cityId) {
         this.title = title;
         this.description = description;
@@ -35,10 +36,19 @@ public class Map extends Model {
         this.cityId = cityId;
     }
 
+
+
     public static List<Map> findAllByCityId(Integer cityId) throws SQLException {
         return findAllByCityId(cityId, true);
     }
 
+    /**
+     * find verified cities
+     * @param cityId
+     * @param verifiedOnly
+     * @return List of maps
+     * @throws SQLException
+     */
     public static List<Map> findAllByCityId(Integer cityId, Boolean verifiedOnly) throws SQLException {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where city_id = ? and verification = ? order by title asc")) {
             preparedStatement.setInt(1, cityId);
@@ -55,7 +65,14 @@ public class Map extends Model {
             }
         }
     }
-public  static  int countAllForCities(int cityID) throws Exception
+
+    /**
+     * count number of maps of a city
+     * @param cityID
+     * @return number of maps of a city
+     * @throws Exception
+     */
+    public  static  int countAllForCities(int cityID) throws Exception
 {
     try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) AS total from maps where city_id = ?")) {
         preparedStatement.setInt(1, cityID);
@@ -194,6 +211,13 @@ public  static  int countAllForCities(int cityID) throws Exception
         }
     }
 
+    /**
+     *  find map by it's title
+     * @param title
+     * @return matching map
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static Map findByTitle(String title) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where title = ?")) {
             preparedStatement.setString(1, title);
@@ -209,6 +233,14 @@ public  static  int countAllForCities(int cityID) throws Exception
         }
     }
 
+    /**
+     * find map by title and version
+     * @param title , version
+     * @param version
+     * @return matching map
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static Map findByTitleAndVersion(String title, String version) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where title = ? And version = ?")) {
             preparedStatement.setString(1, title);
@@ -224,6 +256,11 @@ public  static  int countAllForCities(int cityID) throws Exception
         }
     }
 
+    /**
+     * find maps of a given city
+     * @return List of matching maps
+     * @throws SQLException
+     */
     public static List<Map> findAllWithCityTitle() throws SQLException {
         try (Statement statement = getDb().createStatement()) {
             try (ResultSet rs = statement.executeQuery("select maps.*, concat(cities.name, \", \", cities.country) as city_title\n" +

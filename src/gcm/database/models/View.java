@@ -58,6 +58,16 @@ public class View extends Model {
         }
     }
 
+    /**
+     *  count number of views of a city between 2 dates
+     * @param id
+     * @param from
+     * @param to
+     * @return number of matching views
+     * @throws SQLException
+     * @throws NotFound
+     */
+
     public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
         Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
         Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
