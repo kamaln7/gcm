@@ -1,7 +1,6 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.AddOneToAttractionAndUpdateMapImageCommand;
 import gcm.commands.Input;
 import gcm.commands.ReadMapImageById;
 import gcm.commands.Response;
@@ -69,14 +68,15 @@ public class AddExistingAttractionToMapController {
     private Map map;
     private Attraction attraction;
 
-    private int X;
-    private int Y;
+    private double X;
+    private double Y;
+    private Image originalImage;
+    private boolean clicked = false;
 
     /**
      * initialize the viewer
      */
     public void initialize() {
-
         try {
             BufferedImage bufferedImage = ImageIO.read(this.getClass().getResourceAsStream("/gcm/client/staticFiles/thumb-1920-44975.jpg"));
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
@@ -88,6 +88,7 @@ public class AddExistingAttractionToMapController {
 
     /**
      * load the viewer
+     *
      * @param primaryStage
      * @throws IOException
      */
@@ -97,18 +98,19 @@ public class AddExistingAttractionToMapController {
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Add Attraction to Map - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
     /**
      * exit the window once you finish
+     *
      * @param event
      */
     @FXML
     void finishJop(ActionEvent event) {
-        if (this.map==null || this.attraction==null){
+        if (this.map == null || this.attraction == null || !clicked) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "please choose map or attraction first");
             alert.show();
             return;
@@ -122,6 +124,7 @@ public class AddExistingAttractionToMapController {
 
     /**
      * choose map
+     *
      * @param event
      */
     @FXML
@@ -136,16 +139,14 @@ public class AddExistingAttractionToMapController {
 
             BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(output.imgBytes));
             Image image = SwingFXUtils.toFXImage(bImage, null);
+            originalImage = image;
             mapImg.setImage(image);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please Choose Attraction,\nBefore you click on the map image!");
-            alert.show();
-            mapImg.setOnMouseClicked(e -> {
 
+            mapImg.setOnMouseClicked(e -> {
                 Xcord.setText(String.valueOf(e.getX()));
                 Ycord.setText(String.valueOf(e.getY()));
-                X = (int) Math.round(e.getX());
-                Y = (int) Math.round(e.getY());
-                mapImg.setOnMouseClicked(null);
+                X = e.getX();
+                Y = e.getY();
 
                 try {
                     ByteArrayOutputStream s = new ByteArrayOutputStream();
@@ -156,13 +157,9 @@ public class AddExistingAttractionToMapController {
                     Image image2 = SwingFXUtils.toFXImage(bImage2, null);
                     mapImg.setImage(image2);
                     s.close();
-
-
-                    Input input2 = new AddOneToAttractionAndUpdateMapImageCommand.Input(this.map.getId(), this.attraction, res);
-                    Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
-                    response2.getOutput(AddOneToAttractionAndUpdateMapImageCommand.Output.class);
-
+                    clicked = true;
                 } catch (Exception e1) {
+                    ClientGUI.showErrorTryAgain();
                     e1.printStackTrace();
                 }
             });
@@ -176,17 +173,22 @@ public class AddExistingAttractionToMapController {
 
     /**
      * choose the attraction
+     *
      * @param event
      */
     @FXML
     void chooseAttraction(ActionEvent event) {
-        if (this.map==null){
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Choose Map First");
+        if (this.map == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Choose map first");
             alert.show();
             return;
         }
+
         try {
-            this.attraction = AdminTablePickerAttractionForCityController.loadViewAndWait(new Stage(), this.map.getCityId());
+            Attraction attraction = AdminTablePickerAttractionForCityController.loadViewAndWait(new Stage(), this.map.getCityId());
+            if (attraction == null) return;
+
+            this.attraction = attraction;
             this.attractionTF.setText(attraction.getName());
             setAttractionValues();
         } catch (IOException e) {
@@ -201,27 +203,27 @@ public class AddExistingAttractionToMapController {
         this.Attraction_Name.setText(attraction.getName());
         this.Attraction_Type.setText(attraction.getType());
         this.Attraction_Location.setText(attraction.getLocation());
-        this.accessible.setText(attraction.getAccessibleSpecial() ? "YES" : "NO");
+        this.accessible.setText(attraction.getAccessibleSpecial() ? "Yes" : "No");
         this.Description.setText(attraction.getDescription());
-
     }
 
     /**
      * add the attraction to the map image
+     *
      * @return
      * @throws IOException
      */
     private BufferedImage createImageWithText() throws IOException {
-
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(mapImg.getImage(), null);
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(originalImage, null);
         Graphics2D g2d = bufferedImage.createGraphics();
         g2d.setColor(BLACK);
 
+        double aspectRatio = bufferedImage.getWidth() / bufferedImage.getHeight();
+        double realWidth = Math.min(mapImg.getFitWidth(), mapImg.getFitHeight() * aspectRatio);
+        double realHeight = Math.min(mapImg.getFitHeight(), mapImg.getFitWidth() / aspectRatio);
 
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 60));
-        g2d.drawString("•" + Attraction_Name.getText(), bufferedImage.getWidth() * X / 672, bufferedImage.getHeight() * Y / 376);
-
-        //ImageIO.write(bufferedImage, "png", new File("afterAdding.png") );
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
+        g2d.drawString("•" + this.attraction.getName(), Math.round(bufferedImage.getWidth() * X / realWidth), Math.round(bufferedImage.getHeight() * Y / realHeight));
         g2d.dispose();
 
         return bufferedImage;

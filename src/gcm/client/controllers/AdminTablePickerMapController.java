@@ -1,10 +1,13 @@
 package gcm.client.controllers;
 
+import gcm.client.FilterableTreeItem;
+import gcm.client.TreeItemPredicate;
 import gcm.client.bin.ClientGUI;
 import gcm.commands.GetAllMapsWithCityTitleCommand;
 import gcm.commands.Input;
 import gcm.commands.Response;
 import gcm.database.models.Map;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -39,9 +42,12 @@ public class AdminTablePickerMapController implements Initializable {
     @FXML
     private TreeTableColumn<Object, Void> buttonCol;
 
+    @FXML
+    private TextField filterTF;
+
     private Map map;
 
-    private java.util.Map<String, TreeItem<Object>> cityRoots;
+    private java.util.Map<String, FilterableTreeItem<Object>> cityRoots;
     TreeItem<Object> root = new TreeItem<>();
 
     @Override
@@ -137,13 +143,32 @@ public class AdminTablePickerMapController implements Initializable {
 
     private void addToTreeTableView(Map map) {
         String cityTitle = map._extraInfo.get("cityTitle");
-        TreeItem<Object> root = cityRoots.computeIfAbsent(cityTitle, this::createTreeItemForCity);
-        root.getChildren().add(new TreeItem<>(map));
+        FilterableTreeItem<Object> root = cityRoots.computeIfAbsent(cityTitle, this::createTreeItemForCity);
+        root.getInternalChildren().add(new TreeItem<>(map));
     }
 
-    private TreeItem<Object> createTreeItemForCity(String cityTitle) {
-        TreeItem<Object> item = new TreeItem<>(new WorkaroundCityThing(cityTitle));
+    private FilterableTreeItem<Object> createTreeItemForCity(String cityTitle) {
+        // create tree item for city
+        FilterableTreeItem<Object> item = new FilterableTreeItem<>(new WorkaroundCityThing(cityTitle));
         item.setExpanded(true);
+
+        // bind filter field
+        item.predicateProperty().bind(Bindings.createObjectBinding(() -> {
+            if (filterTF.getText() == null || filterTF.getText().isEmpty())
+                return null;
+
+            return TreeItemPredicate.create(o -> {
+                if (!(o instanceof Map)) return true;
+                Map map = (Map) o;
+
+                String search = filterTF.getText().toLowerCase();
+                return map.getTitle().equals("")
+                        || map.getTitle().toLowerCase().contains(search)
+                        || map.getDescription().toLowerCase().contains(search);
+            });
+        }, filterTF.textProperty()));
+
+        // add to root
         root.getChildren().add(item);
         return item;
     }
@@ -161,7 +186,7 @@ public class AdminTablePickerMapController implements Initializable {
         public String id;
 
         public WorkaroundCityThing(String id) {
-            this.id = id;
+            this.id = "City: " + id;
         }
     }
 

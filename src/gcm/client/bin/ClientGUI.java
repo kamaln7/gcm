@@ -1,7 +1,7 @@
 package gcm.client.bin;
 
 import gcm.client.Client;
-import gcm.client.controllers.LoginController;
+import gcm.client.controllers.ConnectionSettingsController;
 import gcm.database.models.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -38,7 +38,11 @@ public class ClientGUI extends Application {
     }
 
     public static void showErrorTryAgain() {
-        Alert alert = new Alert(Alert.AlertType.WARNING, "There was an error. Please try again.");
+        showErrorTryAgain("There was an error. Please try again.");
+    }
+
+    public static void showErrorTryAgain(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING, message);
         alert.show();
     }
 
@@ -47,7 +51,7 @@ public class ClientGUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         setPrimaryStage(primaryStage);
 
-        LoginController.loadView(primaryStage);
+        ConnectionSettingsController.loadView(primaryStage);
         client.chatIF.display("Started GUI");
 
         primaryStage.setOnCloseRequest(t -> {
