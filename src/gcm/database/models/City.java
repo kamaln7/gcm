@@ -53,6 +53,12 @@ public class City extends Model {
         }
     }
 
+    /**
+     * find all cities in database, order them by country and name
+     *
+     * @return List of City
+     * @throws SQLException
+     */
     public static List<City> findAll() throws SQLException {
         try (Statement statement = getDb().createStatement()) {
             try (ResultSet rs = statement.executeQuery("select * from cities order by country, name asc")) {
@@ -80,7 +86,14 @@ public class City extends Model {
     }
 
 
-    /* QUERIES */
+    /**
+     * find cities by name of city and country name
+     * @param name of city
+     * @param country name
+     * @return City
+     * @throws SQLException
+     * @throws NotFound if not found
+     */
     public static City findByNameAndCountry(String name, String country) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where name = ? and country = ?")) {
             preparedStatement.setString(1, name);
@@ -97,6 +110,12 @@ public class City extends Model {
         }
     }
 
+    /**
+     * find all cities with unapproved new price
+     * @return List of all cities match
+     * @throws SQLException
+     * @throws NotFound if not found such cities
+     */
     public static List<City> findUnapproved() throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price IS NOT NULL OR new_sub_price IS NOT NULL")) {
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -111,6 +130,14 @@ public class City extends Model {
         }
     }
 
+    /**
+     * Approve new price for selected city, Update in database: purchase and subscription columns with new prices
+     *
+     * @param id of city
+     * @return City
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static City approvePrice(int id) /*, double new_purchase_price, double new_subscription_price)*/ throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET purchase_price = new_purchase_price , subscription_price = new_sub_price, new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
             preparedStatement.setInt(1, id);
@@ -124,6 +151,14 @@ public class City extends Model {
         }
     }
 
+    /**
+     * Decline price changes, in database: no changes in purchase and subscription columns
+     * Set NULL values in new_purchase_price and new_subscription_price
+     * @param id of city
+     * @return City matches
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static City declinePrice(int id) /*, double new_purchase_price, double new_subscription_price)*/ throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
 
@@ -138,6 +173,13 @@ public class City extends Model {
         }
     }
 
+    /**
+     * Set in new_purchase_price column, and new_subscription_price column new selected values sent by Content Manager
+     * @param new_purchase_price
+     * @param new_sub_price
+     * @throws SQLException
+     * @throws NotFound
+     */
     public void changePrice(double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE id = ?")) {
             preparedStatement.setDouble(1, new_purchase_price);
@@ -151,6 +193,13 @@ public class City extends Model {
         }
     }
 
+    /**
+     * Find city in database by its city ID
+     * @param id city
+     * @return Matching City
+     * @throws SQLException
+     * @throws NotFound if not found
+     */
     public static City findById(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where id = ?")) {
             preparedStatement.setInt(1, id);

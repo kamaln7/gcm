@@ -33,11 +33,26 @@ public class ChangePriceController {
         primaryStage.show();
     }
 
+    /**
+     * Choose city, update new prices: purchase price and subscription price
+     * @param event
+     */
     @FXML
     void UpdatePrice(ActionEvent event) {
+        if(this.city == null)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a city!!");
+            alert.show();
+            return;
+        }
         double new_purchase_price = Double.parseDouble(NewPurchasePriceField.getText());
         double new_sub_price = Double.parseDouble(NewSubPriceField.getText());
-
+        if(new_purchase_price == 0 || new_sub_price == 0)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You cannot set a price to be zero!!");
+            alert.show();
+            return;
+        }
         Input input = new ChangePriceCommand.Input(this.city.getId(), new_purchase_price, new_sub_price);
 
         try {
@@ -68,6 +83,7 @@ public class ChangePriceController {
     public void openCityPicker(ActionEvent actionEvent) {
         try {
             City city = AdminTablePickerCityController.loadViewAndWait(new Stage());
+            if(city == null) return;
             this.city = city;
             cityField.setText(city.toString());
             PurchasePriceField.setText(String.format("%.2f", this.city.getPurchasePrice()));
