@@ -96,5 +96,14 @@ public class UserProfileController implements Initializable {
             buttonsBox.setVisible(false);
         }
     }
+
+    @FXML
+    void edit_profile(ActionEvent event) {
+        try {
+            EditProfileController.loadView(new Stage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
