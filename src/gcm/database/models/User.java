@@ -204,6 +204,22 @@ public class User extends Model {
         }
     }
 
+
+    public static void updateUser(int user_id, String email, String phone, String first_name, String last_name,String ccNumber, String ccCVV, Integer ccMonth, Integer ccYear) throws SQLException, NotFound {
+        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE users SET email=? ,phone=? ,first_name=?, last_name=?, credit_card_number=?, credit_card_cvv=?, credit_card_month=?, credit_card_year=? WHERE id = ?")) {
+            preparedStatement.setString(1,email );
+            preparedStatement.setString(2, phone);
+            preparedStatement.setString(3, first_name);
+            preparedStatement.setString(4, last_name);
+            preparedStatement.setString(5, ccNumber);
+            preparedStatement.setString(6, ccCVV);
+            preparedStatement.setInt(7, ccMonth);
+            preparedStatement.setInt(8, ccYear);
+            preparedStatement.setInt(9, user_id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
     /**
      * Test if password is correct
      *

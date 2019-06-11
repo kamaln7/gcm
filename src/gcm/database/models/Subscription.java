@@ -43,6 +43,14 @@ public class Subscription extends Model {
         this.renew = renew;
     }
 
+    /**
+     * find Subscriptions in database by ID
+     *
+     * @param id of Subscription
+     * @return matching Subscription
+     * @throws SQLException
+     * @throws NotFound     if not found
+     */
     public static Subscription findById(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where id = ?")) {
             preparedStatement.setInt(1, id);
@@ -58,6 +66,16 @@ public class Subscription extends Model {
         }
     }
 
+    /**
+     * Count rows in database by city id, in period of time between 2 selected dates
+     *
+     * @param id   of city
+     * @param from date
+     * @param to   date
+     * @return Number of matching rows
+     * @throws SQLException
+     * @throws NotFound     if not found
+     */
     public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ?")) {
             preparedStatement.setInt(1, id);
@@ -75,6 +93,16 @@ public class Subscription extends Model {
         }
     }
 
+    /**
+     * Count rows in database by city id, in period of time between 2 selected dates
+     *
+     * @param id   of city
+     * @param from date
+     * @param to   date
+     * @return number of matching rows
+     * @throws SQLException
+     * @throws NotFound     if not found
+     */
     public static int countRenewals(Integer id, Date from, Date to) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ? and renew = 1")) {
             preparedStatement.setInt(1, id);
@@ -92,6 +120,14 @@ public class Subscription extends Model {
         }
     }
 
+    /**
+     * Count rows of subscriptions in database matching user id
+     *
+     * @param id of user
+     * @return number of matching rows
+     * @throws SQLException
+     * @throws NotFound     if not found
+     */
     public static int countForUser(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where user_id = ?")) {
             preparedStatement.setInt(1, id);
@@ -104,6 +140,7 @@ public class Subscription extends Model {
             }
         }
     }
+
 
     public static Subscription findSubscriptionbyIDs(Integer userId, Integer cityId, Date fromDate) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ? AND city_id = ? AND from_date <= ? AND to_date >= ?")) {

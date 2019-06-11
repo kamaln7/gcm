@@ -4,6 +4,7 @@ import gcm.client.bin.ClientGUI;
 import gcm.commands.ActivityReportCommand;
 import gcm.commands.Input;
 import gcm.commands.Response;
+import gcm.database.models.City;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -14,10 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -42,6 +40,9 @@ public class ActivityReportController {
         primaryStage.show();
     }
 
+    /**
+     * Class to fill table view of Activity Report
+     */
     public class ActivityReport {
         private SimpleStringProperty cityName, countryName;
         private SimpleIntegerProperty cityID, mapsNo, purchasesNo, subscriptionsNo, renewalsNo, viewsNo, downloadsNo;
@@ -133,34 +134,54 @@ public class ActivityReportController {
 
     }
 
+    /**
+     * Fill ObservableList
+     */
+    void ObservableList() {
+        cityIdColumn.setCellValueFactory(new PropertyValueFactory<>("cityID"));
+        cityColumn.setCellValueFactory(new PropertyValueFactory<>("cityName"));
+        countryColumn.setCellValueFactory(new PropertyValueFactory<>("countryName"));
+        mapsColumn.setCellValueFactory(new PropertyValueFactory<>("mapsNo"));
+        purchasesColumn.setCellValueFactory(new PropertyValueFactory<>("purchasesNo"));
+        subscriptionsColumn.setCellValueFactory(new PropertyValueFactory<>("subscriptionsNo"));
+        renewalsColumn.setCellValueFactory(new PropertyValueFactory<>("renewalsNo"));
+        viewsColumn.setCellValueFactory(new PropertyValueFactory<>("viewsNo"));
+        downloadsColumn.setCellValueFactory(new PropertyValueFactory<>("downloadsNo"));
+    }
+
+    /**
+     * Fill table with data about all cities
+     *
+     * @param event
+     */
     @FXML
     void showResults(ActionEvent event) {
-        Input input = new ActivityReportCommand.Input(selectFromDate(event), selectToDate(event));
+        if (fromDate.getValue() == null || toDate.getValue() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
+            alert.show();
+            return;
+        }
+        Date from = selectFromDate(event);
+        Date to = selectToDate(event);
+        Input input = new ActivityReportCommand.Input(from, to, -1);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
-
-            cityIdColumn.setCellValueFactory(new PropertyValueFactory<>("cityID"));
-            cityColumn.setCellValueFactory(new PropertyValueFactory<>("cityName"));
-            countryColumn.setCellValueFactory(new PropertyValueFactory<>("countryName"));
-            mapsColumn.setCellValueFactory(new PropertyValueFactory<>("mapsNo"));
-            purchasesColumn.setCellValueFactory(new PropertyValueFactory<>("purchasesNo"));
-            subscriptionsColumn.setCellValueFactory(new PropertyValueFactory<>("subscriptionsNo"));
-            renewalsColumn.setCellValueFactory(new PropertyValueFactory<>("renewalsNo"));
-            viewsColumn.setCellValueFactory(new PropertyValueFactory<>("viewsNo"));
-            downloadsColumn.setCellValueFactory(new PropertyValueFactory<>("downloadsNo"));
-
+            ObservableList();
             ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
 
-            for (int i = 0; i < output.activityReportList.size(); i++) {
-
-                oblist.add(new ActivityReport(output.activityReportList.get(i).getCityID(),
-                        output.activityReportList.get(i).getCity(), output.activityReportList.get(i).getCountryName(),
-                        output.activityReportList.get(i).getMapsNo(), output.activityReportList.get(i).getPurchasesNo(),
-                        output.activityReportList.get(i).getSubscriptionsNo(), output.activityReportList.get(i).getRenewalsNo(),
-                        output.activityReportList.get(i).getViewsNo(), output.activityReportList.get(i).getDownloadsNo()));
+            for (int i = 0; i < output.cities.size(); i++) {
+                oblist.add(new ActivityReport(output.cities.get(i).getId(),
+                        output.cities.get(i).getName(), output.cities.get(i).getCountry(),
+                        output.maps.get(i), output.purchases.get(i),
+                        output.subscriptions.get(i), output.renewals.get(i),
+                        output.views.get(i), output.downloads.get(i)));
             }
             table.setItems(oblist);
+            /**
+             * Filter TableView by input text in search field
+             * by city name, country, id
+             */
             // 1. Wrap the ObservableList in a FilteredList (initially display all data).
             FilteredList<ActivityReport> filteredData = new FilteredList<>(oblist, p -> true);
 
@@ -203,8 +224,45 @@ public class ActivityReportController {
         }
     }
 
-    void search() {
+    /**
+     * Cohoose one city by CityPicker
+     *
+     * @param event
+     */
+    @FXML
+    void chooseCity(ActionEvent event) {
+        if (fromDate.getValue() == null || toDate.getValue() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
+            alert.show();
+            return;
+        }
+        Date from = selectFromDate(event);
+        Date to = selectToDate(event);
+        try {
+            City city = AdminTablePickerCityController.loadViewAndWait(new Stage());
+            if (city == null) return;
+            Input input = new ActivityReportCommand.Input(from, to, city.getId());
+            try {
+                Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+                ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
+                ObservableList();
+                ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
 
+                oblist.add(new ActivityReport(output.cities.get(0).getId(),
+                        output.cities.get(0).getName(), output.cities.get(0).getCountry(),
+                        output.maps.get(0), output.purchases.get(0),
+                        output.subscriptions.get(0), output.renewals.get(0),
+                        output.views.get(0), output.downloads.get(0)));
+                table.setItems(oblist);
+
+            } catch (Exception e) {
+                ClientGUI.showErrorTryAgain();
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            ClientGUI.showErrorTryAgain();
+        }
     }
 
     @FXML
