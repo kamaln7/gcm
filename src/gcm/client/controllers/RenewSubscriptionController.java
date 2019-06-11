@@ -33,10 +33,7 @@ public class RenewSubscriptionController {
 
 
     public void setText(Subscription subscription) {
-
         renewtext.setText("You already have a subscription for this city. It ends at: " + subscription.getToDate());
-
-
     }
 
     public void setSubscription(Subscription subscription) {
