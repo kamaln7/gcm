@@ -2,11 +2,14 @@ package gcm.client;
 
 import com.google.gson.Gson;
 import gcm.ChatIF;
+import gcm.client.bin.ClientGUI;
+import gcm.client.controllers.ConnectionSettingsController;
 import gcm.commands.Input;
 import gcm.commands.LogoutUserCommand;
 import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
+import javafx.application.Platform;
 import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
@@ -40,7 +43,15 @@ public class Client extends AbstractClient {
     @Override
     protected void connectionClosed() {
         this.chatIF.display("Connection to server closed");
-        System.exit(0);
+
+        Platform.runLater(() -> {
+            try {
+                ConnectionSettingsController.loadView(ClientGUI.getPrimaryStage());
+                ClientGUI.showErrorTryAgain("Connection to server closed");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
