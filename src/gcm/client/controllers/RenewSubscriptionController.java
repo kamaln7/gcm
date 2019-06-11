@@ -1,8 +1,10 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.*;
-import gcm.database.models.City;
+import gcm.commands.AddSubscriptionToDataBaseCommand;
+import gcm.commands.FindSubscriptionCommand;
+import gcm.commands.Input;
+import gcm.commands.Response;
 import gcm.database.models.Subscription;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,24 +29,22 @@ public class RenewSubscriptionController {
 
     private double price;
 
-    public void setText(Subscription subscription){
+    public void setText(Subscription subscription) {
 
-        renewtext.setText("you already have subscription for this city and ends at : " + subscription.getToDate());
+        renewtext.setText("You already have a subscription for this city. It ends at: " + subscription.getToDate());
 
 
     }
 
-    public void setSubscription(Subscription subscription){
+    public void setSubscription(Subscription subscription) {
 
         this.subscription = subscription;
     }
 
 
-    public void setPrice(double price)
-    {
+    public void setPrice(double price) {
         this.price = price;
     }
-
 
 
     public static void loadView(Stage primaryStage, Subscription subscription, double price) throws IOException {
@@ -80,38 +80,34 @@ public class RenewSubscriptionController {
         to_date.add(Calendar.MONTH, 6);
         Calendar temp_date = Calendar.getInstance();
         temp_date.setTime(from_date);
-        temp_date.add(Calendar.SECOND,1);
+        temp_date.add(Calendar.SECOND, 1);
 
         Input input1 = new FindSubscriptionCommand.Input(user_id, city_id, temp_date.getTime());
 
-        try{
+        try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input1);
             FindSubscriptionCommand.Output output = response.getOutput(FindSubscriptionCommand.Output.class);
             try {
-                new Alert(Alert.AlertType.INFORMATION, "you already renewed your subscription for this city").show();
+                new Alert(Alert.AlertType.INFORMATION, "You already renewed your subscription for this city").show();
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 ClientGUI.showErrorTryAgain();
                 e.printStackTrace();
             }
 
-        }
-        catch (Subscription.NotFound e){
+        } catch (Subscription.NotFound e) {
             Input input = new AddSubscriptionToDataBaseCommand.Input(user_id, city_id, from_date, to_date.getTime(), price, true);
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 AddSubscriptionToDataBaseCommand.Output output = response.getOutput(AddSubscriptionToDataBaseCommand.Output.class);
-                new Alert(Alert.AlertType.INFORMATION, " your subscription ends at: " + to_date.getTime()).show();
+                new Alert(Alert.AlertType.INFORMATION, "Your subscription ends at: " + to_date.getTime()).show();
 
-            }
-            catch (Exception e1) {
+            } catch (Exception e1) {
                 ClientGUI.showErrorTryAgain();
                 e.printStackTrace();
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
@@ -127,15 +123,6 @@ public class RenewSubscriptionController {
         stage.close();
 
     }
-
-
-
-
-
-
-
-
-
 
 
 }
