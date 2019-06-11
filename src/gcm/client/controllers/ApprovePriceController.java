@@ -15,10 +15,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 
-public class ApprovePriceController{
+public class ApprovePriceController {
 
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ApprovePrice.fxml");
@@ -31,30 +32,60 @@ public class ApprovePriceController{
         primaryStage.show();
     }
 
-    public class CityPrices{
-        private  SimpleIntegerProperty id;
-        private  SimpleStringProperty city_country;
-        private  SimpleStringProperty purchase_price;
-        private  SimpleStringProperty sub_price;
+    /**
+     * fill values in TableView
+     */
+    public class CityPrices {
+        private SimpleIntegerProperty id;
+        private SimpleStringProperty city_country;
+        private SimpleStringProperty purchase_price;
+        private SimpleStringProperty sub_price;
 
-        public CityPrices(int id, String city, String purchase, String sub)
-        {
-            this.id=new SimpleIntegerProperty(id);
+        public CityPrices(int id, String city, String purchase, String sub) {
+            this.id = new SimpleIntegerProperty(id);
             this.city_country = new SimpleStringProperty(city);
             this.purchase_price = new SimpleStringProperty(purchase);
             this.sub_price = new SimpleStringProperty(sub);
         }
 
-        public int getId() {return id.get();}
-        public SimpleIntegerProperty idProperty() {return id;}
-        public String getCity_country() {return city_country.get();}
-        public SimpleStringProperty city_countryProperty() {return city_country; }
-        public String getPurchase_price() {return purchase_price.get();}
-        public SimpleStringProperty purchase_priceProperty() {return purchase_price;}
-        public String getSub_price() {return sub_price.get();}
-        public SimpleStringProperty sub_priceProperty() {return sub_price;}
+        public int getId() {
+            return id.get();
+        }
+
+        public SimpleIntegerProperty idProperty() {
+            return id;
+        }
+
+        public String getCity_country() {
+            return city_country.get();
+        }
+
+        public SimpleStringProperty city_countryProperty() {
+            return city_country;
+        }
+
+        public String getPurchase_price() {
+            return purchase_price.get();
+        }
+
+        public SimpleStringProperty purchase_priceProperty() {
+            return purchase_price;
+        }
+
+        public String getSub_price() {
+            return sub_price.get();
+        }
+
+        public SimpleStringProperty sub_priceProperty() {
+            return sub_price;
+        }
     }
 
+    /**
+     * Review Pending Price Changes to Approve / Decline them
+     *
+     * @param event
+     */
     @FXML
     void getPrice(ActionEvent event) {
 
@@ -69,11 +100,11 @@ public class ApprovePriceController{
             sub_column.setCellValueFactory(new PropertyValueFactory<>("sub_price"));
 
             ObservableList<CityPrices> oblist = FXCollections.observableArrayList();
-            for(int i=0;i<output.result.size(); i ++)
+            for (int i = 0; i < output.result.size(); i++)
                 oblist.add(new CityPrices(output.result.get(i).getId(),
-                        output.result.get(i).getName()+", " + output.result.get(i).getCountry(),
-                        output.result.get(i).getPurchasePrice() + " -> " + output.result.get(i).getNewPurchasePrice() ,
-                        output.result.get(i).getSubscriptionPrice()+ " -> " + output.result.get(i).getNewSubscriptionPrice()));
+                        output.result.get(i).getName() + ", " + output.result.get(i).getCountry(),
+                        output.result.get(i).getPurchasePrice() + " -> " + output.result.get(i).getNewPurchasePrice(),
+                        output.result.get(i).getSubscriptionPrice() + " -> " + output.result.get(i).getNewSubscriptionPrice()));
 
             tableList.setItems(oblist);
 
@@ -86,61 +117,93 @@ public class ApprovePriceController{
         }
     }
 
-    @FXML
-    void ApprovePrice(ActionEvent event) {
-        //Get ID of selected city from the table
-
+    CityPrices getPosition() {
+        if (tableList.getSelectionModel().getSelectedCells().isEmpty())
+            return null;
         TablePosition pos = tableList.getSelectionModel().getSelectedCells().get(0);
         int row = pos.getRow();
         CityPrices item = tableList.getItems().get(row);
-        int id = item.getId();
+        return item;
+    }
 
-        //Send this ID to DATA BASE for updateing price
+    /**
+     * Select row in TableView And approve price changing
+     *
+     * @param event
+     */
+    @FXML
+    void ApprovePrice(ActionEvent event) {
+        /**
+         * Get ID of selected city from the table
+         */
+        CityPrices item = getPosition();
 
-        Input input = new ApprovePriceCommand.Input(id);
-
-        try {
-            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            ApprovePriceCommand.Output output = response.getOutput(ApprovePriceCommand.Output.class);
-
-            // delete the selcted row
-            tableList.getItems().remove(item);
-
-        } catch (City.NotFound e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
+        if (item == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "There is no chosen data!!");
             alert.show();
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
+        } else {
+            int id = item.getId();
+
+        /*if(tableList.getSelectionModel().getSelectedCells().isEmpty())
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "There is no chosen data!!");
+            alert.show();
+        }
+        else {
+            TablePosition pos = tableList.getSelectionModel().getSelectedCells().get(0);
+            int row = pos.getRow();
+            CityPrices item = tableList.getItems().get(row);
+            int id = item.getId();*/
+/**
+ * Send this ID to DATA BASE for updateing price
+ */
+
+            Input input = new ApprovePriceCommand.Input(id);
+
+            try {
+                Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+                ApprovePriceCommand.Output output = response.getOutput(ApprovePriceCommand.Output.class);
+
+                // delete the selcted row
+                tableList.getItems().remove(item);
+
+            } catch (City.NotFound e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
+                alert.show();
+            } catch (Exception e) {
+                ClientGUI.showErrorTryAgain();
+                e.printStackTrace();
+            }
         }
     }
 
+    /**
+     * select row in TableView and decline price changing
+     *
+     * @param event
+     */
     @FXML
     void DeclinePrice(ActionEvent event) {
-        //Get ID of selected city from the table
-
-        TablePosition pos = tableList.getSelectionModel().getSelectedCells().get(0);
-        int row = pos.getRow();
-        CityPrices item = tableList.getItems().get(row);
-        int id = item.getId();
-
-        //Send this ID to DATA BASE
-
-        Input input = new DeclinePriceCommand.Input(id);
-
-        try {
-            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-            DeclinePriceCommand.Output output = response.getOutput(DeclinePriceCommand.Output.class);
-
-            // delete the selcted row
-            tableList.getItems().remove(item);
-
-        } catch (City.NotFound e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
+        CityPrices item = getPosition();
+        if (item == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "There is no chosen data!!");
             alert.show();
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
+        } else {
+            int id = item.getId();
+            Input input = new DeclinePriceCommand.Input(id);
+            try {
+                Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+                DeclinePriceCommand.Output output = response.getOutput(DeclinePriceCommand.Output.class);
+                // delete the selcted row
+                tableList.getItems().remove(item);
+
+            } catch (City.NotFound e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "City is not found");
+                alert.show();
+            } catch (Exception e) {
+                ClientGUI.showErrorTryAgain();
+                e.printStackTrace();
+            }
         }
     }
 

@@ -42,6 +42,9 @@ public class ActivityReportController {
         primaryStage.show();
     }
 
+    /**
+     * Class to fill table view of Activity Report
+     */
     public class ActivityReport{
         private  SimpleStringProperty cityName, countryName;
         private  SimpleIntegerProperty cityID, mapsNo, purchasesNo, subscriptionsNo, renewalsNo, viewsNo, downloadsNo;
@@ -131,6 +134,11 @@ public class ActivityReportController {
 
 
     }
+
+    /**
+     * Fill TableView
+     * @param event
+     */
     @FXML
     void showResults(ActionEvent event) {
 
@@ -160,6 +168,10 @@ public class ActivityReportController {
                         output.activityReportList.get(i).getViewsNo(), output.activityReportList.get(i).getDownloadsNo()));
             }
             table.setItems(oblist);
+            /**
+             * Filter TableView by input text in search field
+             * by city name, country, id
+             */
             // 1. Wrap the ObservableList in a FilteredList (initially display all data).
             FilteredList<ActivityReport> filteredData = new FilteredList<>(oblist, p -> true);
 
@@ -180,8 +192,7 @@ public class ActivityReportController {
                         return true; // Filter matches city.
                     } else if (ActivityReport.getCountryName().toLowerCase().contains(lowerCaseFilter)) {
                         return true; // Filter matches country.
-                    }
-                    else if (Integer.toString(ActivityReport.getCityID()).contains(newValue)) {
+                    } else if (Integer.toString(ActivityReport.getCityID()).contains(newValue)) {
                         return true; // Filter matches cityID.
                     }
                     return false; // Does not match.
