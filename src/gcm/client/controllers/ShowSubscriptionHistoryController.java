@@ -80,7 +80,10 @@ public class ShowSubscriptionHistoryController implements Initializable {
                         btn.setOnAction((ActionEvent event) -> {
                             Subscription subscription = getTableView().getItems().get(getIndex());
                             try {
-                                RenewSubscriptionController.loadView(new Stage(), subscription, subscription.getPrice());
+                                Subscription newSubscription = RenewSubscriptionController.loadView(new Stage(), subscription, subscription.getPrice(), true);
+                                if (newSubscription != null) {
+                                    oblist.add(newSubscription);
+                                }
                             } catch (Exception e) {
                                 ClientGUI.showErrorTryAgain();
                                 e.printStackTrace();
@@ -117,6 +120,10 @@ public class ShowSubscriptionHistoryController implements Initializable {
     }
 
     public static void loadView(Stage stage, int currentUserID) throws IOException {
+        loadView(stage, currentUserID, true);
+    }
+
+    public static void loadView(Stage stage, int currentUserID, Boolean withButtonCol) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ShowSubscriptionHistory.fxml");
         FXMLLoader loader = new FXMLLoader(url);
         AnchorPane pane = loader.load();
@@ -124,10 +131,15 @@ public class ShowSubscriptionHistoryController implements Initializable {
 
         ShowSubscriptionHistoryController controller = loader.getController();
         controller.show(currentUserID);
+        controller.showButtonCol(withButtonCol);
         // setting the stage
         stage.setScene(scene);
         stage.setTitle("Subscription History - GCM 2019");
         stage.setResizable(true);
         stage.showAndWait();
+    }
+
+    public void showButtonCol(Boolean shown) {
+        buttonCol.setVisible(shown);
     }
 }
