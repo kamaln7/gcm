@@ -6,6 +6,7 @@ import gcm.commands.Input;
 import gcm.commands.Response;
 import gcm.database.models.Map;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,7 +59,14 @@ public class AdminTablePickerMapController implements Initializable {
         titleCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("description"));
         versionCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("version"));
-        publishedCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("published"));
+        publishedCol.setCellValueFactory(cellData -> {
+            Object o = cellData.getValue();
+            if (!(o instanceof Map)) {
+                return null;
+            }
+
+            return new SimpleStringProperty(((Map) o).getVerification() ? "Yes" : "No");
+        });
 
         // button
         buttonCol.setCellFactory(new Callback<TreeTableColumn<Object, Void>, TreeTableCell<Object, Void>>() {
