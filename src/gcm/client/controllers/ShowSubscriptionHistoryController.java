@@ -8,15 +8,19 @@ import gcm.database.models.Subscription;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,6 +50,8 @@ public class ShowSubscriptionHistoryController implements Initializable {
     private TableColumn<Subscription, String> toCol;
     @FXML
     private TableColumn<Subscription, String> activeCol;
+    @FXML
+    private TableColumn<Subscription, Void> buttonCol;
 
     private ObservableList oblist = FXCollections.observableArrayList();
 
@@ -63,6 +69,37 @@ public class ShowSubscriptionHistoryController implements Initializable {
             Date now = new Date();
             Boolean active = s.getFromDate().before(now) && s.getToDate().after(now);
             return new SimpleStringProperty(active ? "Yes" : "No");
+        });
+        buttonCol.setCellFactory(new Callback<TableColumn<Subscription, Void>, TableCell<Subscription, Void>>() {
+            @Override
+            public TableCell<Subscription, Void> call(TableColumn<Subscription, Void> param) {
+                final TableCell<Subscription, Void> cell = new TableCell<Subscription, Void>() {
+                    private final Button btn = new Button("Renew");
+
+                    {
+                        btn.setOnAction((ActionEvent event) -> {
+                            Subscription subscription = getTableView().getItems().get(getIndex());
+                            try {
+                                RenewSubscriptionController.loadView(new Stage(), subscription, subscription.getPrice());
+                            } catch (Exception e) {
+                                ClientGUI.showErrorTryAgain();
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btn);
+                        }
+                    }
+                };
+                return cell;
+            }
         });
     }
 
