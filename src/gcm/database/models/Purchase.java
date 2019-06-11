@@ -13,6 +13,7 @@ public class Purchase extends Model {
     private double price;
 
     @Override
+
     public void fillFieldsFromResultSet(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
         this.userId = rs.getInt("user_id");
@@ -34,10 +35,18 @@ public class Purchase extends Model {
         this.price = price;
     }
 
+
     public static Purchase findById() throws SQLException, NotFound {
         return findById();
     }
 
+    /**
+     * find purchase of a given purchase ID
+     * @param id
+     * @return matching purchase
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static Purchase findById(Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from purchases where id = ?")) {
             preparedStatement.setInt(1, id);
@@ -53,6 +62,13 @@ public class Purchase extends Model {
         }
     }
 
+    /**
+     *  count number of purchases of a user
+     * @param  id
+     * @return number of matching purchases
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static int countForUser (Integer id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from purchases where user_id = ?")){
             preparedStatement.setInt(1, id);
@@ -65,6 +81,16 @@ public class Purchase extends Model {
             }
         }
     }
+
+    /**
+     * count number of purchases of a given city between 2 dates
+     * @param id
+     * @param from
+     * @param to
+     * @return number of matching purchases
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException, NotFound {
         Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
         Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
@@ -83,7 +109,13 @@ public class Purchase extends Model {
         }
     }
 
-
+    /**
+     * find purchases of a given user
+     * @param user_id
+     * @return List of matching purchases
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static List<Purchase> findAllByUserId(Integer user_id) throws SQLException, NotFound {
         try (PreparedStatement preparedStatement = getDb().prepareStatement(
                 "select purchases.*, concat(cities.name, \", \", cities.country) as city_title" +
@@ -109,6 +141,12 @@ public class Purchase extends Model {
         }
     }
 
+    /**
+     * add purchase (with all related details) to the data base
+     * @throws SQLException
+     * @throws NotFound
+     * @throws AlreadyExists
+     */
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
         try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into purchases (user_id, city_id, price) values (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
@@ -132,11 +170,14 @@ public class Purchase extends Model {
         }
     }
 
+
+
     public static class AlreadyExists extends Exception {
     }
 
     public static class NotFound extends Exception {
     }
+
 
     public Date getCreatedAt() {
         return createdAt;
