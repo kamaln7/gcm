@@ -110,4 +110,8 @@ public class Client extends AbstractClient {
     public void logout() throws InterruptedException, ExecutionException, IOException {
         this.sendInputAndWaitForResponse(new LogoutUserCommand.Input());
     }
+
+    public Settings getSettings() {
+        return settings;
+    }
 }
