@@ -16,10 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -153,13 +150,13 @@ public class ShowUserInfoController implements Initializable {
 
             ObservableList<UsersInfo> oblist = FXCollections.observableArrayList();
 
-            for (int i = 0; i < output.userInfoList.size(); i++) {
+            for (int i = 0; i < output.usersList.size(); i++) {
 
-                oblist.add(new UsersInfo(output.userInfoList.get(i).getId(),
-                        output.userInfoList.get(i).getFirstName(), output.userInfoList.get(i).getLastName(),
-                        output.userInfoList.get(i).getUserName(), output.userInfoList.get(i).getEmail(),
-                        output.userInfoList.get(i).getPhone(), output.userInfoList.get(i).getDate(),
-                        output.userInfoList.get(i).getPurchases(), output.userInfoList.get(i).getSubscriptions()));
+                oblist.add(new UsersInfo(output.usersList.get(i).getId(),
+                        output.usersList.get(i).getFirst_name(), output.usersList.get(i).getLast_name(),
+                        output.usersList.get(i).getUsername(), output.usersList.get(i).getEmail(),
+                        output.usersList.get(i).getPhone(), output.usersList.get(i).getCreatedAt(),
+                        output.purchasesList.get(i), output.subscriptionsList.get(i)));
             }
             table.setItems(oblist);
 
@@ -210,6 +207,8 @@ public class ShowUserInfoController implements Initializable {
     }
 
     int getPosition() {
+        if(table.getSelectionModel().getSelectedCells().isEmpty())
+            return -1;
         TablePosition pos = table.getSelectionModel().getSelectedCells().get(0);
         int row = pos.getRow();
         UsersInfo item = table.getItems().get(row);
@@ -219,11 +218,16 @@ public class ShowUserInfoController implements Initializable {
     @FXML
     void ShowActiveSubscriptions(ActionEvent event) {
         int UserId = getPosition();
-        try {
-            ActiveSubscriptionsController.loadView(new Stage(), UserId);
-        } catch (IOException e) {
-            e.printStackTrace();
-            ClientGUI.showErrorTryAgain();
+        if (UserId == -1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "There is no chosen data!!");
+            alert.show();
+        } else {
+            try {
+                ActiveSubscriptionsController.loadView(new Stage(), UserId);
+            } catch (IOException e) {
+                e.printStackTrace();
+                ClientGUI.showErrorTryAgain();
+            }
         }
     }
 
@@ -231,22 +235,32 @@ public class ShowUserInfoController implements Initializable {
     @FXML
     void ShowPurchases(ActionEvent event) {
         int UserId = getPosition();
-        try {
-            ShowPurchaseHistoryController.loadView(new Stage(), UserId);
-        } catch (IOException e) {
-            e.printStackTrace();
-            ClientGUI.showErrorTryAgain();
+        if (UserId == -1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "There is no chosen data!!");
+            alert.show();
+        } else {
+            try {
+                ShowPurchaseHistoryController.loadView(new Stage(), UserId);
+            } catch (IOException e) {
+                e.printStackTrace();
+                ClientGUI.showErrorTryAgain();
+            }
         }
     }
 
     @FXML
     void ShowSubscribtionsHistory(ActionEvent event) {
         int UserId = getPosition();
-        try {
-            ShowSubscriptionHistoryController.loadView(new Stage(), UserId, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-            ClientGUI.showErrorTryAgain();
+        if (UserId == -1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "There is no chosen data!!");
+            alert.show();
+        } else {
+            try {
+                ShowSubscriptionHistoryController.loadView(new Stage(), UserId, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+                ClientGUI.showErrorTryAgain();
+            }
         }
     }
 

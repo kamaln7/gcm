@@ -55,6 +55,14 @@ public class Download extends Model {
         }
     }
 
+    /**
+     * Count rows in database by city id, in period of time between 2 selected dates
+     * @param id of city
+     * @param from date
+     * @param to date
+     * @return number of matching rows
+     * @throws SQLException
+     */
     public static int countByPeriod(Integer id, LocalDate from, LocalDate to) throws SQLException {
         Timestamp fromDate = Timestamp.valueOf(from.atTime(0, 0, 0));
         Timestamp toDate = Timestamp.valueOf(to.atTime(23, 59, 59));
