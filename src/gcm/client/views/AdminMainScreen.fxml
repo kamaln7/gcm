@@ -70,7 +70,8 @@
                                 <VBox layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="319.0" spacing="10.0">
                                     <children>
                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Cities" />
-                                        <Button mnemonicParsing="false" onAction="#Approve" prefWidth="219.0" text="Review Pending Price Changes" />
+                                        <Button mnemonicParsing="false" onAction="#Approve" prefHeight="27.0" prefWidth="246.0" text="Review Pending Price Changes" />
+                              <Button mnemonicParsing="false" onAction="#reviewPendingContent" prefHeight="27.0" prefWidth="246.0" text="Review Pending Content Changes" />
                                         <Pane prefHeight="30.0" prefWidth="100.0" />
                                         <Label text="Users Information" />
                                         <Button mnemonicParsing="false" onAction="#showUserInfo" prefWidth="219.0" text="Show Information" />
