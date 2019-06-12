@@ -55,6 +55,7 @@ public class ClientGUI extends Application {
         client.chatIF.display("Started GUI");
 
         primaryStage.setOnCloseRequest(t -> {
+            client.chatIF.display("Close requested. Disconnecting from server");
             try {
                 if (client.isConnected()) {
                     client.logout();
@@ -62,9 +63,10 @@ public class ClientGUI extends Application {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                Platform.exit();
+                System.exit(0);
             }
-            Platform.exit();
-            System.exit(0);
         });
     }
 }
