@@ -1,5 +1,6 @@
 package gcm.database.models;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ public class TourAttraction extends Model {
 
     /**
      * create object with info from ResultSet
+     *
      * @param rs
      * @throws SQLException
      */
@@ -33,6 +35,7 @@ public class TourAttraction extends Model {
 
     /**
      * fill object with info from ResultSet
+     *
      * @param rs
      * @throws SQLException
      */
@@ -47,13 +50,15 @@ public class TourAttraction extends Model {
 
     /**
      * find the attractions in the tour
+     *
      * @param tourId
      * @return List<Attraction> attractions
      * @throws SQLException
      * @throws NotFound
      */
     public static List<Attraction> findAttractionsByTourId(Integer tourId) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours_attractions, attractions where tour_id = ? and tours_attractions.attraction_id = attractions.id ORDER BY tours_attractions.order_index ASC")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from tours_attractions, attractions where tour_id = ? and tours_attractions.attraction_id = attractions.id ORDER BY tours_attractions.order_index ASC")) {
             preparedStatement.setInt(1, tourId);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -70,13 +75,15 @@ public class TourAttraction extends Model {
 
     /**
      * find the attraction ids connected with tourId
+     *
      * @param tourId
      * @return List<TourAttraction> tourAttractionList
      * @throws SQLException
      * @throws NotFound
      */
     public static List<TourAttraction> findTourAttractionsByTourId(Integer tourId) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours_attractions where tour_id = ? ORDER BY tours_attractions.order_index ASC")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from tours_attractions where tour_id = ? ORDER BY tours_attractions.order_index ASC")) {
             preparedStatement.setInt(1, tourId);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -93,13 +100,15 @@ public class TourAttraction extends Model {
 
     /**
      * insert a new object to the database
+     *
      * @throws SQLException
      * @throws NotFound
      * @throws AlreadyExists
      */
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into tours_attractions (tour_id, attraction_id, time, order_index) values (?, ?, ?, ?)")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into tours_attractions (tour_id, attraction_id, time, order_index) values (?, ?, ?, ?)")) {
             preparedStatement.setInt(1, this.getTourId());
             preparedStatement.setInt(2, this.getAttractionId());
             preparedStatement.setString(3, this.getTime());

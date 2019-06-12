@@ -1,6 +1,8 @@
 package gcm.server;
 
 import com.google.gson.Gson;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import gcm.ChatIF;
 import gcm.commands.Command;
 import gcm.commands.Output;
@@ -21,8 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +37,7 @@ public class Server extends AbstractServer {
     private ChatIF chatIF;
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
     private ArrayList<Integer> loggedInUserIds = new ArrayList<>();
-    private Connection db;
+    private HikariDataSource ds;
 
     private static final List<Class<? extends Job>> registeredJobs = new ArrayList<Class<? extends Job>>() {
         {
@@ -61,8 +61,18 @@ public class Server extends AbstractServer {
         this.chatIF.display("Connecting to the database");
 
         // MySQL connection
-        this.db = DriverManager.getConnection(this.settings.connectionString);
-        Model.setDb(this.db);
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(this.settings.connectionString);
+        hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setConnectionTimeout(5000);
+        hikariConfig.setPoolName("DS-Pool");
+        hikariConfig.setLeakDetectionThreshold(8000);
+        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        this.ds = new HikariDataSource(hikariConfig);
+        Model.setDs(this.ds);
 
         // scheduled jobs
         scheduleJobs();

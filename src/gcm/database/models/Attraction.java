@@ -1,9 +1,6 @@
 package gcm.database.models;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +43,8 @@ public class Attraction extends Model {
 
     /* QUERIES */
     public static Attraction findByName(String name) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where name = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from attractions where name = ?")) {
             preparedStatement.setString(1, name);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -61,7 +59,8 @@ public class Attraction extends Model {
     }
 
     public static void updateAttraction(int attraction_id, String attraction_type, String attraction_location, String description, boolean accessibility) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE attractions SET description=? ,type=? ,location=?, accessible_special=? WHERE id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE attractions SET description=? ,type=? ,location=?, accessible_special=? WHERE id = ?")) {
             preparedStatement.setString(1, description);
             preparedStatement.setString(2, attraction_type);
             preparedStatement.setString(3, attraction_location);
@@ -72,7 +71,8 @@ public class Attraction extends Model {
     }
 
     public static List<Attraction> findAllByCityId(Integer cityId) throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where city_id = ? order by name asc")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from attractions where city_id = ? order by name asc")) {
             preparedStatement.setInt(1, cityId);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 List<Attraction> attractions = new ArrayList<>();
@@ -91,13 +91,14 @@ public class Attraction extends Model {
             return findAll();
         }
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(
-                "select attractions.*, concat(cities.name, \", \", cities.country) as city_title" +
-                        " from attractions" +
-                        " left join cities on attractions.city_id = cities.id" +
-                        " where match (attractions.name, attractions.description) against (?)" +
-                        " order by attractions.name asc"
-        )) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
+                     "select attractions.*, concat(cities.name, \", \", cities.country) as city_title" +
+                             " from attractions" +
+                             " left join cities on attractions.city_id = cities.id" +
+                             " where match (attractions.name, attractions.description) against (?)" +
+                             " order by attractions.name asc"
+             )) {
             preparedStatement.setString(1, searchQuery);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -114,7 +115,8 @@ public class Attraction extends Model {
     }
 
     private static List<Attraction> findAll() throws SQLException {
-        try (Statement statement = getDb().createStatement()) {
+        try (Connection db = getDb();
+             Statement statement = db.createStatement()) {
             try (ResultSet rs = statement.executeQuery("select * from attractions order by name asc")) {
                 List<Attraction> attractions = new ArrayList<>();
                 while (rs.next()) {
@@ -136,7 +138,8 @@ public class Attraction extends Model {
      * @throws NotFound     if no such user
      */
     public static Attraction findById(Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from attractions where id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from attractions where id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -152,7 +155,8 @@ public class Attraction extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert attraction to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into attractions (name, city_id, type, location, description, accessible_special) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into attractions (name, city_id, type, location, description, accessible_special) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getName());
             preparedStatement.setInt(2, this.getCityId());
             preparedStatement.setString(3, this.getType());
@@ -177,7 +181,8 @@ public class Attraction extends Model {
     }
 
     public static List<Attraction> getAttractionForCity(int city_id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM attractions WHERE city_id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("SELECT * FROM attractions WHERE city_id = ?")) {
             preparedStatement.setInt(1, city_id);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 List<Attraction> attractions = new ArrayList<>();

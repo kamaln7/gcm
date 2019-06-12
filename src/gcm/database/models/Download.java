@@ -1,9 +1,6 @@
 package gcm.database.models;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Date;
 
 public class Download extends Model {
@@ -47,7 +44,8 @@ public class Download extends Model {
      */
     public void insert() throws SQLException {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into downloads (user_id, model_id, model) values (?, ?, ?)")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into downloads (user_id, model_id, model) values (?, ?, ?)")) {
             preparedStatement.setInt(1, this.getUser_id());
             preparedStatement.setInt(2, this.getModel_id());
             preparedStatement.setString(3, this.getModel());
@@ -66,7 +64,8 @@ public class Download extends Model {
      * @throws SQLException
      */
     public static int countByPeriod(Integer id, Date from, Date to) throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from maps, downloads where maps.city_id = ? and maps.id = downloads.model_id and downloads.model = 'map' and downloads.created_at >= ? and downloads.created_at <= ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from maps, downloads where maps.city_id = ? and maps.id = downloads.model_id and downloads.model = 'map' and downloads.created_at >= ? and downloads.created_at <= ?")) {
             preparedStatement.setInt(1, id);
             preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
             preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
