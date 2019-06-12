@@ -55,6 +55,7 @@ public class MapEditOptionsController {
 
     /**
      * load the viewer
+     *
      * @param primaryStage
      * @throws IOException
      */
@@ -71,6 +72,7 @@ public class MapEditOptionsController {
 
     /**
      * open window to choose a new map
+     *
      * @param actionEvent
      */
     @FXML
@@ -88,6 +90,7 @@ public class MapEditOptionsController {
 
     /**
      * set the map info in the viewer
+     *
      * @param map
      */
     public void setMap(Map map) {
@@ -95,7 +98,7 @@ public class MapEditOptionsController {
         title_field.setText(map.getTitle());
         description_field.setText(map.getDescription());
         this.mapTF.setText(String.format("%s (%s)", this.map.getTitle(), this.map._extraInfo.get("cityTitle")));
-        Input input = new ReadMapImageById.Input(this.map.getId());
+        Input input = new ReadMapImageById.Input(this.map.getId(), true);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ReadMapImageById.Output output = response.getOutput(ReadMapImageById.Output.class);
@@ -110,11 +113,12 @@ public class MapEditOptionsController {
 
     /**
      * save the changes
+     *
      * @param event
      */
     @FXML
     void saveChanges(ActionEvent event) {
-        if (this.map==null){
+        if (this.map == null) {
             (new Alert(Alert.AlertType.WARNING, "Please Choose A Map!")).show();
         }
         this.map.setTitle(title_field.getText());

@@ -6,7 +6,6 @@ import gcm.database.models.MapAttraction;
 import gcm.server.Server;
 import ocsf.server.ConnectionToClient;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -43,23 +42,26 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
     @Override
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
+
+
+        Map map = Map.findById(input.mapId);
         //store the img in the server
-        String imageName = UUID.randomUUID().toString() + ".jpg";
+        String imageName = getImagePathToWrite(map);
         Files.write(Paths.get(server.getFilesPath(), imageName), input.new_map_image);
 
-        Map mapToUpdate = Map.findById(input.mapId);
-        //delete the old file from the server
-        File file = new File(server.getFilesPath(), mapToUpdate.getImg());
-        file.delete();
-
-        mapToUpdate.updateImage(imageName);
-
-        Attraction attraction = new Attraction(mapToUpdate.getCityId(), input.attraction_name, input.description, input.attraction_type, input.getAttraction_location, input.accessibility);
+        Attraction attraction = new Attraction(map.getCityId(), input.attraction_name, input.description, input.attraction_type, input.getAttraction_location, input.accessibility);
         attraction.insert();
 
-        MapAttraction mapAttraction = new MapAttraction(mapToUpdate.getId(), attraction.getId());
+        MapAttraction mapAttraction = new MapAttraction(map.getId(), attraction.getId());
         mapAttraction.insert();
 
         return new Output(attraction);
+    }
+
+    private String getImagePathToWrite(Map map) {
+        String mapImgNew = map.getImgNew();
+        if (mapImgNew != null) return mapImgNew;
+
+        return UUID.randomUUID().toString() + ".jpg";
     }
 }

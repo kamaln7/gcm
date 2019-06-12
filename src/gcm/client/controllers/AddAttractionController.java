@@ -133,7 +133,7 @@ public class AddAttractionController {
             this.map = AdminTablePickerMapController.loadViewAndWait(new Stage());
             this.mapTF.setText(String.format("%s - %s", this.map.getTitle(), this.map._extraInfo.get("cityTitle")));
 
-            Input input = new ReadMapImageById.Input(this.map.getId());
+            Input input = new ReadMapImageById.Input(this.map.getId(), true);
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ReadMapImageById.Output output = response.getOutput(ReadMapImageById.Output.class);
 

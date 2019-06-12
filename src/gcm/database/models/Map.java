@@ -338,6 +338,12 @@ public class Map extends Model {
         }
     }
 
+    public String getImgPathToRead(Boolean withUnapproved) {
+        return withUnapproved
+                ? (getImgNew() == null ? getImg() : getImgNew())
+                : getImg();
+    }
+
 
     // exceptions
     public static class NotFound extends Exception {
@@ -421,5 +427,29 @@ public class Map extends Model {
 
     public void setVerification(Boolean verification) {
         this.verification = verification;
+    }
+
+    public String getTitleNew() {
+        return titleNew;
+    }
+
+    public void setTitleNew(String titleNew) {
+        this.titleNew = titleNew;
+    }
+
+    public String getDescriptionNew() {
+        return descriptionNew;
+    }
+
+    public void setDescriptionNew(String descriptionNew) {
+        this.descriptionNew = descriptionNew;
+    }
+
+    public String getImgNew() {
+        return imgNew;
+    }
+
+    public void setImgNew(String imgNew) {
+        this.imgNew = imgNew;
     }
 }
