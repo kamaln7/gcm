@@ -68,8 +68,15 @@ public class Subscription extends Model {
     }
 
 
-
-
+    /**
+     * find subscription by ID between given dates
+     * @param userId
+     * @param cityId
+     * @param fromDate
+     * @return
+     * @throws SQLException
+     * @throws NotFound
+     */
     public static Subscription findSubscriptionbyIDs(Integer userId, Integer cityId, Date fromDate) throws SQLException, NotFound {
         try (Connection db = getDb();
              PreparedStatement preparedStatement = db.prepareStatement("select * from subscriptions where user_id = ? AND city_id = ? AND from_date <= ? AND to_date >= ?")) {
@@ -122,6 +129,13 @@ public class Subscription extends Model {
             }
         }
     }
+
+    /**
+     * insert subscription to the database
+     * @throws SQLException
+     * @throws NotFound
+     * @throws AlreadyExists
+     */
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
 
