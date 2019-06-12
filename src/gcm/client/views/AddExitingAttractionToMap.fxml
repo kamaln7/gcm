@@ -33,7 +33,7 @@
          <font>
             <Font name="System Bold Italic" size="14.0" />
          </font></Text>
-        <Button layoutX="268.0" layoutY="693.0" mnemonicParsing="false" onAction="#finishJop" prefHeight="43.0" prefWidth="102.0" text="Add Attraction" />
+        <Button layoutX="268.0" layoutY="693.0" mnemonicParsing="false" onAction="#finishJop" prefHeight="43.0" prefWidth="126.0" text="Add Attraction" />
       <Text layoutX="14.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Map" />
       <Text layoutX="13.0" layoutY="569.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Attraction Type">
          <font>
