@@ -104,6 +104,32 @@ public class Attraction extends Model {
         }
     }
 
+    public static List<Attraction> findPendingApproval() throws SQLException {
+        try (Connection db = getDb();
+             Statement statement = db.createStatement()) {
+            try (ResultSet rs = statement.executeQuery(
+                    "select attractions.*, concat(cities.name, \", \", cities.country) as city_title\n" +
+                            "from attractions \n" +
+                            "left join cities\n" +
+                            "on attractions.city_id = cities.id\n" +
+                            "where \n" +
+                            "description_new is not NULL\n" +
+                            "or type_new is not NULL\n" +
+                            "or location_new is not NULL\n" +
+                            "or accessible_special_new is not null"
+            )) {
+                List<Attraction> attractions = new ArrayList<>();
+                while (rs.next()) {
+                    Attraction attraction = new Attraction(rs);
+                    attraction._extraInfo.put("cityTitle", rs.getString("city_title"));
+                    attractions.add(attraction);
+                }
+
+                return attractions;
+            }
+        }
+    }
+
     private static List<Attraction> findAll() throws SQLException {
         try (Connection db = getDb();
              Statement statement = db.createStatement()) {
