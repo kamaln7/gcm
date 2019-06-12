@@ -12,7 +12,7 @@ public class Map extends Model {
     // fields
     private Integer id, cityId;
     private Boolean verification = false; // 1 is verified 0 is not verified
-    private String title, description, version, img;
+    private String title, titleNew, description, descriptionNew, version, img, imgNew;
     private Date createdAt, updatedAt;
 
     // create User object with info from ResultSet
@@ -189,11 +189,14 @@ public class Map extends Model {
         this.id = rs.getInt("id");
         this.cityId = rs.getInt("city_id");
         this.title = rs.getString("title");
+        this.titleNew = rs.getString("title_new");
         this.description = rs.getString("description");
+        this.descriptionNew = rs.getString("description_new");
         this.version = rs.getString("version");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
         this.img = rs.getString("img");
+        this.imgNew = rs.getString("img_new");
         this.verification = rs.getBoolean("verification");
     }
 
@@ -290,7 +293,7 @@ public class Map extends Model {
 
     public void updateImage(String new_image) throws SQLException, NotFound {
         try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET img = ? WHERE id = ?")) {
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET img_new = ? WHERE id = ?")) {
             preparedStatement.setString(1, new_image);
             preparedStatement.setInt(2, this.getId());
 
@@ -300,7 +303,7 @@ public class Map extends Model {
 
     public void updateDescriptionAndTitle() throws SQLException, NotFound {
         try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET title = ?, description = ? WHERE id = ?")) {
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET title_new = ?, description_new = ? WHERE id = ?")) {
             preparedStatement.setString(1, this.title);
             preparedStatement.setString(2, this.description);
             preparedStatement.setInt(3, this.id);
@@ -333,6 +336,12 @@ public class Map extends Model {
                 this.updateWithNewDetailsById(id, "maps");
             }
         }
+    }
+
+    public String getImgPathToRead(Boolean withUnapproved) {
+        return withUnapproved
+                ? (getImgNew() == null ? getImg() : getImgNew())
+                : getImg();
     }
 
 
@@ -418,5 +427,29 @@ public class Map extends Model {
 
     public void setVerification(Boolean verification) {
         this.verification = verification;
+    }
+
+    public String getTitleNew() {
+        return titleNew;
+    }
+
+    public void setTitleNew(String titleNew) {
+        this.titleNew = titleNew;
+    }
+
+    public String getDescriptionNew() {
+        return descriptionNew;
+    }
+
+    public void setDescriptionNew(String descriptionNew) {
+        this.descriptionNew = descriptionNew;
+    }
+
+    public String getImgNew() {
+        return imgNew;
+    }
+
+    public void setImgNew(String imgNew) {
+        this.imgNew = imgNew;
     }
 }

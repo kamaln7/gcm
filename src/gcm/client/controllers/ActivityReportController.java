@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -156,8 +157,8 @@ public class ActivityReportController {
      */
     @FXML
     void showResults(ActionEvent event) {
-        if (fromDate.getValue() == null || toDate.getValue() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
+        if (fromDate.getValue() == null || toDate.getValue() == null || toDate.getValue().isBefore(fromDate.getValue())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a valid date range!");
             alert.show();
             return;
         }
@@ -167,7 +168,6 @@ public class ActivityReportController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
-            ObservableList();
             ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
 
             for (int i = 0; i < output.cities.size(); i++) {
@@ -231,8 +231,8 @@ public class ActivityReportController {
      */
     @FXML
     void chooseCity(ActionEvent event) {
-        if (fromDate.getValue() == null || toDate.getValue() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
+        if (fromDate.getValue() == null || toDate.getValue() == null || toDate.getValue().isBefore(fromDate.getValue())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a valid date range!");
             alert.show();
             return;
         }
@@ -245,7 +245,6 @@ public class ActivityReportController {
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
-                ObservableList();
                 ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
 
                 oblist.add(new ActivityReport(output.cities.get(0).getId(),
@@ -304,16 +303,20 @@ public class ActivityReportController {
 
     @FXML
     Date selectFromDate(ActionEvent event) {
-        return LocalDateToDate(fromDate.getValue());
+        return LocalDateToDate(fromDate.getValue(), true);
     }
 
     @FXML
     Date selectToDate(ActionEvent event) {
-        return LocalDateToDate(toDate.getValue());
+        return LocalDateToDate(toDate.getValue(), false);
     }
 
-    private static Date LocalDateToDate(LocalDate localDate) {
-        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+    private static Date LocalDateToDate(LocalDate localDate, Boolean startOfDay) {
+        Instant instant = Instant.from(
+                startOfDay
+                        ? localDate.atStartOfDay(ZoneId.systemDefault())
+                        : localDate.with(LocalTime.MAX)
+        );
         return Date.from(instant);
     }
 

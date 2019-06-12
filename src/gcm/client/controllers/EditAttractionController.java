@@ -50,7 +50,7 @@ public class EditAttractionController {
         Attraction_Name.setText(attraction.getName());
         Attraction_Location.setText(attraction.getLocation());
         description.setText(attraction.getDescription());
-        accessible_choiceBox.setValue(attraction.getAccessibleSpecial() ? "YES" : "NO");
+        accessible_choiceBox.setValue(attraction.getAccessibleSpecial() ? "Yes" : "No");
         attraction_choiceBox.setValue(attraction.getType());
     }
 
@@ -58,20 +58,12 @@ public class EditAttractionController {
      * initialize the viewer
      */
     public void initialize() {
+        attraction_choiceBox.getItems().setAll(Attraction.types);
+        attraction_choiceBox.getSelectionModel().selectFirst();
 
-        attraction_choiceBox.getItems().add("Museum");
-        attraction_choiceBox.getItems().add("Historical Place");
-        attraction_choiceBox.getItems().add("Hotel");
-        attraction_choiceBox.getItems().add("Restaurant");
-        attraction_choiceBox.getItems().add("Public Institution");
-        attraction_choiceBox.getItems().add("Park");
-        attraction_choiceBox.getItems().add("Parking Lot");
-        attraction_choiceBox.getItems().add("Cinema");
-        attraction_choiceBox.setValue("Museum");
-
-        accessible_choiceBox.getItems().add("YES");
-        accessible_choiceBox.getItems().add("NO");
-        accessible_choiceBox.setValue("NO");
+        accessible_choiceBox.getItems().add("Yes");
+        accessible_choiceBox.getItems().add("No");
+        accessible_choiceBox.setValue("No");
     }
 
     /**
@@ -183,7 +175,7 @@ public class EditAttractionController {
 
 
     private boolean getAccessibility() {
-        if (accessible_choiceBox.getValue().equals("YES")) {
+        if (accessible_choiceBox.getValue().equals("Yes")) {
             return true;
         }
         return false;

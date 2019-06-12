@@ -3,6 +3,7 @@ package gcm.server;
 import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariPoolMXBean;
 import gcm.ChatIF;
 import gcm.commands.Command;
 import gcm.commands.Output;
@@ -64,6 +65,7 @@ public class Server extends AbstractServer {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(this.settings.connectionString);
         hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setMinimumIdle(2);
         hikariConfig.setConnectionTimeout(5000);
         hikariConfig.setPoolName("DS-Pool");
         hikariConfig.setLeakDetectionThreshold(8000);
@@ -206,7 +208,36 @@ public class Server extends AbstractServer {
     }
 
     public void handleMessageFromServerConsole(String msg) {
-        this.chatIF.displayf("server console commands are not implemented");
+        if (msg.equals("clearLoggedIn")) {
+            clearLoggedInUserIds();
+        } else if (msg.equals("status")) {
+            printServerStatus();
+        } else {
+            this.chatIF.displayf("Available commands: clearLoggedIn, status");
+        }
+    }
+
+    private synchronized void printServerStatus() {
+        HikariPoolMXBean hikariPoolMXBean = ds.getHikariPoolMXBean();
+
+        this.chatIF.displayf(
+                "Server status:\n" +
+                        "\t%d connected clients\n" +
+                        "\t%d logged in users\n" +
+                        "\t%d active/%d idle DB connections out of %d total (%d max)\n" +
+                        "\t%d threads awaiting connection",
+                getNumberOfClients(),
+                loggedInUserIds.size(),
+                hikariPoolMXBean.getActiveConnections(),
+                hikariPoolMXBean.getIdleConnections(),
+                hikariPoolMXBean.getTotalConnections(),
+                ds.getMaximumPoolSize(),
+                hikariPoolMXBean.getThreadsAwaitingConnection());
+    }
+
+    private synchronized void clearLoggedInUserIds() {
+        this.loggedInUserIds.clear();
+        this.chatIF.display("Cleared list of logged in users.");
     }
 
     public synchronized void login(ConnectionToClient client, User user) throws AlreadyLoggedIn {

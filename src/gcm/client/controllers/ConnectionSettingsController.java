@@ -72,7 +72,7 @@ public class ConnectionSettingsController implements Initializable {
             LoginController.loadView(ClientGUI.getPrimaryStage());
         } catch (IOException e) {
             e.printStackTrace();
-            ClientGUI.showErrorTryAgain();
+            (new Alert(Alert.AlertType.ERROR, "Couldn't connect to server: " + e.getMessage())).show();
         } finally {
             connectBtn.setDisable(false);
             connectBtn.setText("Connect");

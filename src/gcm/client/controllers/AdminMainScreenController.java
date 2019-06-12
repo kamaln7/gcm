@@ -66,7 +66,6 @@ public class AdminMainScreenController implements Initializable {
     }
 
 
-
     @FXML
     void changePrice(ActionEvent event) {
         try {
@@ -136,13 +135,20 @@ public class AdminMainScreenController implements Initializable {
             e.printStackTrace();
         }
     }
+
     @FXML
-    void Edit_Attraction(ActionEvent event) {try {
-        EditAttractionController.loadView(new Stage());
-    } catch (Exception e) {
-        ClientGUI.showErrorTryAgain();
-        e.printStackTrace();
+    void Edit_Attraction(ActionEvent event) {
+        try {
+            EditAttractionController.loadView(new Stage());
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
     }
+
+    @FXML
+    private void openCityPendingChanges(ActionEvent event) {
+        ClientGUI.showErrorTryAgain("not yet");
     }
 }
 

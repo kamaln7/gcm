@@ -1,11 +1,13 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
+import gcm.commands.AddExistingAttractionAndUpdateMapImageCommand;
 import gcm.commands.Input;
 import gcm.commands.ReadMapImageById;
 import gcm.commands.Response;
 import gcm.database.models.Attraction;
 import gcm.database.models.Map;
+import gcm.database.models.MapAttraction;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -72,6 +74,7 @@ public class AddExistingAttractionToMapController {
     private double Y;
     private Image originalImage;
     private boolean clicked = false;
+    private byte[] res;
 
     /**
      * initialize the viewer
@@ -115,11 +118,24 @@ public class AddExistingAttractionToMapController {
             alert.show();
             return;
         }
-        Stage stage = (Stage) pane.getScene().getWindow();
-        // do what you have to do
-        stage.close();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "attraction added successfully");
-        alert.show();
+
+        try {
+            Input input = new AddExistingAttractionAndUpdateMapImageCommand.Input(this.map.getId(), this.attraction.getId(), res);
+            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+            response.getOutput(AddExistingAttractionAndUpdateMapImageCommand.Output.class);
+
+            Stage stage = (Stage) pane.getScene().getWindow();
+            // do what you have to do
+            stage.close();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Attraction added successfully");
+            alert.show();
+        } catch (MapAttraction.AlreadyExists e) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "This attraction already exists on this map. Choose another.");
+            alert.show();
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -133,7 +149,7 @@ public class AddExistingAttractionToMapController {
             this.map = AdminTablePickerMapController.loadViewAndWait(new Stage());
             this.mapTF.setText(String.format("%s - %s", this.map.getTitle(), this.map._extraInfo.get("cityTitle")));
 
-            Input input = new ReadMapImageById.Input(this.map.getId());
+            Input input = new ReadMapImageById.Input(this.map.getId(), true);
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ReadMapImageById.Output output = response.getOutput(ReadMapImageById.Output.class);
 
@@ -151,7 +167,7 @@ public class AddExistingAttractionToMapController {
                 try {
                     ByteArrayOutputStream s = new ByteArrayOutputStream();
                     ImageIO.write(createImageWithText(), "jpg", s);
-                    byte[] res = s.toByteArray();
+                    res = s.toByteArray();
 
                     BufferedImage bImage2 = ImageIO.read(new ByteArrayInputStream(res));
                     Image image2 = SwingFXUtils.toFXImage(bImage2, null);
