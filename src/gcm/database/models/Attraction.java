@@ -13,6 +13,9 @@ public class Attraction extends Model {
     private String name, description, descriptionNew = null, type, typeNew = null, location, locationNew = null;
     private Date createdAt, updatedAt;
 
+    public Attraction() {
+    }
+
     // create User object with info from ResultSet
     public Attraction(ResultSet rs) throws SQLException {
         super();
