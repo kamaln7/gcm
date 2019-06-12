@@ -22,10 +22,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class ActivityReportController {
@@ -169,7 +168,7 @@ public class ActivityReportController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
             ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
-
+            ObservableList();
             for (int i = 0; i < output.cities.size(); i++) {
                 oblist.add(new ActivityReport(output.cities.get(i).getId(),
                         output.cities.get(i).getName(), output.cities.get(i).getCountry(),
@@ -246,7 +245,7 @@ public class ActivityReportController {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
                 ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
-
+                ObservableList();
                 oblist.add(new ActivityReport(output.cities.get(0).getId(),
                         output.cities.get(0).getName(), output.cities.get(0).getCountry(),
                         output.maps.get(0), output.purchases.get(0),
@@ -312,12 +311,11 @@ public class ActivityReportController {
     }
 
     private static Date LocalDateToDate(LocalDate localDate, Boolean startOfDay) {
-        Instant instant = Instant.from(
-                startOfDay
-                        ? localDate.atStartOfDay(ZoneId.systemDefault())
-                        : localDate.with(LocalTime.MAX)
-        );
-        return Date.from(instant);
+        ZonedDateTime zonedDateTime = startOfDay
+                ? localDate.atStartOfDay(ZoneId.systemDefault())
+                : localDate.atStartOfDay(ZoneId.systemDefault()).plusDays(1);
+
+        return Date.from(zonedDateTime.toInstant());
     }
 
     @FXML
