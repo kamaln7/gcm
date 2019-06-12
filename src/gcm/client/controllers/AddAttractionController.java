@@ -141,8 +141,11 @@ public class AddAttractionController {
             Image image = SwingFXUtils.toFXImage(bImage, null);
             originalImage = image;
             mapImg.setImage(image);
-            (new Alert(Alert.AlertType.INFORMATION, "please fill all the fields before you click on the map")).show();
             mapImg.setOnMouseClicked(e -> {
+                if (attraction_name_field.getText().equals("")) {
+                    (new Alert(Alert.AlertType.WARNING, "Enter an attraction name first.")).show();
+                    return;
+                }
                 Xcord.setText(String.valueOf(e.getX()));
                 Ycord.setText(String.valueOf(e.getY()));
                 X = e.getX();
@@ -178,7 +181,7 @@ public class AddAttractionController {
     @FXML
     private void finishJop(ActionEvent event) {
         if (this.map == null || this.attraction_name_field.getText().equals("") || this.attraction_location_field.getText().equals("") || this.description_field.getText().equals("") || this.Xcord.getText().equals("")) {
-            (new Alert(Alert.AlertType.INFORMATION, "please fill all the fields and then click on the map")).show();
+            (new Alert(Alert.AlertType.INFORMATION, "Please fill all the fields and then click on the map")).show();
             return;
         }
         try {
@@ -221,7 +224,7 @@ public class AddAttractionController {
     }
 
     private boolean getAccessibility() {
-        if (accessible_choiceBox.getValue().equals("YES")) {
+        if (accessible_choiceBox.getValue().equals("Yes")) {
             return true;
         }
         return false;

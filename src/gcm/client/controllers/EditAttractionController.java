@@ -175,7 +175,7 @@ public class EditAttractionController {
 
 
     private boolean getAccessibility() {
-        if (accessible_choiceBox.getValue().equals("YES")) {
+        if (accessible_choiceBox.getValue().equals("Yes")) {
             return true;
         }
         return false;
