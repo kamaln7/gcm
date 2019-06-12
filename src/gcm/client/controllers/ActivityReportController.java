@@ -14,6 +14,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -26,8 +27,47 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.ResourceBundle;
 
-public class ActivityReportController {
+public class ActivityReportController{
+    @FXML
+    private TableView<City> table;
+    @FXML
+    private TableColumn<City, Integer> cityIdColumn;
+    @FXML
+    private TableColumn<City, String> cityColumn;
+
+    @FXML
+    private TableColumn<City, String> countryColumn;
+
+    @FXML
+    private TableColumn<City, String> mapsColumn;
+
+    @FXML
+    private TableColumn<City, String> purchasesColumn;
+
+    @FXML
+    private TableColumn<City, String> subscriptionsColumn;
+
+    @FXML
+    private TableColumn<City, String> renewalsColumn;
+
+    @FXML
+    private TableColumn<City, String> viewsColumn;
+
+    @FXML
+    private TableColumn<City, String> downloadsColumn;
+    @FXML
+    private TextField searchField;
+
+    @FXML
+    private DatePicker fromDate;
+
+    @FXML
+    private DatePicker toDate;
+
+
+
 
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ActivityReport.fxml");
@@ -38,115 +78,6 @@ public class ActivityReportController {
         primaryStage.setTitle("Activity Report - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
-    }
-
-    /**
-     * Class to fill table view of Activity Report
-     */
-    public class ActivityReport {
-        private SimpleStringProperty cityName, countryName;
-        private SimpleIntegerProperty cityID, mapsNo, purchasesNo, subscriptionsNo, renewalsNo, viewsNo, downloadsNo;
-
-        public ActivityReport(int cityId, String city, String country, int maps, int purchases, int subscriptions, int renewals, int views, int downloads) {
-            this.cityID = new SimpleIntegerProperty(cityId);
-            this.cityName = new SimpleStringProperty(city);
-            this.countryName = new SimpleStringProperty(country);
-            this.mapsNo = new SimpleIntegerProperty(maps);
-            this.purchasesNo = new SimpleIntegerProperty(purchases);
-            this.subscriptionsNo = new SimpleIntegerProperty(subscriptions);
-            this.renewalsNo = new SimpleIntegerProperty(renewals);
-            this.viewsNo = new SimpleIntegerProperty(views);
-            this.downloadsNo = new SimpleIntegerProperty(downloads);
-        }
-
-        public String getCityName() {
-            return cityName.get();
-        }
-
-        public String getCountryName() {
-            return countryName.get();
-        }
-
-        public SimpleStringProperty countryNameProperty() {
-            return countryName;
-        }
-
-        public int getCityID() {
-            return cityID.get();
-        }
-
-        public SimpleIntegerProperty cityIDProperty() {
-            return cityID;
-        }
-
-        public SimpleStringProperty cityNameProperty() {
-            return cityName;
-        }
-
-        public int getMapsNo() {
-            return mapsNo.get();
-        }
-
-        public SimpleIntegerProperty mapsNoProperty() {
-            return mapsNo;
-        }
-
-        public int getPurchasesNo() {
-            return purchasesNo.get();
-        }
-
-        public SimpleIntegerProperty purchasesNoProperty() {
-            return purchasesNo;
-        }
-
-        public int getSubscriptionsNo() {
-            return subscriptionsNo.get();
-        }
-
-        public SimpleIntegerProperty subscriptionsNoProperty() {
-            return subscriptionsNo;
-        }
-
-        public int getRenewalsNo() {
-            return renewalsNo.get();
-        }
-
-        public SimpleIntegerProperty renewalsNoProperty() {
-            return renewalsNo;
-        }
-
-        public int getViewsNo() {
-            return viewsNo.get();
-        }
-
-        public SimpleIntegerProperty viewsNoProperty() {
-            return viewsNo;
-        }
-
-        public int getDownloadsNo() {
-            return downloadsNo.get();
-        }
-
-        public SimpleIntegerProperty downloadsNoProperty() {
-            return downloadsNo;
-        }
-
-
-    }
-
-    /**
-     * Fill ObservableList
-     */
-    void ObservableList() {
-        cityIdColumn.setCellValueFactory(new PropertyValueFactory<>("cityID"));
-        cityColumn.setCellValueFactory(new PropertyValueFactory<>("cityName"));
-        countryColumn.setCellValueFactory(new PropertyValueFactory<>("countryName"));
-        mapsColumn.setCellValueFactory(new PropertyValueFactory<>("mapsNo"));
-        purchasesColumn.setCellValueFactory(new PropertyValueFactory<>("purchasesNo"));
-        subscriptionsColumn.setCellValueFactory(new PropertyValueFactory<>("subscriptionsNo"));
-        renewalsColumn.setCellValueFactory(new PropertyValueFactory<>("renewalsNo"));
-        viewsColumn.setCellValueFactory(new PropertyValueFactory<>("viewsNo"));
-        downloadsColumn.setCellValueFactory(new PropertyValueFactory<>("downloadsNo"));
     }
 
     /**
@@ -163,18 +94,23 @@ public class ActivityReportController {
         }
         Date from = selectFromDate(event);
         Date to = selectToDate(event);
-        Input input = new ActivityReportCommand.Input(from, to, -1);
+        Input input = new ActivityReportCommand.Input(from, to);
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
-            ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
-            ObservableList();
-            for (int i = 0; i < output.cities.size(); i++) {
-                oblist.add(new ActivityReport(output.cities.get(i).getId(),
-                        output.cities.get(i).getName(), output.cities.get(i).getCountry(),
-                        output.maps.get(i), output.purchases.get(i),
-                        output.subscriptions.get(i), output.renewals.get(i),
-                        output.views.get(i), output.downloads.get(i)));
+            ObservableList<City> oblist = FXCollections.observableArrayList();
+            cityIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+            cityColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+            countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
+            mapsColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("mapsCount")));
+            purchasesColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("purchasesCount")));
+            subscriptionsColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("subscriptionsCount")));
+            renewalsColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("renewalsCount")));
+            viewsColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("viewsCount")));
+            downloadsColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("downloadsCount")));
+            for(int i = 0 ; i < output.cities.size() ; i++)
+            {
+                oblist.add(output.cities.get(i));
             }
             table.setItems(oblist);
             /**
@@ -182,11 +118,11 @@ public class ActivityReportController {
              * by city name, country, id
              */
             // 1. Wrap the ObservableList in a FilteredList (initially display all data).
-            FilteredList<ActivityReport> filteredData = new FilteredList<>(oblist, p -> true);
+            FilteredList<City> filteredData = new FilteredList<>(oblist, p -> true);
 
             // 2. Set the filter Predicate whenever the filter changes.
             searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-                filteredData.setPredicate(ActivityReport -> {
+                filteredData.setPredicate(City -> {
                     // If filter text is empty, display all data.
                     if (newValue == null || newValue.isEmpty()) {
 
@@ -197,11 +133,11 @@ public class ActivityReportController {
                     // Compare city filter text.
                     String lowerCaseFilter = newValue.toLowerCase();
 
-                    if (ActivityReport.getCityName().toLowerCase().contains(lowerCaseFilter)) {
+                    if (City.getName().toLowerCase().contains(lowerCaseFilter)) {
                         return true; // Filter matches city.
-                    } else if (ActivityReport.getCountryName().toLowerCase().contains(lowerCaseFilter)) {
+                    } else if (City.getCountry().toLowerCase().contains(lowerCaseFilter)) {
                         return true; // Filter matches country.
-                    } else if (Integer.toString(ActivityReport.getCityID()).contains(newValue)) {
+                    } else if (Integer.toString(City.getId()).contains(newValue)) {
                         return true; // Filter matches cityID.
                     }
                     return false; // Does not match.
@@ -209,7 +145,7 @@ public class ActivityReportController {
             });
 
             // 3. Wrap the FilteredList in a SortedList.
-            SortedList<ActivityReport> sortedData = new SortedList<>(filteredData);
+            SortedList<City> sortedData = new SortedList<>(filteredData);
 
             // 4. Bind the SortedList comparator to the TableView comparator.
             sortedData.comparatorProperty().bind(table.comparatorProperty());
@@ -223,82 +159,7 @@ public class ActivityReportController {
         }
     }
 
-    /**
-     * Cohoose one city by CityPicker
-     *
-     * @param event
-     */
-    @FXML
-    void chooseCity(ActionEvent event) {
-        if (fromDate.getValue() == null || toDate.getValue() == null || toDate.getValue().isBefore(fromDate.getValue())) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a valid date range!");
-            alert.show();
-            return;
-        }
-        Date from = selectFromDate(event);
-        Date to = selectToDate(event);
-        try {
-            City city = AdminTablePickerCityController.loadViewAndWait(new Stage());
-            if (city == null) return;
-            Input input = new ActivityReportCommand.Input(from, to, city.getId());
-            try {
-                Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
-                ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
-                ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
-                ObservableList();
-                oblist.add(new ActivityReport(output.cities.get(0).getId(),
-                        output.cities.get(0).getName(), output.cities.get(0).getCountry(),
-                        output.maps.get(0), output.purchases.get(0),
-                        output.subscriptions.get(0), output.renewals.get(0),
-                        output.views.get(0), output.downloads.get(0)));
-                table.setItems(oblist);
 
-            } catch (Exception e) {
-                ClientGUI.showErrorTryAgain();
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            ClientGUI.showErrorTryAgain();
-        }
-    }
-
-    @FXML
-    private TableView<ActivityReport> table;
-    @FXML
-    private TableColumn<ActivityReport, Integer> cityIdColumn;
-    @FXML
-    private TableColumn<ActivityReport, String> cityColumn;
-
-    @FXML
-    private TableColumn<ActivityReport, String> countryColumn;
-
-
-    @FXML
-    private TableColumn<ActivityReport, Integer> mapsColumn;
-
-    @FXML
-    private TableColumn<ActivityReport, Integer> purchasesColumn;
-
-    @FXML
-    private TableColumn<ActivityReport, Integer> subscriptionsColumn;
-
-    @FXML
-    private TableColumn<ActivityReport, Integer> renewalsColumn;
-
-    @FXML
-    private TableColumn<ActivityReport, Integer> viewsColumn;
-
-    @FXML
-    private TableColumn<ActivityReport, Integer> downloadsColumn;
-    @FXML
-    private TextField searchField;
-
-    @FXML
-    private DatePicker fromDate;
-
-    @FXML
-    private DatePicker toDate;
 
     @FXML
     Date selectFromDate(ActionEvent event) {
@@ -318,10 +179,6 @@ public class ActivityReportController {
         return Date.from(zonedDateTime.toInstant());
     }
 
-    @FXML
-    void search(ActionEvent event) {
-
-    }
 
 
 }

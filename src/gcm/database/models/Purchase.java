@@ -85,32 +85,6 @@ public class Purchase extends Model {
         }
     }
 
-    /**
-     * count number of purchases of a given city between 2 dates
-     *
-     * @param id
-     * @param from
-     * @param to
-     * @return number of matching purchases
-     * @throws SQLException
-     * @throws NotFound
-     */
-    public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
-        try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from purchases where city_id = ? and created_at >= ? and created_at <= ?")) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
-            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
-
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    return 0;
-                }
-
-                return rs.getInt("total");
-            }
-        }
-    }
 
     /**
      * find purchases of a given user

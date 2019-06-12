@@ -30,6 +30,12 @@ public class City extends Model {
         this.purchasePrice = purchasePrice;
     }
 
+    /**
+     * Search cities by name
+     * @param searchQuery
+     * @return List of CITY
+     * @throws SQLException
+     */
     public static List<City> searchByName(String searchQuery) throws SQLException {
         if (searchQuery.equals("")) {
             return findAll();
@@ -77,6 +83,89 @@ public class City extends Model {
                     city._extraInfo.put("mapCount", String.valueOf(rs.getInt("map_count")));
                     city._extraInfo.put("attractionCount", String.valueOf(rs.getInt("attraction_count")));
                     city._extraInfo.put("tourCount", String.valueOf(rs.getInt("tour_count")));
+                    cities.add(city);
+                }
+
+                return cities;
+            }
+        }
+    }
+
+    /**
+     * Find all cities for Activity Report, for each city find number of maps, purchases, subscriptions, renewals, views, downloads
+     * @param from date
+     * @param to date
+     * @return List of CITY
+     * @throws SQLException
+     */
+    public static List<City> findAllWithCount(Date from, Date to) throws SQLException {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
+
+                     "SELECT\n" +
+                             " *,\n" +
+
+                             "(\n" +
+                             "select count(*)\n" +
+                             "from maps\n" +
+                             "where maps.city_id = cities.id\n" +
+                             ") AS maps_count,\n" +
+
+                             "(\n" +
+                             "select count(*)\n" +
+                             "from purchases\n" +
+                             "where purchases.city_id = cities.id AND purchases.created_at >= ? and purchases.created_at <= ?\n" +
+                             ") AS purchases_count,\n" +
+
+                             "(\n" +
+                             "select count(*)\n" +
+                             "from subscriptions\n" +
+                             "where subscriptions.city_id = cities.id AND subscriptions.created_at >= ? and subscriptions.created_at <= ?\n" +
+                             ") AS subscriptions_count,\n" +
+
+                             "(\n" +
+                             "select count(*)\n" +
+                             "from subscriptions\n" +
+                             "where subscriptions.city_id = cities.id AND subscriptions.renew = 1 AND subscriptions.created_at >= ? and subscriptions.created_at <= ?\n" +
+                             ") AS renewals_count,\n" +
+
+                             "(\n" +
+                             "select count(*)\n" +
+                             "from views, maps\n" +
+                             "where maps.city_id = cities.id AND views.model_id = maps.id AND views.model = 'map' AND views.created_at >= ? and views.created_at <= ?\n" +
+                             ") AS views_count,\n" +
+
+                             "(\n" +
+                             "select count(*)\n" +
+                             "from downloads, maps\n" +
+                             "where maps.city_id = cities.id AND downloads.model_id = maps.id AND downloads.model = 'map' AND downloads.created_at >= ? and downloads.created_at <= ?\n" +
+                             ") AS downloads_count\n" +
+
+                             "FROM cities\n"
+
+
+             )) {
+            preparedStatement.setTimestamp(1, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(2, new Timestamp(to.getTime()));
+            preparedStatement.setTimestamp(3, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(4, new Timestamp(to.getTime()));
+            preparedStatement.setTimestamp(5, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(6, new Timestamp(to.getTime()));
+            preparedStatement.setTimestamp(7, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(8, new Timestamp(to.getTime()));
+            preparedStatement.setTimestamp(9, new Timestamp(from.getTime()));
+            preparedStatement.setTimestamp(10, new Timestamp(to.getTime()));
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<City> cities = new ArrayList<>();
+                while (rs.next()) {
+                    City city = new City(rs);
+                    city._extraInfo.put("mapsCount", String.valueOf(rs.getInt("maps_count")));
+                    city._extraInfo.put("purchasesCount", String.valueOf(rs.getInt("purchases_count")));
+                    city._extraInfo.put("subscriptionsCount", String.valueOf(rs.getInt("subscriptions_count")));
+                    city._extraInfo.put("renewalsCount", String.valueOf(rs.getInt("renewals_count")));
+                    city._extraInfo.put("viewsCount", String.valueOf(rs.getInt("views_count")));
+                    city._extraInfo.put("downloadsCount", String.valueOf(rs.getInt("downloads_count")));
                     cities.add(city);
                 }
 

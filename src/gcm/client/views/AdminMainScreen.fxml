@@ -55,6 +55,8 @@
                                         <Label text="Cities" />
                                         <Button mnemonicParsing="false" onAction="#changePrice" prefWidth="217.0" text="Change Price" />
                               <Button mnemonicParsing="false" onAction="#openCityPendingChanges" prefWidth="217.0" text="Review Pending Changes" />
+                              <Label text="Reports" />
+                              <Button mnemonicParsing="false" onAction="#showActivityReport" prefWidth="219.0" text="Show Activity Report" />
                                     </children>
                                 </VBox>
                             </children>
@@ -70,11 +72,9 @@
                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Cities" />
                                         <Button mnemonicParsing="false" onAction="#Approve" prefWidth="219.0" text="Review Pending Price Changes" />
                                         <Pane prefHeight="30.0" prefWidth="100.0" />
-                                        <Label text="Users" />
+                                        <Label text="Users Information" />
                                         <Button mnemonicParsing="false" onAction="#showUserInfo" prefWidth="219.0" text="Show Information" />
                                         <Pane prefHeight="30.0" prefWidth="100.0" />
-                                        <Label text="Reports" />
-                                        <Button mnemonicParsing="false" onAction="#showActivityReport" prefWidth="219.0" text="Show Activity Report" />
                                     </children>
                                 </VBox>
                             </children>
