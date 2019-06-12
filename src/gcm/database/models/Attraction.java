@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Attraction extends Model {
+    public static final String[] types = {"Museum", "Historical Place", "Hotel", "Restaurant", "Public Institution", "Park", "Cinema", "Parking Lot", "Coffee Shop"};
     // fields
     private Integer id, cityId;
     private Boolean accessibleSpecial;

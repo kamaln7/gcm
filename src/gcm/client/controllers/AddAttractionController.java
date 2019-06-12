@@ -76,20 +76,12 @@ public class AddAttractionController {
      * initialize the viewer
      */
     public void initialize() {
-        attraction_name_field.setText("Name");
-        attraction_choiceBox.getItems().add("Museum");
-        attraction_choiceBox.getItems().add("Historical Place");
-        attraction_choiceBox.getItems().add("Hotel");
-        attraction_choiceBox.getItems().add("Restaurant");
-        attraction_choiceBox.getItems().add("Public Institution");
-        attraction_choiceBox.getItems().add("Park");
-        attraction_choiceBox.getItems().add("Parking Lot");
-        attraction_choiceBox.getItems().add("Cinema");
-        attraction_choiceBox.setValue("Museum");
+        attraction_choiceBox.getItems().setAll(Attraction.types);
+        attraction_choiceBox.getSelectionModel().selectFirst();
 
-        accessible_choiceBox.getItems().add("YES");
-        accessible_choiceBox.getItems().add("NO");
-        accessible_choiceBox.setValue("NO");
+        accessible_choiceBox.getItems().add("Yes");
+        accessible_choiceBox.getItems().add("No");
+        accessible_choiceBox.setValue("No");
         try {
             BufferedImage bufferedImage = ImageIO.read(this.getClass().getResourceAsStream("/gcm/client/staticFiles/thumb-1920-44975.jpg"));
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
@@ -98,9 +90,10 @@ public class AddAttractionController {
             e.printStackTrace();
         }
     }
-/**
- * load the viewer
- */
+
+    /**
+     * load the viewer
+     */
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/AddAttraction.fxml");
         AnchorPane pane = FXMLLoader.load(url);
@@ -111,6 +104,7 @@ public class AddAttractionController {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
     /**
      * load the viewer
      */
@@ -130,6 +124,7 @@ public class AddAttractionController {
 
     /**
      * choose map and add attraction to the map image
+     *
      * @param event
      */
     @FXML
@@ -162,8 +157,7 @@ public class AddAttractionController {
                     Image image2 = SwingFXUtils.toFXImage(bImage2, null);
                     mapImg.setImage(image2);
                     s.close();
-                }
-                catch (Exception e1) {
+                } catch (Exception e1) {
                     ClientGUI.showErrorTryAgain();
                     e1.printStackTrace();
                 }
@@ -178,11 +172,12 @@ public class AddAttractionController {
 
     /**
      * close the viewer
+     *
      * @param event
      */
     @FXML
     private void finishJop(ActionEvent event) {
-        if (this.map==null ||this.attraction_name_field.getText().equals("") || this.attraction_location_field.getText().equals("") || this.description_field.getText().equals("") || this.Xcord.getText().equals("")){
+        if (this.map == null || this.attraction_name_field.getText().equals("") || this.attraction_location_field.getText().equals("") || this.description_field.getText().equals("") || this.Xcord.getText().equals("")) {
             (new Alert(Alert.AlertType.INFORMATION, "please fill all the fields and then click on the map")).show();
             return;
         }
@@ -205,6 +200,7 @@ public class AddAttractionController {
 
     /**
      * draw the new attraction on th image
+     *
      * @return
      * @throws IOException
      */
