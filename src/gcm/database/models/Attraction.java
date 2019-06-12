@@ -9,8 +9,8 @@ public class Attraction extends Model {
     public static final String[] types = {"Museum", "Historical Place", "Hotel", "Restaurant", "Public Institution", "Park", "Cinema", "Parking Lot", "Coffee Shop"};
     // fields
     private Integer id, cityId;
-    private Boolean accessibleSpecial;
-    private String name, description, type, location;
+    private Boolean accessibleSpecial, accessibleSpecialNew = null;
+    private String name, description, descriptionNew = null, type, typeNew = null, location, locationNew = null;
     private Date createdAt, updatedAt;
 
     // create User object with info from ResultSet
@@ -34,31 +34,19 @@ public class Attraction extends Model {
         this.name = rs.getString("name");
         this.cityId = rs.getInt("city_id");
         this.location = rs.getString("location");
+        this.locationNew = rs.getString("location_new");
         this.type = rs.getString("type");
+        this.typeNew = rs.getString("type_new");
         this.accessibleSpecial = rs.getBoolean("accessible_special");
+        this.accessibleSpecialNew = rs.getBoolean("accessible_special_new");
         this.description = rs.getString("description");
+        this.descriptionNew = rs.getString("description_new");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
     }
 
 
     /* QUERIES */
-    public static Attraction findByName(String name) throws SQLException, NotFound {
-        try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("select * from attractions where name = ?")) {
-            preparedStatement.setString(1, name);
-
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    throw new NotFound();
-                }
-
-                Attraction attraction = new Attraction(rs);
-                return attraction;
-            }
-        }
-    }
-
     public static void updateAttraction(int attraction_id, String attraction_type, String attraction_location, String description, boolean accessibility) throws SQLException, NotFound {
         try (Connection db = getDb();
              PreparedStatement preparedStatement = db.prepareStatement("UPDATE attractions SET description=? ,type=? ,location=?, accessible_special=? WHERE id = ?")) {
@@ -277,5 +265,37 @@ public class Attraction extends Model {
 
     public void setAccessibleSpecial(Boolean accessibleSpecial) {
         this.accessibleSpecial = accessibleSpecial;
+    }
+
+    public Boolean getAccessibleSpecialNew() {
+        return accessibleSpecialNew;
+    }
+
+    public void setAccessibleSpecialNew(Boolean accessibleSpecialNew) {
+        this.accessibleSpecialNew = accessibleSpecialNew;
+    }
+
+    public String getDescriptionNew() {
+        return descriptionNew;
+    }
+
+    public void setDescriptionNew(String descriptionNew) {
+        this.descriptionNew = descriptionNew;
+    }
+
+    public String getTypeNew() {
+        return typeNew;
+    }
+
+    public void setTypeNew(String typeNew) {
+        this.typeNew = typeNew;
+    }
+
+    public String getLocationNew() {
+        return locationNew;
+    }
+
+    public void setLocationNew(String locationNew) {
+        this.locationNew = locationNew;
     }
 }

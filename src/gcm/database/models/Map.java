@@ -12,7 +12,7 @@ public class Map extends Model {
     // fields
     private Integer id, cityId;
     private Boolean verification = false; // 1 is verified 0 is not verified
-    private String title, description, version, img;
+    private String title, titleNew, description, descriptionNew, version, img, imgNew;
     private Date createdAt, updatedAt;
 
     // create User object with info from ResultSet
@@ -189,11 +189,14 @@ public class Map extends Model {
         this.id = rs.getInt("id");
         this.cityId = rs.getInt("city_id");
         this.title = rs.getString("title");
+        this.titleNew = rs.getString("title_new");
         this.description = rs.getString("description");
+        this.descriptionNew = rs.getString("description_new");
         this.version = rs.getString("version");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
         this.img = rs.getString("img");
+        this.imgNew = rs.getString("img_new");
         this.verification = rs.getBoolean("verification");
     }
 
