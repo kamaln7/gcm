@@ -69,8 +69,9 @@ public class Server extends AbstractServer {
     }
 
     private void scheduleJobs() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        ExecutorService executor = Executors.newCachedThreadPool();
         for (Class<? extends Job> jobC : registeredJobs) {
+            chatIF.displayf("Registered job %s", jobC.getName());
             Job job = jobC.getDeclaredConstructor(Server.class).newInstance(this);
             workJob(executor, job);
         }
