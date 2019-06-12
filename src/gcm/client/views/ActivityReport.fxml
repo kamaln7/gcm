@@ -35,7 +35,7 @@
                 <TableColumn fx:id="downloadsColumn" prefWidth="111.0" text="Downloads" />
             </columns>
         </TableView>
-        <TextField fx:id="searchField" layoutX="782.0" layoutY="208.0" promptText="Filter Results" />
+        <TextField fx:id="searchField" layoutX="782.0" layoutY="208.0" promptText="Search City" />
         <Label layoutX="29.0" layoutY="25.0" text="Activity Report">
             <font>
                 <Font size="25.0" />
@@ -43,11 +43,9 @@
         </Label>
         <DatePicker fx:id="fromDate" layoutX="107.0" layoutY="110.0" onAction="#selectFromDate" />
         <DatePicker fx:id="toDate" layoutX="107.0" layoutY="153.0" onAction="#selectToDate" />
-        <Button layoutX="542.0" layoutY="110.0" mnemonicParsing="false" onAction="#showResults" prefHeight="31.0" prefWidth="290.0" text="Full Report" />
+        <Button layoutX="542.0" layoutY="135.0" mnemonicParsing="false" onAction="#showResults" prefHeight="31.0" prefWidth="290.0" text="Show Report" />
         <Label layoutX="28.0" layoutY="115.0" text="From date:" />
         <Label layoutX="28.0" layoutY="158.0" text="To date:" />
-      <Button layoutX="542.0" layoutY="153.0" mnemonicParsing="false" onAction="#chooseCity" prefHeight="31.0" prefWidth="290.0" text="Choose a City" />
-      <Label layoutX="424.0" layoutY="115.0" text="All Cities Report:" />
-      <Label layoutX="424.0" layoutY="158.0" text="One City Report:" />
+      <Label layoutX="424.0" layoutY="140.0" text="Cities Report:" />
     </children>
 </AnchorPane>
