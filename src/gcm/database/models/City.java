@@ -52,6 +52,39 @@ public class City extends Model {
         }
     }
 
+    public static List<City> searchByNameWithCounts(String searchQuery) throws SQLException {
+        if (searchQuery.equals("")) {
+            return new ArrayList<>();
+        }
+
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
+                     "select cities.*," +
+                             " (select count(*) from maps where maps.city_id = cities.id and maps.verification = 1) as map_count," +
+                             " (select count(*) from attractions where attractions.city_id = cities.id) as attraction_count," +
+                             " (select count(*) from tours where tours.city_id = cities.id) as tour_count" +
+                             " from cities" +
+                             " where name like ? or country like ?" +
+                             " order by country, name asc"
+             )) {
+            preparedStatement.setString(1, '%' + searchQuery + '%');
+            preparedStatement.setString(2, '%' + searchQuery + '%');
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                List<City> cities = new ArrayList<>();
+                while (rs.next()) {
+                    City city = new City(rs);
+                    city._extraInfo.put("mapCount", String.valueOf(rs.getInt("map_count")));
+                    city._extraInfo.put("attractionCount", String.valueOf(rs.getInt("attraction_count")));
+                    city._extraInfo.put("tourCount", String.valueOf(rs.getInt("tour_count")));
+                    cities.add(city);
+                }
+
+                return cities;
+            }
+        }
+    }
+
     /**
      * find all cities in database, order them by country and name
      *
@@ -256,7 +289,7 @@ public class City extends Model {
         try (Connection db = getDb();
              PreparedStatement preparedStatement = db.prepareStatement(
                      "select\n" +
-                             "(select count(*) from maps where maps.city_id = ?) as map_count,\n" +
+                             "(select count(*) from maps where maps.city_id = ? and maps.verification = 1) as map_count,\n" +
                              "(select count(*) from attractions where attractions.city_id = ?) as attraction_count, \n" +
                              "(select count(*) from tours where tours.city_id = ?) as tour_count"
              )) {
