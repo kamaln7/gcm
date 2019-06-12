@@ -1,6 +1,5 @@
 package gcm.commands;
 
-import gcm.database.models.Attraction;
 import gcm.database.models.Map;
 import gcm.database.models.MapAttraction;
 import gcm.server.Server;
@@ -11,33 +10,24 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 /**
- * used to create new attraction and add it to the map
+ * used to add attraction to the map
  */
-public class AddAttractionAndUpdateMapImageCommand implements Command {
+public class AddExistingAttractionAndUpdateMapImageCommand implements Command {
     private Boolean createdNewFile = false;
 
     public static class Input extends gcm.commands.Input {
-        public Integer mapId;
-        public boolean accessibility;
-        public String attraction_type, attraction_name, getAttraction_location, description;
+        public Integer mapId, attractionId;
         byte[] new_map_image;
 
-        public Input(Integer mapId, String attraction_type, String attraction_name, String getAttraction_location, byte[] new_map_image, boolean accessibility, String description) {
+        public Input(Integer mapId, Integer attractionId, byte[] new_map_image) {
             this.mapId = mapId;
-            this.attraction_type = attraction_type;
-            this.attraction_name = attraction_name;
-            this.getAttraction_location = getAttraction_location;
+            this.attractionId = attractionId;
             this.new_map_image = new_map_image;
-            this.accessibility = accessibility;
-            this.description = description;
         }
     }
 
     public static class Output extends gcm.commands.Output {
-        public Attraction attraction;
-
-        public Output(Attraction attraction) {
-            this.attraction = attraction;
+        public Output() {
         }
     }
 
@@ -45,8 +35,15 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
     public Output runOnServer(Request request, Server server, ConnectionToClient client) throws Exception {
         Input input = request.getInput(Input.class);
 
+        // check if already exists
+        try {
+            MapAttraction.findByIds(input.mapId, input.attractionId);
+            throw new MapAttraction.AlreadyExists();
+        } catch (MapAttraction.NotFound e) {
+        }
 
         Map map = Map.findById(input.mapId);
+
         //store the img in the server
         String imageName = getImagePathToWrite(map);
         Files.write(Paths.get(server.getFilesPath(), imageName), input.new_map_image);
@@ -54,13 +51,11 @@ public class AddAttractionAndUpdateMapImageCommand implements Command {
             map.updateImage(imageName);
         }
 
-        Attraction attraction = new Attraction(map.getCityId(), input.attraction_name, input.description, input.attraction_type, input.getAttraction_location, input.accessibility);
-        attraction.insert();
-
-        MapAttraction mapAttraction = new MapAttraction(map.getId(), attraction.getId());
+        //here we add attraction Id and map Id to many-many Table
+        MapAttraction mapAttraction = new MapAttraction(map.getId(), input.attractionId);
         mapAttraction.insert();
 
-        return new Output(attraction);
+        return new Output();
     }
 
     private String getImagePathToWrite(Map map) {
