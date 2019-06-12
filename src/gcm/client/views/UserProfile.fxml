@@ -1,64 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
-
-<AnchorPane prefHeight="327.0" prefWidth="548.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.UserProfileController">
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="327.0" prefWidth="548.0" stylesheets="@../stylesheets/main.css"
+            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="gcm.client.controllers.UserProfileController">
     <children>
-        <Text layoutX="14.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" text="User Profile" wrappingWidth="269.0" />
+        <Text layoutX="14.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;"
+              text="User Profile" wrappingWidth="269.0"/>
         <VBox layoutX="14.0" layoutY="59.0" prefWidth="100.0" spacing="5.0">
             <children>
                 <HBox prefWidth="200.0" spacing="5.0">
                     <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold" text="First Name:">
                         </Text>
-                        <Text fx:id="first_name_field" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
+                        <Text fx:id="first_name_field" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                              wrappingWidth="140.826171875">
                         </Text>
                     </children>
                 </HBox>
                 <HBox prefWidth="200.0" spacing="5.0">
                     <children>
-                        <Text layoutX="31.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold" text="Last Name:">
+                        <Text layoutX="31.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              style="-fx-font-weight: bold" text="Last Name:">
                         </Text>
-                        <Text fx:id="last_name_field" layoutX="113.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
+                        <Text fx:id="last_name_field" layoutX="113.0" layoutY="143.0" strokeType="OUTSIDE"
+                              strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
                         </Text>
                     </children>
                 </HBox>
                 <HBox spacing="5.0">
                     <children>
-                        <Text layoutX="31.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold" text="Username:">
+                        <Text layoutX="31.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              style="-fx-font-weight: bold" text="Username:">
                         </Text>
-                        <Text fx:id="username_field" layoutX="113.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
-                        </Text>
-                    </children>
-                </HBox>
-                <HBox prefWidth="200.0" spacing="5.0">
-                    <children>
-                        <Text layoutX="31.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold" text="Email:">
-                        </Text>
-                        <Text fx:id="email_field" layoutX="113.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
+                        <Text fx:id="username_field" layoutX="113.0" layoutY="176.0" strokeType="OUTSIDE"
+                              strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
                         </Text>
                     </children>
                 </HBox>
                 <HBox prefWidth="200.0" spacing="5.0">
                     <children>
-                        <Text layoutX="31.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold" text="Phone:">
+                        <Text layoutX="31.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              style="-fx-font-weight: bold" text="Email:">
                         </Text>
-                        <Text fx:id="phone_field" layoutX="113.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="140.826171875">
+                        <Text fx:id="email_field" layoutX="113.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              text="Text" wrappingWidth="140.826171875">
+                        </Text>
+                    </children>
+                </HBox>
+                <HBox prefWidth="200.0" spacing="5.0">
+                    <children>
+                        <Text layoutX="31.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              style="-fx-font-weight: bold" text="Phone:">
+                        </Text>
+                        <Text fx:id="phone_field" layoutX="113.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                              text="Text" wrappingWidth="140.826171875">
                         </Text>
                     </children>
                 </HBox>
             </children>
         </VBox>
-        <HBox fx:id="buttonsBox" layoutX="14.0" layoutY="189.0" prefHeight="138.0" prefWidth="195.0" spacing="15.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+        <HBox fx:id="buttonsBox" layoutX="14.0" layoutY="189.0" prefHeight="138.0" prefWidth="195.0" spacing="15.0"
+              AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
             <children>
-                <Button mnemonicParsing="false" onAction="#purchase_history" prefHeight="27.0" prefWidth="159.0" text="Purchase History" />
-                <Button mnemonicParsing="false" onAction="#subscription_history" prefHeight="27.0" prefWidth="159.0" text="Subscription History" />
-                <Button mnemonicParsing="false" onAction="#active_subscriptions" prefWidth="159.0" text="Active Subscriptions" />
-            <Button mnemonicParsing="false" onAction="#edit_profile" prefHeight="27.0" prefWidth="159.0" text="Edit Profile" />
+                <Button mnemonicParsing="false" onAction="#edit_profile" prefHeight="27.0" prefWidth="159.0"
+                        text="Edit Profile"/>
             </children>
         </HBox>
     </children>
