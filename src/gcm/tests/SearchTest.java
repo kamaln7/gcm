@@ -29,18 +29,6 @@ public class SearchTest extends TestCase {
     private List<TestAttraction> attractions = new ArrayList<>();
     private List<TestMap> maps = new ArrayList<>();
 
-    private static void assertNoneNull(Object... objects) {
-        for (Object o : objects) {
-            Assert.assertNotNull(o);
-        }
-    }
-
-    private static void assertAllNull(Object... objects) {
-        for (Object o : objects) {
-            Assert.assertNull(o);
-        }
-    }
-
     @Test
     public void testNoMatches() throws Exception {
         mockStatic(City.class);
@@ -56,7 +44,11 @@ public class SearchTest extends TestCase {
         Request request = new Request(new SearchCityOrAttractionCommand.Input("aokdoaskdoaskdo"));
         SearchCityOrAttractionCommand.Output output = cmd.runOnServer(request, null, null);
 
-        assertNoneNull(output.cityMaps, output.attractions, output.cities, output.attractionMaps);
+        assertNotNull(output.cityMaps);
+        assertNotNull(output.attractions);
+        assertNotNull(output.cities);
+        assertNotNull(output.attractionMaps);
+
         assertEquals(output.attractions.size(), 0);
         assertEquals(output.cityMaps.size(), 0);
         assertEquals(output.cities.size(), 0);
@@ -79,6 +71,13 @@ public class SearchTest extends TestCase {
         SearchCityOrAttractionCommand.Output output = cmd.runOnServer(request, null, null);
 
         Assert.assertNotNull(output);
-        assertAllNull(output.cityMaps, output.attractions, output.cities, output.attractionMaps);
+        assertNull(output.cityMaps);
+        assertNull(output.attractionMaps);
+
+        assertNotNull(output.attractions);
+        assertNotNull(output.cities);
+
+        assertEquals(output.attractions.size(), 0);
+        assertEquals(output.cities.size(), 0);
     }
 }
