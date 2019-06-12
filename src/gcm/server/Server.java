@@ -162,14 +162,14 @@ public class Server extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        this.chatIF.displayf("Received msg from [%s]: %s", client, msg);
-        if (!(msg instanceof Request)) {
-            return;
-        }
-
-        // The message is of type Request
         // process in new thread
         (new Thread(() -> {
+            this.chatIF.displayf("Received msg from [%s]: %s", client, msg);
+            if (!(msg instanceof Request)) {
+                return;
+            }
+
+            // The message is of type Request
             try {
                 Request request = (Request) msg;
 
