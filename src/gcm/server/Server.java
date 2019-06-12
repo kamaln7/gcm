@@ -172,12 +172,12 @@ public class Server extends AbstractServer {
         (new Thread(() -> {
             try {
                 Request request = (Request) msg;
-                Command cmd = request.command.newInstance();
 
-                // run the command
                 Exception exception = null;
                 Output output = null;
                 try {
+                    Command cmd = request.command.newInstance();
+                    // run the command
                     output = cmd.runOnServer(request, this, client);
                 } catch (Exception e) {
                     exception = e;
