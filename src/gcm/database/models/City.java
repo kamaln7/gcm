@@ -36,8 +36,9 @@ public class City extends Model {
         }
 
         try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("select * from cities where match (name, country) against (?) order by country, name asc")) {
-            preparedStatement.setString(1, searchQuery);
+             PreparedStatement preparedStatement = db.prepareStatement("select * from cities where name like ? or country like ? order by country, name asc")) {
+            preparedStatement.setString(1, '%' + searchQuery + '%');
+            preparedStatement.setString(2, '%' + searchQuery + '%');
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 List<City> cities = new ArrayList<>();
