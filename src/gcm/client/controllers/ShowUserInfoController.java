@@ -4,8 +4,7 @@ import gcm.client.bin.ClientGUI;
 import gcm.commands.Input;
 import gcm.commands.Response;
 import gcm.commands.ShowUserInfoCommand;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import gcm.database.models.User;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,11 +22,46 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.ResourceBundle;
 
 public class ShowUserInfoController implements Initializable {
+
+
+    @FXML
+    private TableView<User> table;
+
+    @FXML
+    private TableColumn<User, Integer> idColumn;
+
+    @FXML
+    private TableColumn<User, String> firstNameColumn;
+
+    @FXML
+    private TableColumn<User, String> lastNameColumn;
+
+    @FXML
+    private TableColumn<User, String> userNameColumn;
+
+    @FXML
+    private TableColumn<User, String> emailColumn;
+
+    @FXML
+    private TableColumn<User, String> phoneColumn;
+
+    @FXML
+    private TableColumn<User, Date> userSinceColumn;
+
+    @FXML
+    private TableColumn<User, String> purchasesColumn;
+
+    @FXML
+    private TableColumn<User, String> subscriptionsColumn;
+
+    @FXML
+    private TextField searchField;
+    ObservableList<User> oblist = FXCollections.observableArrayList();
+
 
     public static void loadView(Stage primaryStage) throws IOException {
         URL url = MainScreenController.class.getResource("/gcm/client/views/ShowUserInfo.fxml");
@@ -35,183 +69,86 @@ public class ShowUserInfoController implements Initializable {
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GCM 2019");
+        primaryStage.setTitle("Users Report - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
-    public class UsersInfo {
-        private SimpleIntegerProperty id, purchases, subscriptions;
-        private SimpleStringProperty firstName, lastName, userName, email, phone;
-        private SimpleObjectProperty<LocalDate> date;
-
-
-        public UsersInfo(int id, String firstName, String lastName, String userName, String email, String phone, Date date, int purchases, int subscriptions) {
-            this.id = new SimpleIntegerProperty(id);
-            this.firstName = new SimpleStringProperty(firstName);
-            this.lastName = new SimpleStringProperty(lastName);
-            this.userName = new SimpleStringProperty(userName);
-            this.email = new SimpleStringProperty(email);
-            this.phone = new SimpleStringProperty(phone);
-            this.date = new SimpleObjectProperty(date);
-            this.purchases = new SimpleIntegerProperty(purchases);
-            this.subscriptions = new SimpleIntegerProperty(subscriptions);
-        }
-
-        public int getId() {
-            return id.get();
-        }
-
-        public SimpleIntegerProperty idProperty() {
-            return id;
-        }
-
-        public int getPurchases() {
-            return purchases.get();
-        }
-
-        public SimpleIntegerProperty purchasesProperty() {
-            return purchases;
-        }
-
-        public int getSubscriptions() {
-            return subscriptions.get();
-        }
-
-        public SimpleIntegerProperty subscriptionsProperty() {
-            return subscriptions;
-        }
-
-        public String getFirstName() {
-            return firstName.get();
-        }
-
-        public SimpleStringProperty firstNameProperty() {
-            return firstName;
-        }
-
-        public String getLastName() {
-            return lastName.get();
-        }
-
-        public SimpleStringProperty lastNameProperty() {
-            return lastName;
-        }
-
-        public String getUserName() {
-            return userName.get();
-        }
-
-        public SimpleStringProperty userNameProperty() {
-            return userName;
-        }
-
-        public String getEmail() {
-            return email.get();
-        }
-
-        public SimpleStringProperty emailProperty() {
-            return email;
-        }
-
-        public String getPhone() {
-            return phone.get();
-        }
-
-        public SimpleStringProperty phoneProperty() {
-            return phone;
-        }
-
-        public LocalDate getDate() {
-            return date.get();
-        }
-
-        public SimpleObjectProperty<LocalDate> dateProperty() {
-            return date;
-        }
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        table.setItems(oblist);
+
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("first_name"));
+        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("last_name"));
+        userNameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+        phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        userSinceColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+        purchasesColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("purchasesCount")));
+        subscriptionsColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue()._extraInfo.get("subscriptionsCount")));
+
+        // 1. Wrap the ObservableList in a FilteredList (initially display all data).
+        FilteredList<User> filteredData = new FilteredList<>(oblist, p -> true);
+
+        // 2. Set the filter Predicate whenever the filter changes.
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(user -> {
+                // If filter text is empty, display all data.
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                // Compare user filter text.
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                if (user.getFirst_name().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Filter matches first name.
+                } else if (user.getLast_name().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Filter matches last name.
+                } else if (user.getUsername().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Filter matches user name.
+                } else if (Integer.toString(user.getId()).contains(newValue)) {
+                    return true; // Filter matches ID.
+                } else if (user.getPhone().contains(newValue)) {
+                    return true; // Filter matches Phone.
+                } else if (user.getEmail().contains(newValue)) {
+                    return true; // Filter matches E-mail.
+                }
+                return false; // Does not match.
+            });
+        });
+
+        // 3. Wrap the FilteredList in a SortedList.
+        SortedList<User> sortedData = new SortedList<>(filteredData);
+
+        // 4. Bind the SortedList comparator to the TableView comparator.
+        sortedData.comparatorProperty().bind(table.comparatorProperty());
+
+        // 5. Add sorted (and filtered) data to the table.
+        table.setItems(sortedData);
+
+        loadUsers();
+    }
+
+    private void loadUsers() {
         Input input = new ShowUserInfoCommand.Input();
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ShowUserInfoCommand.Output output = response.getOutput(ShowUserInfoCommand.Output.class);
 
-            idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-            firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-            lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-            userNameColumn.setCellValueFactory(new PropertyValueFactory<>("userName"));
-            emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
-            phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-            userSinceColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-            purchasesColumn.setCellValueFactory(new PropertyValueFactory<>("purchases"));
-            subscriptionsColumn.setCellValueFactory(new PropertyValueFactory<>("subscriptions"));
-
-            ObservableList<UsersInfo> oblist = FXCollections.observableArrayList();
-
-            for (int i = 0; i < output.usersList.size(); i++) {
-
-                oblist.add(new UsersInfo(output.usersList.get(i).getId(),
-                        output.usersList.get(i).getFirst_name(), output.usersList.get(i).getLast_name(),
-                        output.usersList.get(i).getUsername(), output.usersList.get(i).getEmail(),
-                        output.usersList.get(i).getPhone(), output.usersList.get(i).getCreatedAt(),
-                        output.purchasesList.get(i), output.subscriptionsList.get(i)));
-            }
-            table.setItems(oblist);
-
-            // 1. Wrap the ObservableList in a FilteredList (initially display all data).
-
-            FilteredList<UsersInfo> filteredData = new FilteredList<>(oblist, p -> true);
-
-            // 2. Set the filter Predicate whenever the filter changes.
-            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-                filteredData.setPredicate(UserInfo -> {
-                    // If filter text is empty, display all data.
-                    if (newValue == null || newValue.isEmpty()) {
-                        return true;
-                    }
-                    // Compare user filter text.
-                    String lowerCaseFilter = newValue.toLowerCase();
-
-                    if (UserInfo.getFirstName().toLowerCase().contains(lowerCaseFilter)) {
-                        return true; // Filter matches first name.
-                    } else if (UserInfo.getLastName().toLowerCase().contains(lowerCaseFilter)) {
-                        return true; // Filter matches last name.
-                    } else if (UserInfo.getUserName().toLowerCase().contains(lowerCaseFilter)) {
-                        return true; // Filter matches user name.
-                    } else if (Integer.toString(UserInfo.getId()).contains(newValue)) {
-                        return true; // Filter matches ID.
-                    } else if (UserInfo.getPhone().contains(newValue)) {
-                        return true; // Filter matches Phone.
-                    } else if (UserInfo.getEmail().contains(newValue)) {
-                        return true; // Filter matches E-mail.
-                    }
-                    return false; // Does not match.
-                });
-            });
-
-            // 3. Wrap the FilteredList in a SortedList.
-            SortedList<UsersInfo> sortedData = new SortedList<>(filteredData);
-
-            // 4. Bind the SortedList comparator to the TableView comparator.
-            sortedData.comparatorProperty().bind(table.comparatorProperty());
-
-            // 5. Add sorted (and filtered) data to the table.
-            table.setItems(sortedData);
+            oblist.setAll(output.usersList);
         } catch (Exception e) {
             ClientGUI.showErrorTryAgain();
             e.printStackTrace();
         }
-
     }
 
     int getPosition() {
-        if(table.getSelectionModel().getSelectedCells().isEmpty())
+        if (table.getSelectionModel().getSelectedCells().isEmpty())
             return -1;
         TablePosition pos = table.getSelectionModel().getSelectedCells().get(0);
         int row = pos.getRow();
-        UsersInfo item = table.getItems().get(row);
+        User item = table.getItems().get(row);
         return item.getId();
     }
 
@@ -263,40 +200,4 @@ public class ShowUserInfoController implements Initializable {
             }
         }
     }
-
-
-    @FXML
-    private TableView<UsersInfo> table;
-
-    @FXML
-    private TableColumn<UsersInfo, Integer> idColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, String> firstNameColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, String> lastNameColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, String> userNameColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, String> emailColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, String> phoneColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, Date> userSinceColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, Integer> purchasesColumn;
-
-    @FXML
-    private TableColumn<UsersInfo, Integer> subscriptionsColumn;
-
-    @FXML
-    private TextField searchField;
-
-
 }

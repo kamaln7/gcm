@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -302,16 +303,20 @@ public class ActivityReportController {
 
     @FXML
     Date selectFromDate(ActionEvent event) {
-        return LocalDateToDate(fromDate.getValue());
+        return LocalDateToDate(fromDate.getValue(), true);
     }
 
     @FXML
     Date selectToDate(ActionEvent event) {
-        return LocalDateToDate(toDate.getValue());
+        return LocalDateToDate(toDate.getValue(), false);
     }
 
-    private static Date LocalDateToDate(LocalDate localDate) {
-        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+    private static Date LocalDateToDate(LocalDate localDate, Boolean startOfDay) {
+        Instant instant = Instant.from(
+                startOfDay
+                        ? localDate.atStartOfDay(ZoneId.systemDefault())
+                        : localDate.with(LocalTime.MAX)
+        );
         return Date.from(instant);
     }
 
