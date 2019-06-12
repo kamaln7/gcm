@@ -378,26 +378,12 @@ public class User extends Model {
         return this.hasRole(ROLES.getOrDefault(role, 100000));
     }
 
+
     /**
-     * @param
-     * @return List of all users with role = user in DataBase
+     * Find all Users and all information needed:  number of  purchases and subscriptions
+     * @return
+     * @throws SQLException
      */
-    public static List<User> findAllUsers() throws SQLException {
-        try (Connection db = getDb();
-             Statement statement = db.createStatement()) {
-            try (ResultSet rs = statement.executeQuery("select * from users where role = 'user' order by last_name, first_name asc")) {
-                List<User> users = new ArrayList<>();
-                while (rs.next()) {
-                    User user = new User(rs);
-                    users.add(user);
-                }
-
-                return users;
-            }
-        }
-    }
-
-
     public static List<User> findAllUsersWithCounts() throws SQLException {
         try (Connection db = getDb();
              Statement statement = db.createStatement()) {
