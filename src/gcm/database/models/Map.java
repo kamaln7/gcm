@@ -95,7 +95,7 @@ public class Map extends Model {
 
 
         String query = String.format(
-                "select * from maps where city_id in (%s) order by title asc",
+                "select * from maps where city_id in (%s) and verification = 1 order by title asc",
                 IntStream
                         .range(0, cityIds.size())
                         .mapToObj(s -> "?")
@@ -148,7 +148,7 @@ public class Map extends Model {
         }
 
         String query = String.format(
-                "select * from maps where id in (%s) order by title asc",
+                "select * from maps where id in (%s) and verification = 1 order by title asc",
                 IntStream
                         .range(0, mapIdsList.size())
                         .mapToObj(s -> "?")
@@ -177,6 +177,7 @@ public class Map extends Model {
                                     .get(attractionId)
                                     .stream()
                                     .map(ma -> maps.get(ma.getMapId()))
+                                    .filter(x -> x != null)
                                     .collect(Collectors.toList())
                     );
                 }

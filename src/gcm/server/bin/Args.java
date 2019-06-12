@@ -11,7 +11,7 @@ public class Args {
     private List<String> parameters = new ArrayList<>();
 
     @Parameter(names = "--connectionString", description = "JDBC MySQL connection string")
-    private String connectionString = "jdbc:mysql://gcm:928c43b1f9d4928c43b1f9d4@gcm.kar.sh/gcm?useSSL=false";
+    private String connectionString = "jdbc:mysql://user:pass@localhost/gcm?useSSL=false";
 
     @Parameter(names = "--port", description = "Port to listen on")
     private Integer port = 5000;

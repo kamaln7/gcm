@@ -48,10 +48,7 @@ public class SearchCityOrAttractionCommand implements Command {
         }
 
         // search cities
-        List<City> cities = City.searchByName(input.searchQuery);
-        for (City city : cities) {
-            city.lookupCountsOfRelated();
-        }
+        List<City> cities = City.searchByNameWithCounts(input.searchQuery);
         java.util.Map<Integer, List<Map>> cityMaps = Map.findAllForCities(cities.stream().map(city -> city.getId()).collect(Collectors.toSet()));
 
         // search attractions
