@@ -1,10 +1,7 @@
 package gcm.client.controllers;
 
 import gcm.client.bin.ClientGUI;
-import gcm.commands.FindCitiesPendingApprovalCommand;
-import gcm.commands.Input;
-import gcm.commands.ReadMapImageByPath;
-import gcm.commands.Response;
+import gcm.commands.*;
 import gcm.database.models.Attraction;
 import gcm.database.models.Map;
 import javafx.beans.binding.BooleanBinding;
@@ -211,10 +208,35 @@ public class ReviewCitiesPendingApprovalController implements Initializable {
         }
     }
 
+    private java.util.Map.Entry<Integer, String> getSelectedCity() {
+        return citiesLV.getSelectionModel().getSelectedItem();
+    }
+
     public void approveAction(ActionEvent actionEvent) {
+        makeDecision(getSelectedCity(), true);
     }
 
     public void rejectAction(ActionEvent actionEvent) {
+        makeDecision(getSelectedCity(), false);
+    }
+
+    public void makeDecision(java.util.Map.Entry<Integer, String> city, Boolean approved) {
+        try {
+            Input input = new MakeDecisionOnCityPendingApprovalCommand.Input(city.getKey(), approved);
+            Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
+            response.getOutput(MakeDecisionOnCityPendingApprovalCommand.Output.class);
+
+            (new Alert(
+                    Alert.AlertType.INFORMATION,
+                    "City " + city.getValue() + " " + (approved ? "approved" : "rejected") + "."
+            )).show();
+
+            citiesLV.getSelectionModel().clearSelection();
+            citiesList.remove(city);
+        } catch (Exception e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
     }
 
     private static class CityListCell extends ListCell<java.util.Map.Entry<Integer, String>> {
