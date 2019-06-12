@@ -269,9 +269,9 @@ public class Map extends Model {
     }
 
     /**
-     * find maps of a given city
+     * find all maps in database with their city titles
      *
-     * @return List of matching maps
+     * @return List of maps
      * @throws SQLException
      */
     public static List<Map> findAllWithCityTitle() throws SQLException {
@@ -281,6 +281,31 @@ public class Map extends Model {
                     "from maps\n" +
                     "left join cities\n" +
                     "on maps.city_id = cities.id")) {
+                ArrayList<Map> maps = new ArrayList<>();
+                while (rs.next()) {
+                    Map map = new Map(rs);
+                    map._extraInfo.put("cityTitle", rs.getString("city_title"));
+                    maps.add(map);
+                }
+                return maps;
+            }
+        }
+    }
+
+    public static List<Map> findPendingApproval() throws SQLException {
+        try (Connection db = getDb();
+             Statement statement = db.createStatement()) {
+            try (ResultSet rs = statement.executeQuery(
+                    "select maps.*, concat(cities.name, \", \", cities.country) as city_title\n" +
+                            "from maps \n" +
+                            "left join cities\n" +
+                            "on maps.city_id = cities.id\n" +
+                            "where \n" +
+                            "verification = 0 \n" +
+                            "or title_new is not null\n" +
+                            "or description_new is not null\n" +
+                            "or img_new is not null"
+            )) {
                 ArrayList<Map> maps = new ArrayList<>();
                 while (rs.next()) {
                     Map map = new Map(rs);
