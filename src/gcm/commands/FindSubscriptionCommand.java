@@ -7,6 +7,10 @@ import ocsf.server.ConnectionToClient;
 
 import java.util.Date;
 
+/**
+ * find subscription by user ID, city ID and date
+ */
+
 public class FindSubscriptionCommand implements Command {
     public static class Input extends gcm.commands.Input {
         private Integer  userId, cityId;

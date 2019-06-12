@@ -76,6 +76,9 @@ public class RenewSubscriptionController {
     }
 
     @FXML
+    /**
+     * checks if the user already made a renew, if not then he renew the subscription for another 6 months
+     */
     void renewSubscription(ActionEvent event) {
 
         int city_id = subscription.getCityId();
