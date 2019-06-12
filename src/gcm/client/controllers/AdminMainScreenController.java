@@ -150,5 +150,14 @@ public class AdminMainScreenController implements Initializable {
     private void openCityPendingChanges(ActionEvent event) {
         ClientGUI.showErrorTryAgain("not yet");
     }
+
+    public void reviewPendingContent(ActionEvent actionEvent) {
+        try {
+            ReviewCitiesPendingApprovalController.loadView(new Stage());
+        } catch (IOException e) {
+            ClientGUI.showErrorTryAgain();
+            e.printStackTrace();
+        }
+    }
 }
 

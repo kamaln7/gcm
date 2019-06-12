@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" />
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="511.0" prefWidth="726.0" stylesheets="@../stylesheets/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gcm.client.controllers.ReviewCitiesPendingApprovalController">
+    <children>
+        <Text layoutX="14.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" text="Review Cities Pending Approval" />
+        <Text layoutX="14.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The following cities have maps or attractions pending approval. Click to get started" />
+        <ListView fx:id="citiesLV" layoutX="14.0" layoutY="79.0" orientation="HORIZONTAL" prefHeight="76.0" prefWidth="701.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="79.0" />
+        <VBox layoutX="14.0" layoutY="167.0" prefHeight="315.0" prefWidth="698.0" spacing="5.0" AnchorPane.bottomAnchor="34.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="162.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="698.0" spacing="5.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Changed Maps" />
+                        <TableView fx:id="mapsTV" maxHeight="1.7976931348623157E308" prefHeight="183.0" prefWidth="697.0" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1" />
+                                <TableColumn prefWidth="75.0" text="C2" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+                <VBox prefWidth="698.0" spacing="5.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Changed Attractions" />
+                        <TableView fx:id="attractionsTV" maxHeight="1.7976931348623157E308" prefHeight="183.0" prefWidth="697.0" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1" />
+                                <TableColumn prefWidth="75.0" text="C2" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+      <HBox layoutX="587.0" layoutY="477.0" spacing="5.0" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="14.0">
+         <children>
+            <Button fx:id="approveBtn" mnemonicParsing="false" onAction="#approveAction" text="Approve" />
+            <Button fx:id="rejectBtn" mnemonicParsing="false" onAction="#rejectAction" text="Reject" />
+         </children>
+      </HBox>
+    </children>
+</AnchorPane>
