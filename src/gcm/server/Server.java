@@ -198,7 +198,7 @@ public class Server extends AbstractServer {
         this.chatIF.displayf("server console commands are not implemented");
     }
 
-    public void login(ConnectionToClient client, User user) throws AlreadyLoggedIn {
+    public synchronized void login(ConnectionToClient client, User user) throws AlreadyLoggedIn {
         Integer id = user.getId();
         if (loggedInUserIds.contains(id)) {
             throw new AlreadyLoggedIn();
@@ -208,7 +208,7 @@ public class Server extends AbstractServer {
         loggedInUserIds.add(id);
     }
 
-    public void logout(ConnectionToClient client) {
+    public synchronized void logout(ConnectionToClient client) {
         Integer id = (Integer) client.getInfo("userId");
         chatIF.displayf("Client [%s] logged out userId=%s", client, String.valueOf(id));
         if (id == null) {
