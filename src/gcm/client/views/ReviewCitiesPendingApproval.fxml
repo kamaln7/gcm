@@ -21,9 +21,15 @@
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Changed Maps" />
                         <TableView fx:id="mapsTV" maxHeight="1.7976931348623157E308" prefHeight="183.0" prefWidth="697.0" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn prefWidth="75.0" text="C1" />
-                                <TableColumn prefWidth="75.0" text="C2" />
+                                <TableColumn fx:id="mapsIDCol" prefWidth="75.0" text="ID" />
+                                <TableColumn fx:id="mapsTitleCol" prefWidth="75.0" text="Title" />
+                                <TableColumn fx:id="mapsDescriptionCol" prefWidth="75.0" text="Description" />
+                                <TableColumn fx:id="mapsImgCol" prefWidth="75.0" text="Image" />
+                                <TableColumn fx:id="mapsPublishedCol" prefWidth="75.0" text="Published?" />
                             </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
                         </TableView>
                     </children>
                 </VBox>
@@ -32,19 +38,27 @@
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Changed Attractions" />
                         <TableView fx:id="attractionsTV" maxHeight="1.7976931348623157E308" prefHeight="183.0" prefWidth="697.0" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn prefWidth="75.0" text="C1" />
-                                <TableColumn prefWidth="75.0" text="C2" />
+                                <TableColumn fx:id="attractionsIDCol" prefWidth="75.0" text="ID" />
+                                <TableColumn fx:id="attractionsNameCol" prefWidth="75.0" text="Name" />
+                                <TableColumn fx:id="attractionsDescriptionCol" prefWidth="75.0" text="Description" />
+                                <TableColumn fx:id="attractionsTypeCol" prefWidth="75.0" text="Type" />
+                                <TableColumn fx:id="attractionsLocationCol" prefWidth="75.0" text="Location" />
+                                <TableColumn fx:id="attractionsAccessibleCol" prefWidth="75.0" text="Accessible?" />
                             </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
                         </TableView>
                     </children>
                 </VBox>
             </children>
         </VBox>
-      <HBox layoutX="587.0" layoutY="477.0" spacing="5.0" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="14.0">
-         <children>
-            <Button fx:id="approveBtn" mnemonicParsing="false" onAction="#approveAction" text="Approve" />
-            <Button fx:id="rejectBtn" mnemonicParsing="false" onAction="#rejectAction" text="Reject" />
-         </children>
-      </HBox>
+        <HBox alignment="CENTER_LEFT" layoutX="587.0" layoutY="477.0" spacing="5.0" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="14.0">
+            <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="All changes for city:" />
+                <Button fx:id="approveBtn" mnemonicParsing="false" onAction="#approveAction" text="Approve" />
+                <Button fx:id="rejectBtn" mnemonicParsing="false" onAction="#rejectAction" text="Reject" />
+            </children>
+        </HBox>
     </children>
 </AnchorPane>
