@@ -129,7 +129,7 @@ public class MapEditOptionsController {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             response.getOutput(UpdateMapTitleAndDescriptionCommand.Output.class);
 
-            (new Alert(Alert.AlertType.INFORMATION, "Map successfully updated!")).show();
+            (new Alert(Alert.AlertType.INFORMATION, "Map edit request is sent and now awaiting approval!")).show();
             ((Stage) mapTF.getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();

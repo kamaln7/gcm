@@ -157,7 +157,7 @@ public class EditAttractionController {
             Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
             UpdateAttractionCommand.Output output2 = response2.getOutput(UpdateAttractionCommand.Output.class);
 
-            (new Alert(Alert.AlertType.INFORMATION, "Attraction successfully edited!")).show();
+            (new Alert(Alert.AlertType.INFORMATION, "Attraction edit request is sent and now awaiting approval!")).show();
             close();
         } catch (Attraction.AlreadyExists x) {
             (new Alert(Alert.AlertType.ERROR, "Attraction already exists.")).show();

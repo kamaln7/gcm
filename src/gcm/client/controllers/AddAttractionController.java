@@ -191,7 +191,7 @@ public class AddAttractionController {
 
             Response response2 = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
             AddAttractionAndUpdateMapImageCommand.Output output2 = response2.getOutput(AddAttractionAndUpdateMapImageCommand.Output.class);
-            (new Alert(Alert.AlertType.INFORMATION, "Attraction successfully added!")).show();
+            (new Alert(Alert.AlertType.INFORMATION, "Attraction successfully added to city + pending approval for map placement!")).show();
             setAttraction(output2.attraction);
         } catch (Attraction.AlreadyExists x) {
             (new Alert(Alert.AlertType.ERROR, "Attraction already exists.")).show();
