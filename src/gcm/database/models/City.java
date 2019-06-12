@@ -32,6 +32,7 @@ public class City extends Model {
 
     /**
      * Search cities by name
+     *
      * @param searchQuery
      * @return List of CITY
      * @throws SQLException
@@ -93,8 +94,9 @@ public class City extends Model {
 
     /**
      * Find all cities for Activity Report, for each city find number of maps, purchases, subscriptions, renewals, views, downloads
+     *
      * @param from date
-     * @param to date
+     * @param to   date
      * @return List of CITY
      * @throws SQLException
      */
@@ -201,107 +203,111 @@ public class City extends Model {
         try (Connection db = getDb()) {
             db.setAutoCommit(false);
 
-            // ****** attractions ******* //
-            if (approved) {
-                // move _new fields to regular fields
+            try {
+                // ****** attractions ******* //
+                if (approved) {
+                    // move _new fields to regular fields
+                    try (PreparedStatement preparedStatement = db.prepareStatement(
+                            "update attractions\n" +
+                                    "set\n" +
+                                    "\tlocation = COALESCE(location_new, location),\n" +
+                                    "\ttype = COALESCE(type_new, type),\n" +
+                                    "\taccessible_special = COALESCE(accessible_special_new, accessible_special),\n" +
+                                    "\tdescription = COALESCE(description_new, description)\n" +
+                                    "where city_id = ?"
+                    )) {
+                        preparedStatement.setInt(1, cityId);
+                        preparedStatement.executeUpdate();
+                    }
+                }
+                // set _new fields to null
                 try (PreparedStatement preparedStatement = db.prepareStatement(
                         "update attractions\n" +
                                 "set\n" +
-                                "\tlocation = COALESCE(location_new, location),\n" +
-                                "\ttype = COALESCE(type_new, type),\n" +
-                                "\taccessible_special = COALESCE(accessible_special_new, accessible_special),\n" +
-                                "\tdescription = COALESCE(description_new, description)\n" +
+                                "\tlocation_new = null,\n" +
+                                "\ttype_new = null,\n" +
+                                "\taccessible_special_new = null,\n" +
+                                "\tdescription_new = NULL\n" +
                                 "where city_id = ?"
                 )) {
                     preparedStatement.setInt(1, cityId);
                     preparedStatement.executeUpdate();
                 }
-            }
-            // set _new fields to null
-            try (PreparedStatement preparedStatement = db.prepareStatement(
-                    "update attractions\n" +
-                            "set\n" +
-                            "\tlocation_new = null,\n" +
-                            "\ttype_new = null,\n" +
-                            "\taccessible_special_new = null,\n" +
-                            "\tdescription_new = NULL\n" +
-                            "where city_id = ?"
-            )) {
-                preparedStatement.setInt(1, cityId);
-                preparedStatement.executeUpdate();
-            }
 
 
-            // ****** maps ******* //
-            if (approved) {
-                // get old image paths before removing them
-                try (PreparedStatement preparedStatement = db.prepareStatement(
-                        "select img from maps where img_new is not null and city_id = ?"
-                )) {
-                    preparedStatement.setInt(1, cityId);
-                    try (ResultSet rs = preparedStatement.executeQuery()) {
-                        while (rs.next()) {
-                            oldImagePaths.add(rs.getString("img"));
+                // ****** maps ******* //
+                if (approved) {
+                    // get old image paths before removing them
+                    try (PreparedStatement preparedStatement = db.prepareStatement(
+                            "select img from maps where img_new is not null and city_id = ?"
+                    )) {
+                        preparedStatement.setInt(1, cityId);
+                        try (ResultSet rs = preparedStatement.executeQuery()) {
+                            while (rs.next()) {
+                                oldImagePaths.add(rs.getString("img"));
+                            }
                         }
                     }
-                }
 
-                // move _new fields to regular fields
+                    // move _new fields to regular fields
+                    try (PreparedStatement preparedStatement = db.prepareStatement(
+                            "update maps\n" +
+                                    "set\n" +
+                                    "\t title = COALESCE(title_new, title),\n" +
+                                    "\t img = COALESCE(img_new, img),\n" +
+                                    "\t description = COALESCE(description_new, description),\n" +
+                                    "\t verification = 1\n" +
+                                    "where city_id = ?"
+                    )) {
+                        preparedStatement.setInt(1, cityId);
+                        preparedStatement.executeUpdate();
+                    }
+                } else {
+                    // delete new maps that were rejected
+
+                    // get their paths so we can delete the files
+                    try (PreparedStatement preparedStatement = db.prepareStatement(
+                            "select img, img_new from maps where verification = 0 and city_id = ?"
+                    )) {
+                        preparedStatement.setInt(1, cityId);
+                        try (ResultSet rs = preparedStatement.executeQuery()) {
+                            while (rs.next()) {
+                                String path;
+
+                                path = rs.getString("img");
+                                if (path != null) oldImagePaths.add(path);
+
+                                path = rs.getString("img_new");
+                                if (path != null) oldImagePaths.add(path);
+                            }
+                        }
+                    }
+
+                    // delete rows
+                    try (PreparedStatement preparedStatement = db.prepareStatement(
+                            "delete from maps where verification = 0 and city_id = ?"
+                    )) {
+                        preparedStatement.setInt(1, cityId);
+                        preparedStatement.executeUpdate();
+                    }
+                }
+                // set _new fields to null
                 try (PreparedStatement preparedStatement = db.prepareStatement(
                         "update maps\n" +
                                 "set\n" +
-                                "\t title = COALESCE(title_new, title),\n" +
-                                "\t img = COALESCE(img_new, img),\n" +
-                                "\t description = COALESCE(description_new, description),\n" +
-                                "\t verification = 1\n" +
+                                "\t title_new = null,\n" +
+                                "\t img_new = null,\n" +
+                                "\t description_new = null\n" +
                                 "where city_id = ?"
                 )) {
                     preparedStatement.setInt(1, cityId);
                     preparedStatement.executeUpdate();
                 }
-            } else {
-                // delete new maps that were rejected
 
-                // get their paths so we can delete the files
-                try (PreparedStatement preparedStatement = db.prepareStatement(
-                        "select img, img_new from maps where verification = 0 and city_id = ?"
-                )) {
-                    preparedStatement.setInt(1, cityId);
-                    try (ResultSet rs = preparedStatement.executeQuery()) {
-                        while (rs.next()) {
-                            String path;
-
-                            path = rs.getString("img");
-                            if (path != null) oldImagePaths.add(path);
-
-                            path = rs.getString("img_new");
-                            if (path != null) oldImagePaths.add(path);
-                        }
-                    }
-                }
-
-                // delete rows
-                try (PreparedStatement preparedStatement = db.prepareStatement(
-                        "delete from maps where verification = 0 and city_id = ?"
-                )) {
-                    preparedStatement.setInt(1, cityId);
-                    preparedStatement.executeUpdate();
-                }
+                db.commit();
+            } finally {
+                db.setAutoCommit(true);
             }
-            // set _new fields to null
-            try (PreparedStatement preparedStatement = db.prepareStatement(
-                    "update maps\n" +
-                            "set\n" +
-                            "\t title_new = null,\n" +
-                            "\t img_new = null,\n" +
-                            "\t description_new = null\n" +
-                            "where city_id = ?"
-            )) {
-                preparedStatement.setInt(1, cityId);
-                preparedStatement.executeUpdate();
-            }
-
-            db.commit();
         }
 
         return oldImagePaths;
