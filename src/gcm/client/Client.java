@@ -1,6 +1,8 @@
 package gcm.client;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.gson.Gson;
+import com.sun.javafx.stage.StageHelper;
 import gcm.ChatIF;
 import gcm.client.bin.ClientGUI;
 import gcm.client.controllers.ConnectionSettingsController;
@@ -10,11 +12,13 @@ import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class Client extends AbstractClient {
@@ -49,7 +53,12 @@ public class Client extends AbstractClient {
 
         Platform.runLater(() -> {
             try {
-                ConnectionSettingsController.loadView(ClientGUI.getPrimaryStage());
+                List<Stage> stages = Lists.newArrayList(StageHelper.getStages());
+                stages.forEach(s -> s.close());
+
+                Stage newStage = new Stage();
+                ClientGUI.setPrimaryStage(newStage);
+                ConnectionSettingsController.loadView(newStage);
                 ClientGUI.showErrorTryAgain("Connection to server closed");
             } catch (IOException e) {
                 e.printStackTrace();

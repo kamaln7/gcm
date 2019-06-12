@@ -107,13 +107,14 @@ public class Server extends AbstractServer {
                 while (true) {
                     try {
                         if (nextSleep > 0) {
+                            chatIF.displayf("Sleeping job %s for %d seconds", job.getName(), nextSleep / 1000);
                             Thread.sleep(nextSleep);
                         }
                         chatIF.displayf("Running job %s...", job.getName());
                         Future<Void> future = executor.submit(job);
                         future.get();
                         nextSleep = job.getInterval() * 1000;
-                        chatIF.displayf("Success. Sleeping job %s for %d seconds", job.getName(), nextSleep / 1000);
+                        chatIF.displayf("Successfully worked job %s", job.getName());
                     } catch (Exception e) {
                         chatIF.displayf("Exception while working job %s", job.getName());
                         e.printStackTrace();
