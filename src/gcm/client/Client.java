@@ -1,6 +1,8 @@
 package gcm.client;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.gson.Gson;
+import com.sun.javafx.stage.StageHelper;
 import gcm.ChatIF;
 import gcm.client.bin.ClientGUI;
 import gcm.client.controllers.ConnectionSettingsController;
@@ -10,15 +12,20 @@ import gcm.commands.Request;
 import gcm.commands.Response;
 import gcm.common.GsonSingleton;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 import ocsf.client.AbstractClient;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class Client extends AbstractClient {
+    private final long TimeoutTime = 12;
+    private final TimeUnit TimeoutUnit = TimeUnit.SECONDS;
+    private final String TimeoutMessage = String.format("Command timed out after waiting %s %s. No response from server.", TimeoutTime, TimeoutUnit);
+
     private Gson gson = GsonSingleton.GsonSingleton().gson;
     private Settings settings;
     private HashMap<String, CompletableFuture<Response>> pendingCommands;
@@ -46,7 +53,12 @@ public class Client extends AbstractClient {
 
         Platform.runLater(() -> {
             try {
-                ConnectionSettingsController.loadView(ClientGUI.getPrimaryStage());
+                List<Stage> stages = Lists.newArrayList(StageHelper.getStages());
+                stages.forEach(s -> s.close());
+
+                Stage newStage = new Stage();
+                ClientGUI.setPrimaryStage(newStage);
+                ConnectionSettingsController.loadView(newStage);
                 ClientGUI.showErrorTryAgain("Connection to server closed");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -74,13 +86,13 @@ public class Client extends AbstractClient {
 
     @Override
     protected void handleMessageFromServer(Object msg) {
-        this.chatIF.displayf("Server sent msg: %s", msg);
-        if (!(msg instanceof Response)) {
-            return;
-        }
-
-        // received a Response from the server
         (new Thread(() -> {
+            this.chatIF.displayf("Server sent msg: %s", msg);
+            if (!(msg instanceof Response)) {
+                return;
+            }
+
+            // received a Response from the server
             Response response = (Response) msg;
 
             // get the command Request id and find its CompletableFuture
@@ -111,6 +123,14 @@ public class Client extends AbstractClient {
         CompletableFuture<Response> response = new CompletableFuture<>();
         this.pendingCommands.put(request.id, response);
         this.sendToServer(request);
+
+        // time out if server never sends a response
+        Executors.newScheduledThreadPool(1).schedule(() -> {
+            if (!response.isDone()) {
+                response.completeExceptionally(new CancellationException(TimeoutMessage));
+                response.cancel(true);
+            }
+        }, TimeoutTime, TimeoutUnit);
         return response.get();
     }
 

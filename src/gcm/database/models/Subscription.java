@@ -52,7 +52,8 @@ public class Subscription extends Model {
      * @throws NotFound     if not found
      */
     public static Subscription findById(Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from subscriptions where id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -77,7 +78,8 @@ public class Subscription extends Model {
      * @throws NotFound     if not found
      */
     public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ?")) {
             preparedStatement.setInt(1, id);
             preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
             preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
@@ -104,7 +106,8 @@ public class Subscription extends Model {
      * @throws NotFound     if not found
      */
     public static int countRenewals(Integer id, Date from, Date to) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ? and renew = 1")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from subscriptions where city_id = ? and created_at >= ? and created_at <= ? and renew = 1")) {
             preparedStatement.setInt(1, id);
             preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
             preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
@@ -129,7 +132,8 @@ public class Subscription extends Model {
      * @throws NotFound     if not found
      */
     public static int countForUser(Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from subscriptions where user_id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from subscriptions where user_id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -143,7 +147,8 @@ public class Subscription extends Model {
 
 
     public static Subscription findSubscriptionbyIDs(Integer userId, Integer cityId, Date fromDate) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from subscriptions where user_id = ? AND city_id = ? AND from_date <= ? AND to_date >= ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from subscriptions where user_id = ? AND city_id = ? AND from_date <= ? AND to_date >= ?")) {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, cityId);
             preparedStatement.setTimestamp(3, new Timestamp(fromDate.getTime()));
@@ -167,7 +172,8 @@ public class Subscription extends Model {
     }
 
     public static List<Subscription> findAllByUserId(Integer userId, Boolean activeOnly) throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
                 String.format(
                         "select subscriptions.*, concat(cities.name, \", \", cities.country) as city_title" +
                                 " from subscriptions" +
@@ -196,7 +202,8 @@ public class Subscription extends Model {
     public void insert() throws SQLException, NotFound, AlreadyExists {
 
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into subscriptions (user_id, city_id, from_date, to_date, price, renew) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into subscriptions (user_id, city_id, from_date, to_date, price, renew) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, getUserId());
             preparedStatement.setInt(2, getCityId());
             preparedStatement.setTimestamp(3, new Timestamp(getFromDate().getTime()));
@@ -237,7 +244,8 @@ public class Subscription extends Model {
                         .collect(Collectors.joining(", "))
         );
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(query)) {
             // bind status
             preparedStatement.setBoolean(1, isSent);
 
@@ -259,7 +267,8 @@ public class Subscription extends Model {
     public static List<Subscription> findExpiringInNDays(Integer days) throws SQLException {
         List<Subscription> subscriptions = new ArrayList<>();
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
                 "select t.*\n" +
                         "from subscriptions t\n" +
                         "inner join (\n" +

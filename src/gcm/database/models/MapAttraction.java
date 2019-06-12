@@ -1,5 +1,6 @@
 package gcm.database.models;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,7 +42,8 @@ public class MapAttraction extends Model {
                         .collect(Collectors.joining(", "))
         );
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(query)) {
             // bind ids
             int bound = attractionIdsList.size();
             for (int i = 0; i < bound; i++) {
@@ -70,7 +72,8 @@ public class MapAttraction extends Model {
     }
 
     public static MapAttraction findByIds(Integer mapId, Integer attractionId) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps_attractions where map_id = ? and attraction_id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from maps_attractions where map_id = ? and attraction_id = ?")) {
             preparedStatement.setInt(1, mapId);
             preparedStatement.setInt(2, attractionId);
 
@@ -87,7 +90,8 @@ public class MapAttraction extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps_attractions (map_id, attraction_id) values (?, ?)")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into maps_attractions (map_id, attraction_id) values (?, ?)")) {
             preparedStatement.setInt(1, this.getMapId());
             preparedStatement.setInt(2, this.getAttractionId());
             // run the insert command

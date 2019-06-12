@@ -1,9 +1,6 @@
 package gcm.database.models;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Date;
 
 public class View extends Model {
@@ -45,7 +42,8 @@ public class View extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into views (user_id, model_id, model) values (?, ?, ?)")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into views (user_id, model_id, model) values (?, ?, ?)")) {
             preparedStatement.setInt(1, this.getUser_id());
             preparedStatement.setInt(2, this.getModel_id());
             preparedStatement.setString(3, this.getModel());
@@ -67,7 +65,8 @@ public class View extends Model {
      * @throws NotFound
      */
     public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) as total from maps, views where maps.city_id = ? and maps.id = views.model_id and views.model = 'map' and views.created_at >= ? and views.created_at <= ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from maps, views where maps.city_id = ? and maps.id = views.model_id and views.model = 'map' and views.created_at >= ? and views.created_at <= ?")) {
             preparedStatement.setInt(1, id);
             preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
             preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));

@@ -1,6 +1,8 @@
 package gcm.server;
 
 import com.google.gson.Gson;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import gcm.ChatIF;
 import gcm.commands.Command;
 import gcm.commands.Output;
@@ -21,8 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +37,7 @@ public class Server extends AbstractServer {
     private ChatIF chatIF;
     private HashMap<String, ConnectionToClient> clientConnections = new HashMap<>();
     private ArrayList<Integer> loggedInUserIds = new ArrayList<>();
-    private Connection db;
+    private HikariDataSource ds;
 
     private static final List<Class<? extends Job>> registeredJobs = new ArrayList<Class<? extends Job>>() {
         {
@@ -61,16 +61,27 @@ public class Server extends AbstractServer {
         this.chatIF.display("Connecting to the database");
 
         // MySQL connection
-        this.db = DriverManager.getConnection(this.settings.connectionString);
-        Model.setDb(this.db);
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(this.settings.connectionString);
+        hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setConnectionTimeout(5000);
+        hikariConfig.setPoolName("DS-Pool");
+        hikariConfig.setLeakDetectionThreshold(8000);
+        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        this.ds = new HikariDataSource(hikariConfig);
+        Model.setDs(this.ds);
 
         // scheduled jobs
         scheduleJobs();
     }
 
     private void scheduleJobs() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        ExecutorService executor = Executors.newCachedThreadPool();
         for (Class<? extends Job> jobC : registeredJobs) {
+            chatIF.displayf("Registered job %s", jobC.getName());
             Job job = jobC.getDeclaredConstructor(Server.class).newInstance(this);
             workJob(executor, job);
         }
@@ -106,13 +117,14 @@ public class Server extends AbstractServer {
                 while (true) {
                     try {
                         if (nextSleep > 0) {
+                            chatIF.displayf("Sleeping job %s for %d seconds", job.getName(), nextSleep / 1000);
                             Thread.sleep(nextSleep);
                         }
                         chatIF.displayf("Running job %s...", job.getName());
                         Future<Void> future = executor.submit(job);
                         future.get();
                         nextSleep = job.getInterval() * 1000;
-                        chatIF.displayf("Success. Sleeping job %s for %d seconds", job.getName(), nextSleep / 1000);
+                        chatIF.displayf("Successfully worked job %s", job.getName());
                     } catch (Exception e) {
                         chatIF.displayf("Exception while working job %s", job.getName());
                         e.printStackTrace();
@@ -162,22 +174,22 @@ public class Server extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        this.chatIF.displayf("Received msg from [%s]: %s", client, msg);
-        if (!(msg instanceof Request)) {
-            return;
-        }
-
-        // The message is of type Request
         // process in new thread
         (new Thread(() -> {
+            this.chatIF.displayf("Received msg from [%s]: %s", client, msg);
+            if (!(msg instanceof Request)) {
+                return;
+            }
+
+            // The message is of type Request
             try {
                 Request request = (Request) msg;
-                Command cmd = request.command.newInstance();
 
-                // run the command
                 Exception exception = null;
                 Output output = null;
                 try {
+                    Command cmd = request.command.newInstance();
+                    // run the command
                     output = cmd.runOnServer(request, this, client);
                 } catch (Exception e) {
                     exception = e;
@@ -197,7 +209,7 @@ public class Server extends AbstractServer {
         this.chatIF.displayf("server console commands are not implemented");
     }
 
-    public void login(ConnectionToClient client, User user) throws AlreadyLoggedIn {
+    public synchronized void login(ConnectionToClient client, User user) throws AlreadyLoggedIn {
         Integer id = user.getId();
         if (loggedInUserIds.contains(id)) {
             throw new AlreadyLoggedIn();
@@ -207,7 +219,7 @@ public class Server extends AbstractServer {
         loggedInUserIds.add(id);
     }
 
-    public void logout(ConnectionToClient client) {
+    public synchronized void logout(ConnectionToClient client) {
         Integer id = (Integer) client.getInfo("userId");
         chatIF.displayf("Client [%s] logged out userId=%s", client, String.valueOf(id));
         if (id == null) {
