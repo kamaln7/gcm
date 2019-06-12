@@ -54,32 +54,6 @@ public class View extends Model {
         }
     }
 
-    /**
-     * count number of views of a city between 2 dates
-     *
-     * @param id
-     * @param from
-     * @param to
-     * @return number of matching views
-     * @throws SQLException
-     * @throws NotFound
-     */
-    public static int countByPeriod(Integer id, Date from, Date to) throws SQLException, NotFound {
-        try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from maps, views where maps.city_id = ? and maps.id = views.model_id and views.model = 'map' and views.created_at >= ? and views.created_at <= ?")) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
-            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
-
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    return 0;
-                }
-
-                return rs.getInt("total");
-            }
-        }
-    }
 
     // exceptions
     public static class NotFound extends Exception {

@@ -54,31 +54,7 @@ public class Download extends Model {
         }
     }
 
-    /**
-     * Count rows in database by city id, in period of time between 2 selected dates
-     *
-     * @param id   of city
-     * @param from date
-     * @param to   date
-     * @return number of matching rows
-     * @throws SQLException
-     */
-    public static int countByPeriod(Integer id, Date from, Date to) throws SQLException {
-        try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("select count(*) as total from maps, downloads where maps.city_id = ? and maps.id = downloads.model_id and downloads.model = 'map' and downloads.created_at >= ? and downloads.created_at <= ?")) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setTimestamp(2, new Timestamp(from.getTime()));
-            preparedStatement.setTimestamp(3, new Timestamp(to.getTime()));
 
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    return 0;
-                }
-
-                return rs.getInt("total");
-            }
-        }
-    }
 
     // exceptions
     public static class NotFound extends Exception {
