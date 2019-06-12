@@ -7,6 +7,10 @@ import ocsf.server.ConnectionToClient;
 
 import java.util.Date;
 
+/**
+ * add subscription to the data base
+ * user ID, city ID, starting date, ending date, price, renew(0 new, 1 renew)
+ */
 public class AddSubscriptionToDataBaseCommand implements Command {
     public static class Input extends gcm.commands.Input {
         public int user_id, city_id;

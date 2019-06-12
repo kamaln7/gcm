@@ -6,6 +6,10 @@ import ocsf.server.ConnectionToClient;
 
 import java.util.List;
 
+/**
+ * find subscriptions by the user ID
+ */
+
 public class FindSubscriptionByUserIDCommand implements Command {
     public static class Input extends gcm.commands.Input {
         private Integer userId;

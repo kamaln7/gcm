@@ -64,6 +64,9 @@ public class BuyCityController {
     }
 
     @FXML
+    /**
+     * add subscription to the database
+     */
     void addsubscriptiontoDB(ActionEvent event) {
 
         int city_id = city.getId();
@@ -108,6 +111,9 @@ public class BuyCityController {
 
 
     @FXML
+    /**
+     * add purchase to the database
+     */
     void addpurchasetoDB(ActionEvent event) {
 
         int city_id = city.getId();
@@ -136,6 +142,7 @@ public class BuyCityController {
 
 
     @FXML
+
     void close(ActionEvent event) {
         Stage stage = (Stage) subscriptionprice.getScene().getWindow();
         // do what you have to do
