@@ -396,4 +396,37 @@ public class User extends Model {
             }
         }
     }
+
+
+    public static List<User> findAllUsersWithCounts() throws SQLException {
+        try (Connection db = getDb();
+             Statement statement = db.createStatement()) {
+            try (ResultSet rs = statement.executeQuery(
+                    "SELECT\n" +
+                            " users.*,\n" +
+                            "(\n" +
+                            "select count(*)\n" +
+                            "from purchases\n" +
+                            "where purchases.user_id = users.id\n" +
+                            ") AS purchases_count,\n" +
+                            "(\n" +
+                            "select count(*)\n" +
+                            "from subscriptions\n" +
+                            "where subscriptions.user_id = users.id\n" +
+                            ") AS subscriptions_count\n" +
+                            "FROM users\n" +
+                            "where role = 'user'\n"
+            )) {
+                List<User> users = new ArrayList<>();
+                while (rs.next()) {
+                    User user = new User(rs);
+                    user._extraInfo.put("purchasesCount", String.valueOf(rs.getInt("purchases_count")));
+                    user._extraInfo.put("subscriptionsCount", String.valueOf(rs.getInt("subscriptions_count")));
+                    users.add(user);
+                }
+
+                return users;
+            }
+        }
+    }
 }

@@ -16,7 +16,7 @@
         <Button layoutX="29.0" layoutY="496.0" mnemonicParsing="false" onAction="#ShowPurchases" prefHeight="31.0"
                 prefWidth="250.0" text="Show Purchases History"/>
         <Button layoutX="292.0" layoutY="496.0" mnemonicParsing="false" onAction="#ShowSubscribtionsHistory"
-                prefHeight="31.0" prefWidth="250.0" text="Show Subscribtions History"/>
+                prefHeight="31.0" prefWidth="250.0" text="Show Subscriptions History"/>
         <TableView fx:id="table" layoutX="29.0" layoutY="129.0" prefHeight="349.0" prefWidth="1034.0">
             <columns>
                 <TableColumn fx:id="idColumn" prefWidth="40.999969482421875" text="ID"/>
