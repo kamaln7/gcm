@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class Client extends AbstractClient {
-    private final long TimeoutTime = 10;
+    private final long TimeoutTime = 12;
     private final TimeUnit TimeoutUnit = TimeUnit.SECONDS;
     private final String TimeoutMessage = String.format("Command timed out after waiting %s %s. No response from server.", TimeoutTime, TimeoutUnit);
 

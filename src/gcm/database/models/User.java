@@ -2,10 +2,7 @@ package gcm.database.models;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -99,7 +96,8 @@ public class User extends Model {
      */
     public User register() throws SQLException, NotFound, AlreadyExists {
         // insert user to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into users (username, password, email, phone, role, first_name, last_name, credit_card_number, credit_card_cvv, credit_card_month, credit_card_year) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into users (username, password, email, phone, role, first_name, last_name, credit_card_number, credit_card_cvv, credit_card_month, credit_card_year) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getUsername());
             preparedStatement.setString(2, this.getPassword());
             preparedStatement.setString(3, this.getEmail());
@@ -141,7 +139,8 @@ public class User extends Model {
      * @throws NotFound     if no such user
      */
     public static User findById(Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from users where id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from users where id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -164,7 +163,8 @@ public class User extends Model {
      * @throws NotFound     if no such user
      */
     public static User findByUsername(String username) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from users where username = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from users where username = ?")) {
             preparedStatement.setString(1, username);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -186,7 +186,10 @@ public class User extends Model {
      * @return User
      */
     public static User login(String username, String password) throws NotFound, SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from users where username = ?")) {
+        try (
+                Connection db = getDb();
+                PreparedStatement preparedStatement = db.prepareStatement("select * from users where username = ?")
+        ) {
             preparedStatement.setString(1, username);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -205,9 +208,10 @@ public class User extends Model {
     }
 
 
-    public static void updateUser(int user_id, String email, String phone, String first_name, String last_name,String ccNumber, String ccCVV, Integer ccMonth, Integer ccYear) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE users SET email=? ,phone=? ,first_name=?, last_name=?, credit_card_number=?, credit_card_cvv=?, credit_card_month=?, credit_card_year=? WHERE id = ?")) {
-            preparedStatement.setString(1,email );
+    public static void updateUser(int user_id, String email, String phone, String first_name, String last_name, String ccNumber, String ccCVV, Integer ccMonth, Integer ccYear) throws SQLException, NotFound {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE users SET email=? ,phone=? ,first_name=?, last_name=?, credit_card_number=?, credit_card_cvv=?, credit_card_month=?, credit_card_year=? WHERE id = ?")) {
+            preparedStatement.setString(1, email);
             preparedStatement.setString(2, phone);
             preparedStatement.setString(3, first_name);
             preparedStatement.setString(4, last_name);
@@ -379,7 +383,8 @@ public class User extends Model {
      * @return List of all users with role = user in DataBase
      */
     public static List<User> findAllUsers() throws SQLException {
-        try (Statement statement = getDb().createStatement()) {
+        try (Connection db = getDb();
+             Statement statement = db.createStatement()) {
             try (ResultSet rs = statement.executeQuery("select * from users where role = 'user' order by last_name, first_name asc")) {
                 List<User> users = new ArrayList<>();
                 while (rs.next()) {

@@ -1,9 +1,6 @@
 package gcm.database.models;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +12,8 @@ public class Tour extends Model {
     private Date createdAt, updatedAt;
 
     /**
-     *  create object with info from ResultSet
+     * create object with info from ResultSet
+     *
      * @param rs
      * @throws SQLException
      */
@@ -31,7 +29,8 @@ public class Tour extends Model {
     }
 
     /**
-     *  fill object with info from ResultSet
+     * fill object with info from ResultSet
+     *
      * @param rs
      * @throws SQLException
      */
@@ -45,13 +44,15 @@ public class Tour extends Model {
 
     /**
      * Find a tour by its id
+     *
      * @param id
      * @return tour
      * @throws SQLException
      * @throws NotFound
      */
     public static Tour findById(Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours where id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from tours where id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -67,13 +68,15 @@ public class Tour extends Model {
 
     /**
      * find all tours inside city
+     *
      * @param city_id
      * @return List<Tour> tours
      * @throws SQLException
      * @throws NotFound
      */
     public static List<Tour> findAllByCityId(Integer city_id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from tours where city_id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from tours where city_id = ?")) {
             preparedStatement.setInt(1, city_id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -89,13 +92,15 @@ public class Tour extends Model {
 
     /**
      * insert a new object to the database
+     *
      * @throws SQLException
      * @throws NotFound
      * @throws AlreadyExists
      */
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into tours (city_id, description) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into tours (city_id, description) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, this.getCityId());
             preparedStatement.setString(2, this.getDescription());
             // run the insert command
