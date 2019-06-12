@@ -37,6 +37,10 @@ public class MakeDecisionOnCityPendingApprovalCommand implements Command {
             }
         }
 
+        if (input.approved) {
+            server.getChatIF().displayf("Send email to users who subscribe to city id=%d that a new version is published.", input.cityId);
+        }
+
         return new Output();
     }
 }
