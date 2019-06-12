@@ -56,7 +56,7 @@ public class User extends Model {
 
     public User(String username, String password, String email, String phone, String role, String first_name, String last_name) {
         this.username = username;
-        this.password = password;
+        this.setPassword(password);
         this.email = email;
         this.phone = phone;
         this.role = role;
