@@ -39,10 +39,11 @@ public class ShowBoughtCityAttractionsController {
     @FXML
     private TableColumn<attractionInfo, String> accessibility_column;
 
-    private  int myCityID;
+    private int myCityID;
 
     /**
      * close the viewer
+     *
      * @param event
      */
     @FXML
@@ -52,14 +53,14 @@ public class ShowBoughtCityAttractionsController {
         stage.close();
     }
 
-    private void setCity(int cityID){
-        this.myCityID=cityID;
+    private void setCity(int cityID) {
+        this.myCityID = cityID;
     }
 
     /**
      * set the city attractions in the table
      */
-    private void setAttractions(){
+    private void setAttractions() {
         Input input = new GetCityAttractionsCommand.Input(myCityID);
 
         try {
@@ -73,8 +74,8 @@ public class ShowBoughtCityAttractionsController {
             accessibility_column.setCellValueFactory(new PropertyValueFactory<>("accessibility"));
 
             ObservableList<attractionInfo> oblist = FXCollections.observableArrayList();
-            for(int i=0;i<output.result.size(); i ++)
-                oblist.add(new attractionInfo(output.result.get(i).getName(),output.result.get(i).getDescription(),output.result.get(i).getLocation(),output.result.get(i).getType(),output.result.get(i).getAccessibleSpecial()));
+            for (int i = 0; i < output.result.size(); i++)
+                oblist.add(new attractionInfo(output.result.get(i).getName(), output.result.get(i).getDescription(), output.result.get(i).getLocation(), output.result.get(i).getType(), output.result.get(i).getAccessibleSpecial()));
 
             tableList.setItems(oblist);
 
@@ -86,6 +87,7 @@ public class ShowBoughtCityAttractionsController {
 
     /**
      * loads the viewer
+     *
      * @param primaryStage
      * @param cityID
      * @throws IOException
@@ -111,7 +113,7 @@ public class ShowBoughtCityAttractionsController {
     /**
      * a class used to help filling the table
      */
-    public class attractionInfo{
+    public class attractionInfo {
         private String name, description, location, type, accessibility;
 
         public attractionInfo(String name, String description, String location, String type, boolean accessibility) {
@@ -119,7 +121,7 @@ public class ShowBoughtCityAttractionsController {
             this.description = description;
             this.location = location;
             this.type = type;
-            this.accessibility = accessibility?"YES":"NO";
+            this.accessibility = accessibility ? "Yes" : "No";
         }
 
         public String getName() {
@@ -142,9 +144,6 @@ public class ShowBoughtCityAttractionsController {
             return accessibility;
         }
     }
-
-
-
 
 
 }
