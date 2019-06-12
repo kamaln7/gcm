@@ -127,7 +127,7 @@ public class AddExistingAttractionToMapController {
             Stage stage = (Stage) pane.getScene().getWindow();
             // do what you have to do
             stage.close();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Attraction added successfully");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Attraction successfully added to city + pending approval for map placement!");
             alert.show();
         } catch (MapAttraction.AlreadyExists e) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "This attraction already exists on this map. Choose another.");
