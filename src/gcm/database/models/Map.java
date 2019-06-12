@@ -1,10 +1,8 @@
 package gcm.database.models;
 
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Date;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,20 +35,21 @@ public class Map extends Model {
     }
 
 
-
     public static List<Map> findAllByCityId(Integer cityId) throws SQLException {
         return findAllByCityId(cityId, true);
     }
 
     /**
      * find verified cities
+     *
      * @param cityId
      * @param verifiedOnly
      * @return List of maps
      * @throws SQLException
      */
     public static List<Map> findAllByCityId(Integer cityId, Boolean verifiedOnly) throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where city_id = ? and verification = ? order by title asc")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from maps where city_id = ? and verification = ? order by title asc")) {
             preparedStatement.setInt(1, cityId);
             preparedStatement.setBoolean(2, verifiedOnly);
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -68,23 +67,25 @@ public class Map extends Model {
 
     /**
      * count number of maps of a city
+     *
      * @param cityID
      * @return number of maps of a city
      * @throws Exception
      */
-    public  static  int countAllForCities(int cityID) throws Exception
-{
-    try (PreparedStatement preparedStatement = getDb().prepareStatement("select count(*) AS total from maps where city_id = ?")) {
-        preparedStatement.setInt(1, cityID);
+    public static int countAllForCities(int cityID) throws Exception {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select count(*) AS total from maps where city_id = ?")) {
+            preparedStatement.setInt(1, cityID);
 
-        try (ResultSet rs = preparedStatement.executeQuery()) {
-            if (!rs.next()) {
-                return 0;
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+                return rs.getInt("total");
             }
-            return rs.getInt("total");
         }
     }
-}
+
     public static java.util.Map<Integer, List<Map>> findAllForCities(Set<Integer> cityIds) throws SQLException {
         if (cityIds.isEmpty()) {
             return new java.util.HashMap<>();
@@ -101,7 +102,8 @@ public class Map extends Model {
                         .collect(Collectors.joining(", "))
         );
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(query)) {
             // bind ids
             int bound = cityIds.size();
             for (int i = 0; i < bound; i++) {
@@ -152,7 +154,8 @@ public class Map extends Model {
                         .mapToObj(s -> "?")
                         .collect(Collectors.joining(", "))
         );
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(query)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(query)) {
             // bind ids
             int bound = mapIdsList.size();
             for (int i = 0; i < bound; i++) {
@@ -197,7 +200,8 @@ public class Map extends Model {
 
     /* QUERIES */
     public static Map findById(Integer id) throws Exception {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from maps where id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -212,14 +216,16 @@ public class Map extends Model {
     }
 
     /**
-     *  find map by it's title
+     * find map by it's title
+     *
      * @param title
      * @return matching map
      * @throws SQLException
      * @throws NotFound
      */
     public static Map findByTitle(String title) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where title = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from maps where title = ?")) {
             preparedStatement.setString(1, title);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -235,14 +241,16 @@ public class Map extends Model {
 
     /**
      * find map by title and version
-     * @param title , version
+     *
+     * @param title   , version
      * @param version
      * @return matching map
      * @throws SQLException
      * @throws NotFound
      */
     public static Map findByTitleAndVersion(String title, String version) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from maps where title = ? And version = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from maps where title = ? And version = ?")) {
             preparedStatement.setString(1, title);
             preparedStatement.setString(2, version);
 
@@ -258,11 +266,13 @@ public class Map extends Model {
 
     /**
      * find maps of a given city
+     *
      * @return List of matching maps
      * @throws SQLException
      */
     public static List<Map> findAllWithCityTitle() throws SQLException {
-        try (Statement statement = getDb().createStatement()) {
+        try (Connection db = getDb();
+             Statement statement = db.createStatement()) {
             try (ResultSet rs = statement.executeQuery("select maps.*, concat(cities.name, \", \", cities.country) as city_title\n" +
                     "from maps\n" +
                     "left join cities\n" +
@@ -279,7 +289,8 @@ public class Map extends Model {
     }
 
     public void updateImage(String new_image) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE maps SET img = ? WHERE id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET img = ? WHERE id = ?")) {
             preparedStatement.setString(1, new_image);
             preparedStatement.setInt(2, this.getId());
 
@@ -288,7 +299,8 @@ public class Map extends Model {
     }
 
     public void updateDescriptionAndTitle() throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE maps SET title = ?, description = ? WHERE id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET title = ?, description = ? WHERE id = ?")) {
             preparedStatement.setString(1, this.title);
             preparedStatement.setString(2, this.description);
             preparedStatement.setInt(3, this.id);
@@ -299,7 +311,8 @@ public class Map extends Model {
 
     public void insert() throws SQLException, NotFound {
         // insert map to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into maps (title, version, description, img, city_id) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into maps (title, version, description, img, city_id) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, this.getTitle());
             preparedStatement.setString(2, this.getVersion());

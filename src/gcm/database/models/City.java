@@ -1,9 +1,6 @@
 package gcm.database.models;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +35,8 @@ public class City extends Model {
             return findAll();
         }
 
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where match (name, country) against (?) order by country, name asc")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from cities where match (name, country) against (?) order by country, name asc")) {
             preparedStatement.setString(1, searchQuery);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -60,7 +58,8 @@ public class City extends Model {
      * @throws SQLException
      */
     public static List<City> findAll() throws SQLException {
-        try (Statement statement = getDb().createStatement()) {
+        try (Connection db = getDb();
+             Statement statement = db.createStatement()) {
             try (ResultSet rs = statement.executeQuery("select * from cities order by country, name asc")) {
                 List<City> cities = new ArrayList<>();
                 while (rs.next()) {
@@ -88,14 +87,16 @@ public class City extends Model {
 
     /**
      * find cities by name of city and country name
-     * @param name of city
+     *
+     * @param name    of city
      * @param country name
      * @return City
      * @throws SQLException
-     * @throws NotFound if not found
+     * @throws NotFound     if not found
      */
     public static City findByNameAndCountry(String name, String country) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where name = ? and country = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from cities where name = ? and country = ?")) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, country);
 
@@ -112,12 +113,14 @@ public class City extends Model {
 
     /**
      * find all cities with unapproved new price
+     *
      * @return List of all cities match
      * @throws SQLException
-     * @throws NotFound if not found such cities
+     * @throws NotFound     if not found such cities
      */
     public static List<City> findUnapproved() throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("SELECT * FROM cities WHERE new_purchase_price IS NOT NULL OR new_sub_price IS NOT NULL")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("SELECT * FROM cities WHERE new_purchase_price IS NOT NULL OR new_sub_price IS NOT NULL")) {
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 List<City> cities = new ArrayList<>();
                 while (rs.next()) {
@@ -139,7 +142,8 @@ public class City extends Model {
      * @throws NotFound
      */
     public static City approvePrice(int id) /*, double new_purchase_price, double new_subscription_price)*/ throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET purchase_price = new_purchase_price , subscription_price = new_sub_price, new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE cities SET purchase_price = new_purchase_price , subscription_price = new_sub_price, new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
             preparedStatement.setInt(1, id);
 
             int status = preparedStatement.executeUpdate();
@@ -154,13 +158,15 @@ public class City extends Model {
     /**
      * Decline price changes, in database: no changes in purchase and subscription columns
      * Set NULL values in new_purchase_price and new_subscription_price
+     *
      * @param id of city
      * @return City matches
      * @throws SQLException
      * @throws NotFound
      */
     public static City declinePrice(int id) /*, double new_purchase_price, double new_subscription_price)*/ throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE cities SET new_purchase_price = null, new_sub_price = null  WHERE id = ?")) {
 
             preparedStatement.setInt(1, id);
 
@@ -175,13 +181,15 @@ public class City extends Model {
 
     /**
      * Set in new_purchase_price column, and new_subscription_price column new selected values sent by Content Manager
+     *
      * @param new_purchase_price
      * @param new_sub_price
      * @throws SQLException
      * @throws NotFound
      */
     public void changePrice(double new_purchase_price, double new_sub_price) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE cities SET new_purchase_price = ? , new_sub_price = ?  WHERE id = ?")) {
             preparedStatement.setDouble(1, new_purchase_price);
             preparedStatement.setDouble(2, new_sub_price);
             preparedStatement.setInt(3, getId());
@@ -195,13 +203,15 @@ public class City extends Model {
 
     /**
      * Find city in database by its city ID
+     *
      * @param id city
      * @return Matching City
      * @throws SQLException
-     * @throws NotFound if not found
+     * @throws NotFound     if not found
      */
     public static City findById(Integer id) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("select * from cities where id = ?")) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("select * from cities where id = ?")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -217,7 +227,8 @@ public class City extends Model {
 
     public void insert() throws SQLException, NotFound, AlreadyExists {
         // insert city to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement("insert into cities (name, country, subscription_price, purchase_price) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement("insert into cities (name, country, subscription_price, purchase_price) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getName());
             preparedStatement.setString(2, this.getCountry());
             preparedStatement.setDouble(3, this.subscriptionPrice);
@@ -241,12 +252,13 @@ public class City extends Model {
     }
 
     public void lookupCountsOfRelated() throws SQLException {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(
-                "select\n" +
-                        "(select count(*) from maps where maps.city_id = ?) as map_count,\n" +
-                        "(select count(*) from attractions where attractions.city_id = ?) as attraction_count, \n" +
-                        "(select count(*) from tours where tours.city_id = ?) as tour_count"
-        )) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
+                     "select\n" +
+                             "(select count(*) from maps where maps.city_id = ?) as map_count,\n" +
+                             "(select count(*) from attractions where attractions.city_id = ?) as attraction_count, \n" +
+                             "(select count(*) from tours where tours.city_id = ?) as tour_count"
+             )) {
             preparedStatement.setInt(1, this.getId());
             preparedStatement.setInt(2, this.getId());
             preparedStatement.setInt(3, this.getId());

@@ -1,9 +1,6 @@
 package gcm.database.models;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Date;
 
 public class ServerJob extends Model {
@@ -24,13 +21,14 @@ public class ServerJob extends Model {
     }
 
     public static ServerJob findLatestByName(String name) throws SQLException, NotFound {
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(
-                "select *" +
-                        " from server_jobs" +
-                        " where name = ?" +
-                        " order by created_at desc" +
-                        " limit 1"
-        )) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
+                     "select *" +
+                             " from server_jobs" +
+                             " where name = ?" +
+                             " order by created_at desc" +
+                             " limit 1"
+             )) {
             preparedStatement.setString(1, name);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -45,9 +43,10 @@ public class ServerJob extends Model {
 
     public ServerJob insert() throws SQLException, NotFound {
         // insert user to table
-        try (PreparedStatement preparedStatement = getDb().prepareStatement(
-                "insert into server_jobs" +
-                        " (name) values (?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection db = getDb();
+             PreparedStatement preparedStatement = db.prepareStatement(
+                     "insert into server_jobs" +
+                             " (name) values (?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, this.getName());
             // run the insert command
             preparedStatement.executeUpdate();
