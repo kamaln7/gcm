@@ -156,8 +156,8 @@ public class ActivityReportController {
      */
     @FXML
     void showResults(ActionEvent event) {
-        if (fromDate.getValue() == null || toDate.getValue() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
+        if (fromDate.getValue() == null || toDate.getValue() == null || toDate.getValue().isBefore(fromDate.getValue())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a valid date range!");
             alert.show();
             return;
         }
@@ -167,7 +167,6 @@ public class ActivityReportController {
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
             ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
-            ObservableList();
             ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
 
             for (int i = 0; i < output.cities.size(); i++) {
@@ -231,8 +230,8 @@ public class ActivityReportController {
      */
     @FXML
     void chooseCity(ActionEvent event) {
-        if (fromDate.getValue() == null || toDate.getValue() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a date!!");
+        if (fromDate.getValue() == null || toDate.getValue() == null || toDate.getValue().isBefore(fromDate.getValue())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You have to choose a valid date range!");
             alert.show();
             return;
         }
@@ -245,7 +244,6 @@ public class ActivityReportController {
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
                 ActivityReportCommand.Output output = response.getOutput(ActivityReportCommand.Output.class);
-                ObservableList();
                 ObservableList<ActivityReport> oblist = FXCollections.observableArrayList();
 
                 oblist.add(new ActivityReport(output.cities.get(0).getId(),
