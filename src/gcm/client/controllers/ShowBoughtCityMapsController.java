@@ -83,7 +83,7 @@ public class ShowBoughtCityMapsController {
      */
     @FXML
     void close(ActionEvent event) {
-        Stage stage = (Stage) mapImg.getScene().getWindow();
+        Stage stage = (Stage) mapTitle.getScene().getWindow();
         // do what you have to do
         stage.close();
     }
@@ -103,13 +103,24 @@ public class ShowBoughtCityMapsController {
             FindMapsByCityIdCommand.Output output = response.getOutput(FindMapsByCityIdCommand.Output.class);
             this.maps = output.maps;
             this.size= maps.size();
-
+            if (size==0){
+                setNoMaps();
+                return;
+            }
             //show the first map
             showMap(this.maps.get(current));
             previous.setVisible(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    /**
+     * used when no maps for city
+     */
+    private void setNoMaps(){
+        mapTitle.setText("NO AVAILABLE MAPS YET!");
+        next.setVisible(false);
+        previous.setVisible(false);
     }
 
     /**
