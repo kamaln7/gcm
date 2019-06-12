@@ -9,6 +9,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({SearchTest.class})
 public class AllTests {
     public static void main(String[] args) {
-        JUnitCore.main("AllTests");
+        JUnitCore.main("gcm.tests.AllTests");
     }
 }
