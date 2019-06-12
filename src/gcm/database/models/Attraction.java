@@ -85,7 +85,7 @@ public class Attraction extends Model {
                      "select attractions.*, concat(cities.name, \", \", cities.country) as city_title" +
                              " from attractions" +
                              " left join cities on attractions.city_id = cities.id" +
-                             " where attractions.name like ? or attractions.description like ? against (?)" +
+                             " where attractions.name like ? or attractions.description like ?" +
                              " order by attractions.name asc"
              )) {
             preparedStatement.setString(1, '%' + searchQuery + '%');
