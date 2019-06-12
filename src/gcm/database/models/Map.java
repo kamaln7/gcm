@@ -293,7 +293,7 @@ public class Map extends Model {
 
     public void updateImage(String new_image) throws SQLException, NotFound {
         try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET img = ? WHERE id = ?")) {
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET img_new = ? WHERE id = ?")) {
             preparedStatement.setString(1, new_image);
             preparedStatement.setInt(2, this.getId());
 
@@ -303,7 +303,7 @@ public class Map extends Model {
 
     public void updateDescriptionAndTitle() throws SQLException, NotFound {
         try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET title = ?, description = ? WHERE id = ?")) {
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE maps SET title_new = ?, description_new = ? WHERE id = ?")) {
             preparedStatement.setString(1, this.title);
             preparedStatement.setString(2, this.description);
             preparedStatement.setInt(3, this.id);

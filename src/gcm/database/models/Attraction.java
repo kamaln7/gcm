@@ -49,7 +49,7 @@ public class Attraction extends Model {
     /* QUERIES */
     public static void updateAttraction(int attraction_id, String attraction_type, String attraction_location, String description, boolean accessibility) throws SQLException, NotFound {
         try (Connection db = getDb();
-             PreparedStatement preparedStatement = db.prepareStatement("UPDATE attractions SET description=? ,type=? ,location=?, accessible_special=? WHERE id = ?")) {
+             PreparedStatement preparedStatement = db.prepareStatement("UPDATE attractions SET description_new=? ,type_new=? ,location_new=?, accessible_special_new=? WHERE id = ?")) {
             preparedStatement.setString(1, description);
             preparedStatement.setString(2, attraction_type);
             preparedStatement.setString(3, attraction_location);
