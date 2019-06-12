@@ -136,7 +136,7 @@ public class AddTourController {
             try {
                 Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input2);
                 response.getOutput(AddTourAttractionCommand.Output.class);
-                (new Alert(Alert.AlertType.INFORMATION, "Tour was added!")).showAndWait();
+                (new Alert(Alert.AlertType.INFORMATION, "Tour was added!")).show();
                 ((Stage) tableList.getScene().getWindow()).close();
             } catch (Exception e) {
                 e.printStackTrace();
