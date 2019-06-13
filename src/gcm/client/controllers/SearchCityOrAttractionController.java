@@ -46,6 +46,7 @@ public class SearchCityOrAttractionController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         CityListCell.setWithBuyButton(ClientGUI.getCurrentUser().hasExactRole("user"));
 
+        citiesList.setPlaceholder(new Label("No cities matching search query found."));
         citiesList.setItems(citiesListItems);
         citiesList.setCellFactory((Callback<ListView<CityWithMapsList>, CityListCell>) listView -> new CityListCell() {
             {
@@ -53,6 +54,7 @@ public class SearchCityOrAttractionController implements Initializable {
                 setMaxWidth(Control.USE_PREF_SIZE);
             }
         });
+        attractionsList.setPlaceholder(new Label("No attractions matching search query found."));
         attractionsList.setItems(attractionsListItems);
         attractionsList.setCellFactory((Callback<ListView<AttractionWithMapsList>, AttractionListCell>) listView -> new AttractionListCell() {
             {
