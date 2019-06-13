@@ -1,9 +1,7 @@
 package gcm.client.controllers;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import gcm.client.bin.ClientGUI;
 import gcm.commands.Input;
-import gcm.commands.RegisterUserCommand;
 import gcm.commands.Response;
 import gcm.commands.UpdateUserCommand;
 import gcm.database.models.User;
@@ -12,7 +10,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -50,9 +50,27 @@ public class EditProfileController implements Initializable {
         Scene scene = new Scene(pane);
         // setting the stage
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Register for GCM 2019");
+        primaryStage.setTitle("Edit Profile - GCM 2019");
         primaryStage.setResizable(false);
         primaryStage.show();
+    }
+
+    public static void loadViewAndWait(Stage primaryStage) throws IOException {
+        URL url = EditProfileController.class.getResource("/gcm/client/views/EditProfile.fxml");
+        AnchorPane pane = FXMLLoader.load(url);
+        Scene scene = new Scene(pane);
+        // setting the stage
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Edit Profile - GCM 2019");
+        primaryStage.setResizable(false);
+        primaryStage.showAndWait();
+    }
+
+    private static Boolean anyIsEmpty(String... vals) {
+        for (String val : vals) {
+            if (val.isEmpty()) return true;
+        }
+        return false;
     }
 
     @FXML
@@ -64,10 +82,15 @@ public class EditProfileController implements Initializable {
                 ccNumber = ccNumberTF.getText(),
                 ccCVV = ccCVVTF.getText();
 
+        if (anyIsEmpty(email, phone, first_name, last_name, ccNumber, ccCVV)) {
+            (new Alert(Alert.AlertType.WARNING, "Fill in all the fields")).show();
+            return;
+        }
+
         Integer ccMonth = ccMonthCB.getSelectionModel().getSelectedItem(),
                 ccYear = ccYearCB.getSelectionModel().getSelectedItem();
 
-        Input input = new UpdateUserCommand.Input(ClientGUI.getCurrentUser().getId(),email, phone, first_name, last_name, ccNumber, ccCVV, ccMonth, ccYear);
+        Input input = new UpdateUserCommand.Input(ClientGUI.getCurrentUser().getId(), email, phone, first_name, last_name, ccNumber, ccCVV, ccMonth, ccYear);
 
         try {
             Response response = ClientGUI.getClient().sendInputAndWaitForResponse(input);
@@ -82,23 +105,23 @@ public class EditProfileController implements Initializable {
             e.printStackTrace();
         }
     }
-    private void close(){
+
+    private void close() {
         Stage stage = (Stage) first_name_field.getScene().getWindow();
         // do what you have to do
         stage.close();
     }
 
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-       User user = ClientGUI.getCurrentUser();
-       first_name_field.setText(user.getFirst_name());
-       last_name_field.setText(user.getLast_name());
-       emailField.setText(user.getEmail());
-       phoneField.setText(user.getPhone());
-       ccNumberTF.setText(user.getCcNumber());
-       ccCVVTF.setText(user.getCcCVV());
+        User user = ClientGUI.getCurrentUser();
+        first_name_field.setText(user.getFirst_name());
+        last_name_field.setText(user.getLast_name());
+        emailField.setText(user.getEmail());
+        phoneField.setText(user.getPhone());
+        ccNumberTF.setText(user.getCcNumber());
+        ccCVVTF.setText(user.getCcCVV());
         Integer currentYear = Integer.parseInt(new SimpleDateFormat("yy").format(new Date()));
         ccMonthCB.getItems().setAll(IntStream.range(1, 13).parallel().mapToObj(Integer::valueOf).collect(Collectors.toList()));
         ccYearCB.getItems().setAll(IntStream.range(currentYear, currentYear + 6).parallel().mapToObj(Integer::valueOf).collect(Collectors.toList()));

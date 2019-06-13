@@ -84,6 +84,10 @@ public class User extends Model {
         this.last_name = rs.getString("last_name");
         this.createdAt = rs.getTimestamp("created_at");
         this.updatedAt = rs.getTimestamp("updated_at");
+        this.ccNumber = rs.getString("credit_card_number");
+        this.ccCVV = rs.getString("credit_card_cvv");
+        this.ccMonth = rs.getInt("credit_card_month");
+        this.ccYear = rs.getInt("credit_card_year");
     }
 
     /**
@@ -381,6 +385,7 @@ public class User extends Model {
 
     /**
      * Find all Users and all information needed:  number of  purchases and subscriptions
+     *
      * @return
      * @throws SQLException
      */
