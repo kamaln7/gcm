@@ -111,6 +111,7 @@ public class City extends Model {
                              "select count(*)\n" +
                              "from maps\n" +
                              "where maps.city_id = cities.id\n" +
+                             "AND maps.verification = 1"+
                              ") AS maps_count,\n" +
 
                              "(\n" +
