@@ -56,6 +56,13 @@ public class RegisterController implements Initializable {
         primaryStage.show();
     }
 
+    private static Boolean anyIsEmpty(String... vals) {
+        for (String val : vals) {
+            if (val.isEmpty()) return true;
+        }
+        return false;
+    }
+
     @FXML
     void registerButtonClick(ActionEvent event) {
         String username = usernameField.getText(),
@@ -69,6 +76,11 @@ public class RegisterController implements Initializable {
 
         Integer ccMonth = ccMonthCB.getSelectionModel().getSelectedItem(),
                 ccYear = ccYearCB.getSelectionModel().getSelectedItem();
+
+        if (anyIsEmpty(username, password, email, phone, first_name, last_name, ccNumber, ccCVV)) {
+            (new Alert(Alert.AlertType.WARNING, "Fill in all the fields")).show();
+            return;
+        }
 
         Input input = new RegisterUserCommand.Input(username, password, email, phone, first_name, last_name, ccNumber, ccCVV, ccMonth, ccYear);
 

@@ -37,35 +37,6 @@ public class UserProfileController implements Initializable {
 
     User myUser;
 
-    @FXML
-    void active_subscriptions(ActionEvent event) {
-        try {
-            ActiveSubscriptionsController.loadView(new Stage(), myUser.getId());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    void purchase_history(ActionEvent event) {
-        try {
-            ShowPurchaseHistoryController.loadView(new Stage(), myUser.getId());
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    void subscription_history(ActionEvent event) {
-        try {
-            ShowSubscriptionHistoryController.loadView(new Stage(), myUser.getId());
-        } catch (Exception e) {
-            ClientGUI.showErrorTryAgain();
-            e.printStackTrace();
-        }
-    }
-
     public void setFields(User user) {
         myUser = user;
         first_name_field.setText(myUser.getFirst_name());
@@ -100,7 +71,8 @@ public class UserProfileController implements Initializable {
     @FXML
     void edit_profile(ActionEvent event) {
         try {
-            EditProfileController.loadView(new Stage());
+            EditProfileController.loadViewAndWait(new Stage());
+            setFields(ClientGUI.getCurrentUser());
         } catch (IOException e) {
             e.printStackTrace();
         }
