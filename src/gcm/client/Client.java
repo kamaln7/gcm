@@ -27,6 +27,7 @@ public class Client extends AbstractClient {
     private final String TimeoutMessage = String.format("Command timed out after waiting %s %s. No response from server.", TimeoutTime, TimeoutUnit);
 
     private Gson gson = GsonSingleton.GsonSingleton().gson;
+
     private Settings settings;
     private HashMap<String, CompletableFuture<Response>> pendingCommands;
 

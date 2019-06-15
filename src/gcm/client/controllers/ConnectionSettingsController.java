@@ -1,5 +1,6 @@
 package gcm.client.controllers;
 
+import gcm.client.Client;
 import gcm.client.Settings;
 import gcm.client.bin.ClientGUI;
 import javafx.event.ActionEvent;
@@ -64,12 +65,13 @@ public class ConnectionSettingsController implements Initializable {
                 return;
             }
 
-            Settings settings = ClientGUI.getClient().getSettings();
-            settings.setHost(host);
-            settings.setPort(Integer.valueOf(port));
+            Client client = ClientGUI.getClient();
+            client.setHost(host);
+            client.setPort(Integer.valueOf(port));
+            client.start();
 
-            ClientGUI.getClient().start();
             LoginController.loadView(ClientGUI.getPrimaryStage());
+
         } catch (IOException e) {
             e.printStackTrace();
             (new Alert(Alert.AlertType.ERROR, "Couldn't connect to server: " + e.getMessage())).show();
