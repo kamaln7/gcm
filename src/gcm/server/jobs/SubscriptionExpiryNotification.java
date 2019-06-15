@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * A job that runs once every 24 hours and emails users with subscriptions that end in 3 days or sooner
+ */
 public class SubscriptionExpiryNotification extends Job {
     private static final Integer ExpiryDays = 3;
 
     @Override
     public long getInterval() {
-        return 3600;
+        return 24 * 60 * 60;
     }
 
     @Override
@@ -24,12 +27,7 @@ public class SubscriptionExpiryNotification extends Job {
         super(server);
     }
 
-    /**
-     * Computes a result, or throws an exception if unable to do so.
-     *
-     * @return computed result
-     * @throws Exception if unable to compute a result
-     */
+
     @Override
     public Void call() throws Exception {
         // get expiring subscriptions and group by user id
@@ -45,6 +43,7 @@ public class SubscriptionExpiryNotification extends Job {
                 .stream()
                 .collect(Collectors.groupingBy(Subscription::getUserId));
 
+        // go over list and notify users
         for (Map.Entry<Integer, List<Subscription>> entry : userSubscriptions.entrySet()) {
             Integer userId = entry.getKey();
             List<Subscription> subscriptions = entry.getValue();
@@ -57,6 +56,7 @@ public class SubscriptionExpiryNotification extends Job {
                     ExpiryDays
             );
 
+            // mark the subscription as "notification sent" so we don't keep sending emails
             Subscription.updateSentExpiryNotification(
                     subscriptions
                             .stream()

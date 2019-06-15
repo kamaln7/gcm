@@ -31,6 +31,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * GCM Server
+ */
 public class Server extends AbstractServer {
     private Gson gson = GsonSingleton.GsonSingleton().gson;
 
@@ -80,6 +83,14 @@ public class Server extends AbstractServer {
         scheduleJobs();
     }
 
+    /**
+     * Loops over registered jobs and schedules them to run on their intervals
+     *
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     */
     private void scheduleJobs() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         ExecutorService executor = Executors.newCachedThreadPool();
         for (Class<? extends Job> jobC : registeredJobs) {
@@ -89,6 +100,12 @@ public class Server extends AbstractServer {
         }
     }
 
+    /**
+     * Runs a job periodically based on its interval and the last time it was run
+     *
+     * @param executor
+     * @param job
+     */
     private void workJob(ExecutorService executor, Job job) {
         if (job.getInterval() <= 0) {
             chatIF.displayf("Not scheduling job %s because its interval is %d", job.getName(), job.getInterval());
@@ -116,12 +133,16 @@ public class Server extends AbstractServer {
                     nextSleep = 0;
                 }
 
+                // scheduler loop
                 while (true) {
                     try {
+                        // sleep if necessary
                         if (nextSleep > 0) {
                             chatIF.displayf("Sleeping job %s for %d seconds", job.getName(), nextSleep / 1000);
                             Thread.sleep(nextSleep);
                         }
+
+                        // run the job
                         chatIF.displayf("Running job %s...", job.getName());
                         Future<Void> future = executor.submit(job);
                         future.get();

@@ -25,12 +25,15 @@ import static org.powermock.api.easymock.PowerMock.*;
 @PrepareForTest({City.class, Map.class, Attraction.class})
 @RunWith(PowerMockRunner.class)
 public class SearchTest extends TestCase {
+    // fake database for tests
+    // with fixed, predictable data
     private java.util.Map<Integer, TestCity> cities = new HashMap<>();
     private java.util.Map<Integer, TestMap> maps = new HashMap<>();
     private java.util.Map<Integer, TestAttraction> attractions = new HashMap<>();
 
     private int cityIdCounter = 1;
 
+    // ID counter for the fake rows
     private enum IDs {
         HaifaCityId,
         HaifaUniId,
@@ -42,6 +45,9 @@ public class SearchTest extends TestCase {
         addCityHaifa();
     }
 
+    /**
+     * Add fake testing data
+     */
     private void addCityHaifa() {
         int cityId = cityIdCounter++;
 
@@ -54,27 +60,35 @@ public class SearchTest extends TestCase {
         TestMap mountCarmelMap = new TestMap("Mount Carmel", "Mountain carmel map", "", "", cityId);
         mountCarmelMap.setId(IDs.MountCarmelId.ordinal());
 
+        // set relationships
         haifaUni.maps.add(mountCarmelMap);
         haifa.maps.add(mountCarmelMap);
         haifa.attractions.add(haifaUni);
 
+        // insert into fake db
         attractions.put(haifaUni.getId(), haifaUni);
         maps.put(mountCarmelMap.getId(), mountCarmelMap);
         cities.put(mountCarmelMap.getId(), haifa);
     }
 
+    /**
+     * Test that searching for something that doesn't exist returns no results
+     *
+     * @throws Exception
+     */
     @Test
     public void testNoMatches() throws Exception {
         mockStatic(City.class);
         mockStatic(Map.class);
         mockStatic(Attraction.class);
 
+        // mock methods based on the fake data
         expectModelResults("aokdoaskdoaskdo");
 
         replayAll();
 
+        // sends search command
         SearchCityOrAttractionCommand cmd = new SearchCityOrAttractionCommand();
-
         Request request = new Request(new SearchCityOrAttractionCommand.Input("aokdoaskdoaskdo"));
         SearchCityOrAttractionCommand.Output output = cmd.runOnServer(request, null, null);
 
@@ -91,6 +105,11 @@ public class SearchTest extends TestCase {
         verifyAll();
     }
 
+    /**
+     * Test that searching for "haifa" returns the fake data we added above
+     *
+     * @throws Exception
+     */
     @Test
     public void testSearchForHaifa() throws Exception {
         mockStatic(City.class);
@@ -135,12 +154,15 @@ public class SearchTest extends TestCase {
         verifyAll();
     }
 
+    // mock Models to return fake data instead of connecting to the database
     private void expectModelResults(String query) throws SQLException {
+        // find matching cities in the fake database
         List<City> matchingCities = cities.values()
                 .parallelStream()
                 .filter(city -> contains(city.getName(), query) || contains(city.getCountry(), query))
                 .collect(Collectors.toList());
 
+        // find maps for the matching cities
         java.util.Map<Integer, List<Map>> mapsForMatchingCities = matchingCities
                 .parallelStream()
                 .map(city -> (TestCity) city)
@@ -149,14 +171,17 @@ public class SearchTest extends TestCase {
                         city -> city.maps.stream().map(m -> (Map) m).collect(Collectors.toList())
                 ));
 
+        // mock City and Map methods to return the matches we found above
         expect(City.searchByNameWithCounts(query)).andReturn(matchingCities);
         expect(Map.findAllForCities(anyObject())).andReturn(mapsForMatchingCities);
 
+        // find matching attractions
         List<Attraction> matchingAttractions = attractions.values()
                 .parallelStream()
                 .filter(attraction -> contains(attraction.getName(), query) || contains(attraction.getDescription(), query))
                 .collect(Collectors.toList());
 
+        // find maps for matching attractions
         java.util.Map<Integer, List<Map>> mapsForMatchingAttractions = matchingAttractions
                 .parallelStream()
                 .map(attraction -> (TestAttraction) attraction)
@@ -165,6 +190,7 @@ public class SearchTest extends TestCase {
                         attraction -> attraction.maps.stream().map(m -> (Map) m).collect(Collectors.toList())
                 ));
 
+        // again, mock to return fake data
         expect(Attraction.searchByNameOrDescription(query)).andReturn(matchingAttractions);
         expect(Map.findAllForAttractions(anyObject())).andReturn(mapsForMatchingAttractions);
     }
@@ -177,6 +203,11 @@ public class SearchTest extends TestCase {
         return outer.toLowerCase().contains(inner.toLowerCase());
     }
 
+    /**
+     * Test that an empty search query returns nothing
+     *
+     * @throws Exception
+     */
     @Test
     public void testEmptySearchQuery() throws Exception {
         SearchCityOrAttractionCommand cmd = new SearchCityOrAttractionCommand();

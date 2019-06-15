@@ -2,7 +2,7 @@
   <configuration default="false" name="Server" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="gcm.server.bin.ServerConsole" />
     <module name="gcm" />
-    <option name="PROGRAM_PARAMETERS" value="--connectionString &quot;jdbc:mysql://gcm:***REMOVED***@gcm.kar.sh:500/gcm?useSSL=false&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="--connectionString &quot;jdbc:mysql://gcm:928c43b1f9d4928c43b1f9d4@gcm.kar.sh:500/gcm?useSSL=false&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="gcm.server.bin.*" />

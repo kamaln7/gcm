@@ -48,6 +48,9 @@ public class Client extends AbstractClient {
         this.openConnection();
     }
 
+    /**
+     * If the server closes the connection, close all JavaFX windows, show a warning, and go back to the connection settings screen
+     */
     @Override
     protected void connectionClosed() {
         this.chatIF.display("Connection to server closed");
@@ -85,6 +88,11 @@ public class Client extends AbstractClient {
         this.chatIF.display("Connected to server");
     }
 
+    /**
+     * Handle all messages from the server (Response types)
+     *
+     * @param msg the message sent.
+     */
     @Override
     protected void handleMessageFromServer(Object msg) {
         (new Thread(() -> {
@@ -113,13 +121,29 @@ public class Client extends AbstractClient {
         chatIF.display("client console commands aren't supported");
     }
 
-    // Takes an Input, creates a Request object and calls sendRequestAndWaitForResponse()
+    /**
+     * Takes an Input, creates a Request object and calls sendRequestAndWaitForResponse()
+     *
+     * @param input Command input
+     * @return Response for the command from the server
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws IOException
+     */
     public Response sendInputAndWaitForResponse(Input input) throws InterruptedException, ExecutionException, IOException {
         Request request = new Request(input);
         return this.sendRequestAndWaitForResponse(request);
     }
 
-    // sends the request to the server and waits for a response then returns it
+    /**
+     * sends the request to the server and waits for a response then returns it
+     *
+     * @param request Request containing a command and input
+     * @return Response for the command from the server
+     * @throws IOException
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     private Response sendRequestAndWaitForResponse(Request request) throws IOException, ExecutionException, InterruptedException {
         CompletableFuture<Response> response = new CompletableFuture<>();
         this.pendingCommands.put(request.id, response);
