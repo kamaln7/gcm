@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="Maven: com.beust:jcommander:1.72">
+    <archive path="/Users/kamal/.m2/repository/com/beust/jcommander/1.72/jcommander-1.72.jar" />
+  </library>
+  <library name="Maven: com.google.code.gson:gson:2.8.5">
+    <archive path="/Users/kamal/.m2/repository/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" />
+  </library>
+  <library name="Maven: com.google.protobuf:protobuf-java:3.6.1">
+    <archive path="/Users/kamal/.m2/repository/com/google/protobuf/protobuf-java/3.6.1/protobuf-java-3.6.1.jar" />
+  </library>
+  <library name="Maven: com.zaxxer:HikariCP:2.7.8">
+    <archive path="/Users/kamal/.m2/repository/com/zaxxer/HikariCP/2.7.8/HikariCP-2.7.8.jar" />
+  </library>
+  <library name="Maven: junit:junit:4.12">
+    <archive path="/Users/kamal/.m2/repository/junit/junit/4.12/junit-4.12.jar" />
+  </library>
+  <library name="Maven: mysql:mysql-connector-java:8.0.16">
+    <archive path="/Users/kamal/.m2/repository/mysql/mysql-connector-java/8.0.16/mysql-connector-java-8.0.16.jar" />
+  </library>
+  <library name="Maven: org.hamcrest:hamcrest-all:1.3">
+    <archive path="/Users/kamal/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar" />
+  </library>
+  <library name="Maven: org.hamcrest:hamcrest-core:1.3">
+    <archive path="/Users/kamal/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" />
+  </library>
+  <library name="Maven: org.mindrot:jbcrypt:0.4">
+    <archive path="/Users/kamal/.m2/repository/org/mindrot/jbcrypt/0.4/jbcrypt-0.4.jar" />
+  </library>
+  <library name="Maven: org.slf4j:slf4j-api:1.7.25">
+    <archive path="/Users/kamal/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" />
+  </library>
+  <library name="Maven: org.slf4j:slf4j-simple:1.7.25">
+    <archive path="/Users/kamal/.m2/repository/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar" />
+  </library>
+  <library name="cglib-nodep-3.2.9">
+    <archive path="/Users/kamal/dev/Software Engineering 2019/gcm/lib/cglib-nodep-3.2.9.jar" />
+    <archive path="/Users/kamal/dev/Software Engineering 2019/gcm/lib/easymock-4.0.1.jar" />
+    <archive path="/Users/kamal/dev/Software Engineering 2019/gcm/lib/javassist-3.24.0-GA.jar" />
+    <archive path="/Users/kamal/dev/Software Engineering 2019/gcm/lib/objenesis-3.0.1.jar" />
+  </library>
+  <library name="hamcrest-all-1.3" />
+  <library name="powermock-easymock-2.0.2-full">
+    <archive path="/Users/kamal/dev/Software Engineering 2019/gcm/lib/powermock-easymock-2.0.2-full.jar" />
+  </library>
+  <library name="powermock-mockito2-2.0.2-full" />
+</eclipse-userlibraries>
+
